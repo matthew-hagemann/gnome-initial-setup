@@ -38,6 +38,7 @@ Build-Depends: debhelper-compat (= 13),
                libsecret-1-dev (>= 0.18.8),
                libsystemd-dev [linux-any],
                libwebkit2gtk-4.0-dev (>= 2.26),
+               libxml2-utils,
                meson (>= 0.50.0),
                systemd ( >= 242),
 Rules-Requires-Root: no
