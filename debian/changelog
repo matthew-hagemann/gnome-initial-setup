@@ -1,3 +1,9 @@
+gnome-initial-setup (42.2-1ubuntu2) kinetic; urgency=medium
+
+  * Rebuild against latest gnome-desktop
+
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Thu, 28 Jul 2022 09:41:22 -0400
+
 gnome-initial-setup (42.2-1ubuntu1) kinetic; urgency=medium
 
   * Resynchronize with Debian. Remaining changes:
