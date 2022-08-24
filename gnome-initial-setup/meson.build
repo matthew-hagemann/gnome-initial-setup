@@ -27,37 +27,45 @@ sources += [
     'gis-keyring.h'
 ]
 
+geocode_glib_2_dep = dependency(
+  'geocode-glib-2.0',
+  fallback: ['geocode-glib', 'geocode_glib_dep'],
+  default_options: [
+    'enable-gtk-doc=false',
+    'enable-installed-tests=false',
+    'enable-introspection=false',
+    'soup2=false',
+  ],
+)
+
 dependencies = [
     dependency ('libnm', version: '>= 1.2'),
-    dependency ('libnma', version: '>= 1.0'),
+    dependency ('libnma-gtk4', version: '>= 1.0'),
     dependency ('polkit-gobject-1', version: '>= 0.103'),
     dependency ('accountsservice'),
-    dependency ('gnome-desktop-4', fallback: ['gnome-desktop', 'libgnome_desktop_base_dep']),
+    geocode_glib_2_dep,
+    dependency ('gnome-desktop-4'),
     dependency ('gsettings-desktop-schemas', version: '>= 3.37.1'),
     dependency ('fontconfig'),
-    dependency ('gweather4', fallback: ['libgweather', 'libgweather_dep']),
     dependency ('goa-1.0'),
-    dependency ('goa-backend-1.0'),
-    dependency ('gtk+-3.0', version: '>= 3.11.3'),
+    dependency ('gtk4', version: '>= 4.6'),
     dependency ('glib-2.0', version: '>= 2.63.1'),
     dependency ('gio-unix-2.0', version: '>= 2.53.0'),
     dependency ('gdm', version: '>= 3.8.3'),
-    dependency ('geocode-glib-1.0'),
+    dependency ('gweather4'),
     dependency ('libgeoclue-2.0', version: '>= 2.3.1'),
-    dependency ('libhandy-1', version: '>= 1.5.90', fallback: ['libhandy', 'libhandy_dep']),
     cc.find_library('m', required: false),
     dependency ('pango', version: '>= 1.32.5'),
-    dependency ('rest-0.7'),
     dependency ('json-glib-1.0'),
     dependency ('krb5'),
     dependency ('libsecret-1', version: '>= 0.18.8'),
     dependency ('pwquality'),
-    dependency ('webkit2gtk-4.0', version: '>= 2.26.0'),
-    cheese_dep,
-    cheese_gtk_dep,
+    dependency ('rest-1.0'),
+    dependency ('webkit2gtk-5.0'),
     ibus_dep,
     libmalcontent_dep,
     libmalcontent_ui_dep,
+    libadwaita_dep,
 ]
 
 executable(

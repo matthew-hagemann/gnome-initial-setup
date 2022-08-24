@@ -1,6 +1,6 @@
 project('gnome-initial-setup',
         ['c'],
-        version: '42.2',
+        version: '43.beta',
         license: 'GPL-2.0-or-later',
         meson_version: '>= 0.53.0',
 )
@@ -10,13 +10,12 @@ gnome = import('gnome')
 i18n = import('i18n')
 
 prefix = get_option('prefix')
-po_dir = join_paths(meson.source_root(), 'po')
+po_dir = join_paths(meson.current_source_dir(), 'po')
 bin_dir = join_paths(prefix, get_option('bindir'))
 data_dir = join_paths(prefix, get_option('datadir'))
 locale_dir = join_paths(prefix, get_option('localedir'))
 libexec_dir = join_paths(prefix, get_option('libexecdir'))
 sysconf_dir = join_paths(prefix, get_option('sysconfdir'))
-source_root = join_paths(meson.source_root(), 'gnome-initial-setup')
 pkgdata_dir = join_paths(data_dir, meson.project_name())
 pkgsysconf_dir = join_paths(sysconf_dir, meson.project_name())
 
@@ -27,6 +26,7 @@ conf.set_quoted('PKGDATADIR', pkgdata_dir)
 conf.set_quoted('DATADIR', data_dir)
 conf.set_quoted('PKGSYSCONFDIR', pkgsysconf_dir)
 conf.set_quoted('SYSCONFDIR', sysconf_dir)
+conf.set_quoted('LIBEXECDIR', libexec_dir)
 conf.set('SECRET_API_SUBJECT_TO_CHANGE', true)
 conf.set_quoted('G_LOG_DOMAIN', 'InitialSetup')
 conf.set('GLIB_VERSION_MIN_REQUIRED', 'GLIB_VERSION_2_64')
@@ -37,24 +37,16 @@ if enable_systemd
     systemd_dep = dependency('systemd', version: '>= 242', required: false)
     assert(systemd_dep.found(), 'Systemd support explicitly required, but systemd not found')
 
-    systemd_userunitdir = systemd_dep.get_pkgconfig_variable('systemduserunitdir',
-                                                             define_variable: ['prefix', prefix])
+    systemd_userunitdir = systemd_dep.get_variable(pkgconfig: 'systemduserunitdir',
+                                                   pkgconfig_define: ['prefix', prefix])
+    systemd_sysusersdir = systemd_dep.get_variable(pkgconfig: 'sysusersdir',
+                                                   pkgconfig_define: ['prefix', prefix])
 endif
 
 vendor_conf_file = get_option('vendor-conf-file')
 if vendor_conf_file != ''
     conf.set_quoted('VENDOR_CONF_FILE', vendor_conf_file)
 endif
-
-# Needed for the 'account' page
-cheese_dep = dependency ('cheese',
-                         version: '>= 3.28',
-                         required: get_option('cheese'))
-cheese_gtk_dep = dependency ('cheese-gtk',
-                         version: '>= 3.3.5',
-                         required: get_option('cheese'))
-have_cheese = cheese_dep.found() and cheese_gtk_dep.found()
-conf.set('HAVE_CHEESE', have_cheese)
 
 # Needed for the 'keyboard' page
 ibus_dep = dependency ('ibus-1.0',
@@ -63,13 +55,24 @@ ibus_dep = dependency ('ibus-1.0',
 have_ibus = ibus_dep.found()
 conf.set('HAVE_IBUS', have_ibus)
 
+# Check for libadwaita before malcontent-ui, otherwise Meson may search and
+# find an older version of libadwaita in the host system, cache it, and fail
+# to fallback to a submodule.
+libadwaita_dep = dependency(
+  'libadwaita-1',
+  version: '>= 1.2.alpha',
+  fallback: ['libadwaita', 'libadwaita_dep'],
+  default_options: ['examples=false', 'introspection=disabled', 'tests=false', 'vapi=false'],
+)
+
 # Needed for the parental controls pages
 libmalcontent_dep = dependency ('malcontent-0',
                                 version: '>= 0.6.0',
                                 required: get_option('parental_controls'))
 libmalcontent_ui_dep = dependency ('malcontent-ui-0',
-                                   version: '>= 0.6.0',
-                                   required: get_option('parental_controls'))
+                                   version: '>= 0.11.0',
+                                   required: get_option('parental_controls'),
+                                   fallback: ['malcontent-ui', 'libmalcontent_ui_dep'])
 have_parental_controls = libmalcontent_dep.found() and libmalcontent_ui_dep.found()
 conf.set('HAVE_PARENTAL_CONTROLS', have_parental_controls)
 
@@ -85,7 +88,6 @@ subdir('build-aux')
 summary(
   {
     'systemd support': enable_systemd,
-    'Cheese': have_cheese,
     'IBus': have_ibus,
     'Parental Controls': have_parental_controls,
     'Vendor Configuration File':
