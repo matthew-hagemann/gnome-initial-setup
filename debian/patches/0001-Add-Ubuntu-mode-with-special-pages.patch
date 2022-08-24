@@ -120,11 +120,11 @@ index 0000000..12c7bf0
 +</locatingRules>
 \ No newline at end of file
 diff --git a/data/meson.build b/data/meson.build
-index 31fa2f9..0fbb7d1 100644
+index ba8d78e..9a1dc5a 100644
 --- a/data/meson.build
 +++ b/data/meson.build
-@@ -99,6 +99,14 @@ if enable_systemd
-     )
+@@ -101,6 +101,14 @@ if enable_systemd
+     install_data('gnome-initial-setup.conf', install_dir: systemd_sysusersdir)
  endif
  
 +i18n.merge_file(
@@ -139,7 +139,7 @@ index 31fa2f9..0fbb7d1 100644
  rules_dir = join_paths(data_dir, 'polkit-1', 'rules.d')
  configure_file(
 diff --git a/gnome-initial-setup/gis-driver.c b/gnome-initial-setup/gis-driver.c
-index 77434ee..f0f50c9 100644
+index b24644b..57eb9dc 100644
 --- a/gnome-initial-setup/gis-driver.c
 +++ b/gnome-initial-setup/gis-driver.c
 @@ -101,6 +101,9 @@ struct _GisDriver {
@@ -151,8 +151,8 @@ index 77434ee..f0f50c9 100644
 +  gboolean quit_requested;
  };
  
- G_DEFINE_TYPE (GisDriver, gis_driver, GTK_TYPE_APPLICATION)
-@@ -979,6 +982,33 @@ gis_driver_save_data (GisDriver  *driver,
+ G_DEFINE_TYPE (GisDriver, gis_driver, ADW_TYPE_APPLICATION)
+@@ -933,6 +936,33 @@ gis_driver_save_data (GisDriver  *driver,
    return gis_assistant_save_data (driver->assistant, error);
  }
  
@@ -187,10 +187,10 @@ index 77434ee..f0f50c9 100644
  gis_driver_new (GisDriverMode mode)
  {
 diff --git a/gnome-initial-setup/gis-driver.h b/gnome-initial-setup/gis-driver.h
-index 467b419..3dcb706 100644
+index 9b935e2..fc5ed02 100644
 --- a/gnome-initial-setup/gis-driver.h
 +++ b/gnome-initial-setup/gis-driver.h
-@@ -120,6 +120,12 @@ gchar *gis_driver_conf_get_string (GisDriver *driver,
+@@ -121,6 +121,12 @@ gchar *gis_driver_conf_get_string (GisDriver *driver,
                                     const gchar *group,
                                     const gchar *key);
  
@@ -204,10 +204,10 @@ index 467b419..3dcb706 100644
  
  G_END_DECLS
 diff --git a/gnome-initial-setup/gnome-initial-setup.c b/gnome-initial-setup/gnome-initial-setup.c
-index a4c6711..81281d8 100644
+index 81df249..7246e4c 100644
 --- a/gnome-initial-setup/gnome-initial-setup.c
 +++ b/gnome-initial-setup/gnome-initial-setup.c
-@@ -44,6 +44,9 @@
+@@ -41,6 +41,9 @@
  #include "pages/parental-controls/gis-parental-controls-page.h"
  #include "pages/password/gis-password-page.h"
  #include "pages/summary/gis-summary-page.h"
@@ -217,7 +217,7 @@ index a4c6711..81281d8 100644
  
  #define VENDOR_PAGES_GROUP "pages"
  #define VENDOR_SKIP_KEY "skip"
-@@ -83,6 +86,17 @@ static PageData page_table[] = {
+@@ -80,6 +83,17 @@ static PageData page_table[] = {
    { NULL },
  };
  
@@ -235,8 +235,8 @@ index a4c6711..81281d8 100644
  #undef PAGE
  
  static gboolean
-@@ -180,6 +194,25 @@ destroy_pages_after (GisAssistant *assistant,
-   }
+@@ -192,6 +206,25 @@ destroy_page (gpointer data)
+     gis_assistant_remove_page (GIS_ASSISTANT (assistant), page);
  }
  
 +static gboolean
@@ -261,7 +261,7 @@ index a4c6711..81281d8 100644
  static void
  rebuild_pages_cb (GisDriver *driver)
  {
-@@ -192,7 +225,11 @@ rebuild_pages_cb (GisDriver *driver)
+@@ -204,7 +237,11 @@ rebuild_pages_cb (GisDriver *driver)
  
    assistant = gis_driver_get_assistant (driver);
    current_page = gis_assistant_get_current_page (assistant);
@@ -273,8 +273,8 @@ index a4c6711..81281d8 100644
 +    page_data = page_table;
  
    g_ptr_array_free (skipped_pages, TRUE);
-   skipped_pages = g_ptr_array_new_with_free_func ((GDestroyNotify) gtk_widget_destroy);
-@@ -200,7 +237,7 @@ rebuild_pages_cb (GisDriver *driver)
+   skipped_pages = g_ptr_array_new_with_free_func (destroy_page);
+@@ -212,7 +249,7 @@ rebuild_pages_cb (GisDriver *driver)
    if (current_page != NULL) {
      destroy_pages_after (assistant, current_page);
  
@@ -284,19 +284,19 @@ index a4c6711..81281d8 100644
          break;
  
 diff --git a/gnome-initial-setup/meson.build b/gnome-initial-setup/meson.build
-index 43321ec..60edab8 100644
+index fac8d1b..1189e70 100644
 --- a/gnome-initial-setup/meson.build
 +++ b/gnome-initial-setup/meson.build
-@@ -52,6 +52,9 @@ dependencies = [
-     dependency ('libsecret-1', version: '>= 0.18.8'),
+@@ -62,6 +62,9 @@ dependencies = [
      dependency ('pwquality'),
-     dependency ('webkit2gtk-4.0', version: '>= 2.26.0'),
-+    dependency ('snapd-glib'),
-+    dependency ('libsoup-2.4'),
+     dependency ('rest-1.0'),
+     dependency ('webkit2gtk-5.0'),
++    dependency ('snapd-glib-2'),
++    dependency ('libsoup-3.0'),
 +    dependency ('sysmetrics'),
-     cheese_dep,
-     cheese_gtk_dep,
      ibus_dep,
+     libmalcontent_dep,
+     libmalcontent_ui_dep,
 diff --git a/gnome-initial-setup/pages/apps/apps.gresource.xml b/gnome-initial-setup/pages/apps/apps.gresource.xml
 new file mode 100644
 index 0000000..e89e744
@@ -1764,7 +1764,7 @@ index 0000000..09bfb69
 +#endif /* __GIS_AUTH_DIALOG_H__ */
 diff --git a/gnome-initial-setup/pages/livepatch/gis-auth-dialog.ui b/gnome-initial-setup/pages/livepatch/gis-auth-dialog.ui
 new file mode 100644
-index 0000000..2f3c742
+index 0000000..0fe40b2
 --- /dev/null
 +++ b/gnome-initial-setup/pages/livepatch/gis-auth-dialog.ui
 @@ -0,0 +1,231 @@
@@ -2818,10 +2818,10 @@ index 3230501..32f615b 100644
  
  if libmalcontent_dep.found() and libmalcontent_ui_dep.found()
 diff --git a/gnome-initial-setup/pages/privacy/gis-privacy-page.c b/gnome-initial-setup/pages/privacy/gis-privacy-page.c
-index 80c40c3..0774ec4 100644
+index 40cfd88..af674cd 100644
 --- a/gnome-initial-setup/pages/privacy/gis-privacy-page.c
 +++ b/gnome-initial-setup/pages/privacy/gis-privacy-page.c
-@@ -243,7 +243,7 @@ activate_link (GtkLabel       *label,
+@@ -228,7 +228,7 @@ activate_link (GtkLabel       *label,
  static void
  gis_privacy_page_locale_changed (GisPage *page)
  {
@@ -2831,10 +2831,10 @@ index 80c40c3..0774ec4 100644
  
  static void
 diff --git a/gnome-initial-setup/pages/summary/gis-summary-page.c b/gnome-initial-setup/pages/summary/gis-summary-page.c
-index b1e0f78..c14eb94 100644
+index 8d86cce..53e4dee 100644
 --- a/gnome-initial-setup/pages/summary/gis-summary-page.c
 +++ b/gnome-initial-setup/pages/summary/gis-summary-page.c
-@@ -190,7 +190,7 @@ done_cb (GtkButton *button, GisSummaryPage *page)
+@@ -189,7 +189,7 @@ done_cb (GtkButton *button, GisSummaryPage *page)
        log_user_in (page);
        break;
      case GIS_DRIVER_MODE_EXISTING_USER:
@@ -3339,10 +3339,10 @@ index 0000000..8c1d52c
 @@ -0,0 +1 @@
 +<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="Layer_1" x="0px" y="0px" width="150px" height="150px" viewBox="0 0 400 400" style="enable-background:new 0 0 400 400;" xml:space="preserve"> <style type="text/css"> .st0{fill:#666666; fill-opacity:0.25;} </style> <g> <path class="st0" d="M301.4,372.4C271.7,390,237,400,200,400C89.5,400,0,310.5,0,200C0,89.5,89.5,0,200,0c110.5,0,200,89.5,200,200 c0,36.4-9.7,70.6-26.8,100l0,0L400,400l-100-26.8L301.4,372.4L301.4,372.4z"/> </g> </svg>
 diff --git a/meson.build b/meson.build
-index fa67311..d7ec0f0 100644
+index bab863a..3c5fd19 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -73,6 +73,9 @@ libmalcontent_ui_dep = dependency ('malcontent-ui-0',
+@@ -76,6 +76,9 @@ libmalcontent_ui_dep = dependency ('malcontent-ui-0',
  have_parental_controls = libmalcontent_dep.found() and libmalcontent_ui_dep.found()
  conf.set('HAVE_PARENTAL_CONTROLS', have_parental_controls)
  
@@ -3353,15 +3353,17 @@ index fa67311..d7ec0f0 100644
                 configuration: conf)
  config_h_dir = include_directories('.')
 diff --git a/po/POTFILES.in b/po/POTFILES.in
-index f0310ef..9b1b23f 100644
+index 9bc7c20..e7d8d61 100644
 --- a/po/POTFILES.in
 +++ b/po/POTFILES.in
-@@ -1,3 +1,4 @@
+@@ -1,5 +1,6 @@
+ # List of source files containing translatable strings.
+ # Please keep this file sorted alphabetically.
 +data/com.ubuntu.welcome.policy.in
  data/gnome-initial-setup-first-login.desktop.in.in
  data/gnome-initial-setup.desktop.in.in
  gnome-initial-setup/cc-common-language.c
-@@ -41,3 +42,12 @@ gnome-initial-setup/pages/timezone/gis-timezone-page.c
+@@ -44,3 +45,12 @@ gnome-initial-setup/pages/timezone/gis-timezone-page.c
  gnome-initial-setup/pages/timezone/gis-timezone-page.ui
  gnome-initial-setup/pages/welcome/gis-welcome-page.c
  gnome-initial-setup/pages/welcome/gis-welcome-page.ui
