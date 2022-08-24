@@ -1,9 +1,12 @@
 gnome-initial-setup (43~beta-1) UNRELEASED; urgency=medium
 
-  * Build-Depend on libxml2-utils for xmllint
   * New upstream release
+  * Switch to gtk4, libadwaita, and libsoup3
+  * Drop obsolete cheese dependency
+  * Build-Depend on libxml2-utils for xmllint
+  * Temporarily disable malcontent integration
 
- -- Jeremy Bicha <jbicha@ubuntu.com>  Tue, 23 Aug 2022 21:50:33 -0400
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Wed, 24 Aug 2022 19:37:11 -0400
 
 gnome-initial-setup (42.2-1) unstable; urgency=medium
 
