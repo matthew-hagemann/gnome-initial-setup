@@ -26,7 +26,6 @@ struct _GisLocationEntryPrivate {
     GWeatherLocation *location;
     GWeatherLocation *top;
     gboolean          show_named_timezones;
-    gboolean          custom_text;
     GCancellable     *cancellable;
     GtkTreeModel     *model;
 };
@@ -134,7 +133,6 @@ gis_location_entry_init (GisLocationEntry *entry)
     gtk_entry_set_completion (GTK_ENTRY (entry->priv->entry), completion);
     g_object_unref (completion);
 
-    priv->custom_text = FALSE;
     g_signal_connect (entry, "changed",
                       G_CALLBACK (entry_changed), NULL);
 }
@@ -327,9 +325,7 @@ entry_changed (GisLocationEntry *entry)
 
     text = gtk_editable_get_text (GTK_EDITABLE (entry));
 
-    if (text && *text)
-        entry->priv->custom_text = TRUE;
-    else
+    if (!text || *text == '\0')
         set_location_internal (entry, NULL, NULL, NULL);
 }
 
@@ -358,23 +354,24 @@ set_location_internal (GisLocationEntry *entry,
 
     g_assert (iter == NULL || loc == NULL);
 
+    g_signal_handlers_block_by_func (entry, entry_changed, NULL);
+
     if (iter) {
         gtk_tree_model_get (model, iter,
                             LOC_GIS_LOCATION_ENTRY_COL_DISPLAY_NAME, &name,
                             LOC_GIS_LOCATION_ENTRY_COL_LOCATION, &priv->location,
                             -1);
         set_entry_text (entry, name);
-        priv->custom_text = FALSE;
         g_free (name);
     } else if (loc) {
         priv->location = g_object_ref (loc);
         set_entry_text (entry, gweather_location_get_name (loc));
-        priv->custom_text = FALSE;
     } else {
         priv->location = NULL;
         set_entry_text (entry, "");
-        priv->custom_text = TRUE;
     }
+
+    g_signal_handlers_unblock_by_func (entry, entry_changed, NULL);
 
     gtk_editable_set_position (GTK_EDITABLE (entry), -1);
     g_object_notify (G_OBJECT (entry), "location");
@@ -446,25 +443,6 @@ gis_location_entry_get_location (GisLocationEntry *entry)
         return g_object_ref (entry->priv->location);
     else
         return NULL;
-}
-
-/**
- * gis_location_entry_has_custom_text:
- * @entry: a #GisLocationEntry
- *
- * Checks whether or not @entry's text has been modified by the user.
- * Note that this does not mean that no location is associated with @entry.
- * gis_location_entry_get_location() should be used for this.
- *
- * Return value: %TRUE if @entry's text was modified by the user, or %FALSE if
- * it's set to the default text of a location.
- **/
-gboolean
-gis_location_entry_has_custom_text (GisLocationEntry *entry)
-{
-    g_return_val_if_fail (GIS_IS_LOCATION_ENTRY (entry), FALSE);
-
-    return entry->priv->custom_text;
 }
 
 /**
@@ -804,6 +782,8 @@ fill_store (gpointer data, gpointer user_data)
     normalized = g_utf8_normalize (display_name, -1, G_NORMALIZE_ALL);
     compare_name = g_utf8_casefold (normalized, -1);
 
+    g_debug ("Adding geocode match %s", display_name);
+
     gtk_list_store_insert_with_values (user_data, NULL, -1,
                                        PLACE_GIS_LOCATION_ENTRY_COL_PLACE, place,
                                        PLACE_GIS_LOCATION_ENTRY_COL_DISPLAY_NAME, display_name,
@@ -820,38 +800,35 @@ _got_places (GObject      *source_object,
              GAsyncResult *result,
              gpointer      user_data)
 {
-    GList *places;
-    GisLocationEntry *self = user_data;
-    GError *error = NULL;
-    GtkListStore *store = NULL;
+    g_autolist(GeocodePlace) places = NULL;
+    GisLocationEntry *self = NULL;
+    g_autoptr(GError) error = NULL;
+    g_autoptr(GtkListStore) store = NULL;
     GtkEntryCompletion *completion;
 
     places = geocode_forward_search_finish (GEOCODE_FORWARD (source_object), result, &error);
-    if (places == NULL) {
+    if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
         /* return without touching anything if cancelled (the entry might have been disposed) */
-        if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
-            g_clear_error (&error);
-            return;
-        }
-
-        g_clear_error (&error);
-        completion = gtk_entry_get_completion (user_data);
-        gtk_entry_completion_set_match_func (completion, matcher, NULL, NULL);
-        gtk_entry_completion_set_model (completion, self->priv->model);
-        goto out;
+        g_debug ("Geocode query cancelled");
+        return;
     }
 
-    completion = gtk_entry_get_completion (user_data);
-    store = gtk_list_store_new (5, G_TYPE_STRING, GEOCODE_TYPE_PLACE, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
-    gtk_tree_sortable_set_default_sort_func (GTK_TREE_SORTABLE (store),
-                                             tree_compare_local_name, NULL, NULL);
-    g_list_foreach (places, fill_store, store);
-    g_list_free (places);
-    gtk_entry_completion_set_match_func (completion, new_matcher, NULL, NULL);
-    gtk_entry_completion_set_model (completion, GTK_TREE_MODEL (store));
-    g_object_unref (store);
+    self = GIS_LOCATION_ENTRY (user_data);
+    completion = gtk_entry_get_completion (GTK_ENTRY (self->priv->entry));
 
- out:
+    if (places == NULL) {
+        g_debug ("No geocode results, restoring default model");
+        gtk_entry_completion_set_match_func (completion, matcher, NULL, NULL);
+        gtk_entry_completion_set_model (completion, self->priv->model);
+    } else {
+        store = gtk_list_store_new (5, G_TYPE_STRING, GEOCODE_TYPE_PLACE, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+        gtk_tree_sortable_set_default_sort_func (GTK_TREE_SORTABLE (store),
+                                                 tree_compare_local_name, NULL, NULL);
+        g_list_foreach (places, fill_store, store);
+        gtk_entry_completion_set_match_func (completion, new_matcher, NULL, NULL);
+        gtk_entry_completion_set_model (completion, GTK_TREE_MODEL (store));
+    }
+
     g_clear_object (&self->priv->cancellable);
 }
 
@@ -868,6 +845,7 @@ _no_matches (GtkEntryCompletion *completion, GisLocationEntry *entry) {
 
     entry->priv->cancellable = g_cancellable_new ();
 
+    g_debug ("Starting geocode query for %s", key);
     forward = geocode_forward_new_for_string(key);
     geocode_forward_search_async (forward, entry->priv->cancellable, _got_places, entry);
 }

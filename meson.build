@@ -1,6 +1,6 @@
 project('gnome-initial-setup',
         ['c'],
-        version: '43.beta',
+        version: '43.rc.1',
         license: 'GPL-2.0-or-later',
         meson_version: '>= 0.53.0',
 )
@@ -29,6 +29,7 @@ conf.set_quoted('SYSCONFDIR', sysconf_dir)
 conf.set_quoted('LIBEXECDIR', libexec_dir)
 conf.set('SECRET_API_SUBJECT_TO_CHANGE', true)
 conf.set_quoted('G_LOG_DOMAIN', 'InitialSetup')
+conf.set('G_LOG_USE_STRUCTURED', true)
 conf.set('GLIB_VERSION_MIN_REQUIRED', 'GLIB_VERSION_2_64')
 conf.set('GLIB_VERSION_MAX_ALLOWED', 'GLIB_VERSION_2_64')
 
@@ -69,7 +70,7 @@ libadwaita_dep = dependency(
 libmalcontent_dep = dependency ('malcontent-0',
                                 version: '>= 0.6.0',
                                 required: get_option('parental_controls'))
-libmalcontent_ui_dep = dependency ('malcontent-ui-0',
+libmalcontent_ui_dep = dependency ('malcontent-ui-1',
                                    version: '>= 0.11.0',
                                    required: get_option('parental_controls'),
                                    fallback: ['malcontent-ui', 'libmalcontent_ui_dep'])
