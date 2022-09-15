@@ -1,3 +1,32 @@
+gnome-initial-setup (43~rc.1-1ubuntu1) UNRELEASED; urgency=medium
+
+  * Merge with debian, containing new upstream release
+  * debian/patches: Port Ubuntu pages to Gtk4 and enable them again.
+    Moved code to the newer toolkit, adding more async operations and an UI
+    redesigned with more Adwaita look and feel.
+    Also, remove the livepatch support because:
+     - We don't support point releases
+     - It will be moved to the installer for the next LTS.
+  * debian/control: Build-depend on libsoup-3.0-dev, required by snap panel
+  * debian/control: Remove dependency on polkitd.
+    It was required by the livepatch page but we don't use it anymore.
+  * debian/patches: Refresh and remove debian's patch to disable webkit2gtk5
+  * Remaining changes with debian:
+    + debian/control.in:
+      - Build-Depends on libsnapd-glib-dev, libsoup3-dev, libsysmetrics-dev,
+        libwebkit2gtk-5.0-dev
+    + Add Ubuntu-specific patches:
+      - 0001-Make-summary-page-explicitly-request-navigation-butt.patch
+      - 0001-Ensure-stamp-file-if-the-user-quit-the-wizard.patch
+      - 0001-Add-Ubuntu-mode-with-special-pages.patch
+      - 0001-Display-the-ubuntu-welcome-wizard-in-Unity.patch
+      - 0006-goa-Add-Ubuntu-Single-Sign-On-to-the-list.patch
+      - 0007-goa-adjust-description-to-not-mention-email-or-conta.patch
+      - Don-t-show-Facebook-in-Ubuntu.patch
+      - 0008-Ubuntu-location-default.patch
+
+ -- Marco Trevisan (Treviño) <marco@ubuntu.com>  Thu, 15 Sep 2022 19:11:42 +0200
+
 gnome-initial-setup (43~rc.1-1) unstable; urgency=high
 
   * New upstream release
