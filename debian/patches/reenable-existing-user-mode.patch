@@ -7,10 +7,10 @@ Subject: Re-enable existing users mode since gnome-tour isn't in Debian
  1 file changed, 14 deletions(-)
 
 diff --git a/gnome-initial-setup/gnome-initial-setup.c b/gnome-initial-setup/gnome-initial-setup.c
-index fd74bad..dba16e1 100644
+index 113ded3..4d14fea 100644
 --- a/gnome-initial-setup/gnome-initial-setup.c
 +++ b/gnome-initial-setup/gnome-initial-setup.c
-@@ -374,20 +374,6 @@ main (int argc, char *argv[])
+@@ -323,20 +323,6 @@ main (int argc, char *argv[])
    adw_style_manager_set_color_scheme (adw_style_manager_get_default (),
                                        ADW_COLOR_SCHEME_PREFER_LIGHT);
  
