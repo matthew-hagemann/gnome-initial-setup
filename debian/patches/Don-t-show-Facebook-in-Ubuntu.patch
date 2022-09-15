@@ -11,7 +11,7 @@ LP: #1797736
  1 file changed, 22 insertions(+), 1 deletion(-)
 
 diff --git a/gnome-initial-setup/pages/goa/gis-goa-page.c b/gnome-initial-setup/pages/goa/gis-goa-page.c
-index c33c7fb..88f27c1 100644
+index 4fea8d0..4897868 100644
 --- a/gnome-initial-setup/pages/goa/gis-goa-page.c
 +++ b/gnome-initial-setup/pages/goa/gis-goa-page.c
 @@ -174,6 +174,25 @@ run_goa_helper_async (const gchar         *command,
@@ -51,4 +51,4 @@ index c33c7fb..88f27c1 100644
 +  GStrv providers = conf_providers ? conf_providers : default_providers;
  
    listed_providers = run_goa_helper_sync ("list-providers", NULL);
-   providers_variant = g_variant_parse (G_VARIANT_TYPE ("a(ssviu)"),
+ 

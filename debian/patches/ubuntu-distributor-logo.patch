@@ -1,11 +1,21 @@
+From: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Date: Thu, 15 Sep 2022 17:53:52 +0200
+Subject: ubuntu-distributor-logo
+
+# Description: ubuntu-logo-icon is from settings and with text next to it,
+
 # Description: ubuntu-logo-icon is from settings and with text next to it,
 we might need to revisit the use of the logo but workaround for now
 # Ubuntu: https://launchpad.net/bugs/1966115
-Index: gnome-initial-setup/gnome-initial-setup/pages/language/gis-language-page.c
-===================================================================
---- gnome-initial-setup.orig/gnome-initial-setup/pages/language/gis-language-page.c
-+++ gnome-initial-setup/gnome-initial-setup/pages/language/gis-language-page.c
-@@ -192,7 +192,7 @@ update_distro_logo (GisLanguagePage *pag
+---
+ gnome-initial-setup/pages/language/gis-language-page.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/gnome-initial-setup/pages/language/gis-language-page.c b/gnome-initial-setup/pages/language/gis-language-page.c
+index f62b2ad..3007181 100644
+--- a/gnome-initial-setup/pages/language/gis-language-page.c
++++ b/gnome-initial-setup/pages/language/gis-language-page.c
+@@ -192,7 +192,7 @@ update_distro_logo (GisLanguagePage *page)
    } id_to_logo[] = {
      { "debian",                         "emblem-debian" },
      { "fedora",                         "fedora-logo-icon" },
