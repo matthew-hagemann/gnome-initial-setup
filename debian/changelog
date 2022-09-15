@@ -1,3 +1,16 @@
+gnome-initial-setup (43~rc.1-1) unstable; urgency=high
+
+  * New upstream release
+  * Add patch to disable privacy page. It uses webkitgtk 5.0
+    which is still only in Debian Experimental
+  * debian/control.in: Drop webkitgtk from Build-Depends for now
+  * Add patch from Ubuntu to re-enable existing-user mode.
+    It was disabled upstream because it conflicts with gnome-tour
+    but gnome-tour isn't available in Debian or Ubuntu yet
+  * Release to unstable (Closes: #1019106)
+
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Wed, 07 Sep 2022 11:04:27 -0400
+
 gnome-initial-setup (43~beta-0ubuntu1) kinetic; urgency=medium
 
   * New upstream release
