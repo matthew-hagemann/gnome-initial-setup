@@ -1,4 +1,4 @@
-gnome-initial-setup (43~rc.1-1ubuntu1) UNRELEASED; urgency=medium
+gnome-initial-setup (43~rc.1-1ubuntu1) kinetic; urgency=medium
 
   * Merge with debian, containing new upstream release
   * debian/patches: Port Ubuntu pages to Gtk4 and enable them again.
@@ -25,7 +25,7 @@ gnome-initial-setup (43~rc.1-1ubuntu1) UNRELEASED; urgency=medium
       - Don-t-show-Facebook-in-Ubuntu.patch
       - 0008-Ubuntu-location-default.patch
 
- -- Marco Trevisan (Treviño) <marco@ubuntu.com>  Thu, 15 Sep 2022 19:11:42 +0200
+ -- Marco Trevisan (Treviño) <marco@ubuntu.com>  Thu, 15 Sep 2022 19:30:37 +0200
 
 gnome-initial-setup (43~rc.1-1) unstable; urgency=high
 
