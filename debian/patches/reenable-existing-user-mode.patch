@@ -2,6 +2,7 @@ From: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 Date: Thu, 17 Feb 2022 08:17:17 -0500
 Subject: Re-enable existing users mode since gnome-tour isn't in Debian
 
+Forwarded: not-needed
 ---
  gnome-initial-setup/gnome-initial-setup.c | 14 --------------
  1 file changed, 14 deletions(-)
