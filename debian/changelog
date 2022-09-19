@@ -1,12 +1,14 @@
-gnome-initial-setup (43.0-1) UNRELEASED; urgency=medium
+gnome-initial-setup (43.0-1) unstable; urgency=medium
+
+  [ Jeremy Bicha ]
+  * New upstream release
+  * Re-enable Privacy page
+  * Re-enable malcontent integration for Debian
 
   [ Simon McVittie ]
   * d/control.in: Replace transitional libfontconfig1-dev with libfontconfig-dev
 
-  [ Jeremy Bicha ]
-  * New upstream release
-
- -- Jeremy Bicha <jbicha@ubuntu.com>  Mon, 19 Sep 2022 11:15:12 -0400
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Mon, 19 Sep 2022 11:44:22 -0400
 
 gnome-initial-setup (43~rc.1-1) unstable; urgency=high
 
