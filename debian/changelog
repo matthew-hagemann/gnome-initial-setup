@@ -1,4 +1,4 @@
-gnome-initial-setup (43.0-1ubuntu1) UNRELEASED; urgency=medium
+gnome-initial-setup (43.0-1ubuntu1) kinetic; urgency=medium
 
   * Merge with Debian. Remaining changes:
     + debian/control.in:
@@ -12,8 +12,9 @@ gnome-initial-setup (43.0-1ubuntu1) UNRELEASED; urgency=medium
       - 0007-goa-adjust-description-to-not-mention-email-or-conta.patch
       - Don-t-show-Facebook-in-Ubuntu.patch
       - 0008-Ubuntu-location-default.patch
+  * Drop unnecessary Build-Depends on libsoup-3.0-dev
 
- -- Jeremy Bicha <jbicha@ubuntu.com>  Mon, 19 Sep 2022 11:56:50 -0400
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Mon, 19 Sep 2022 12:14:21 -0400
 
 gnome-initial-setup (43.0-1) unstable; urgency=medium
 
