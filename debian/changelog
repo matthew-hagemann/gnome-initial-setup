@@ -1,3 +1,9 @@
+gnome-initial-setup (43.1-1) UNRELEASED; urgency=medium
+
+  * New upstream release
+
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Tue, 18 Oct 2022 13:06:07 -0400
+
 gnome-initial-setup (43.0-1) unstable; urgency=medium
 
   [ Jeremy Bicha ]
