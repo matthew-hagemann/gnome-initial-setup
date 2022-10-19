@@ -1,8 +1,7 @@
 gnome-initial-setup (43.0-1ubuntu2) kinetic; urgency=medium
 
-  * Add Ubuntu-specific patch:
-    - select-radio-button-on-help-improve-ubuntu.patch: Fixes no radio
-      button initially selected on Help Improve Ubuntu (LP: #1993495).
+  * Update 0001-Add-Ubuntu-mode-with-special-pages.patch:
+    - Fix no option selected by default for Help Improve Ubuntu (LP: #1993495)
 
  -- Nathan Pratta Teodosio <nathan.teodosio@canonical.com>  Wed, 19 Oct 2022 10:53:46 -0300
 
