@@ -1,3 +1,20 @@
+gnome-initial-setup (43.1-2) unstable; urgency=medium
+
+  * Team upload
+  * Depend on polkitd and pkexec instead of transitional policykit-1.
+    This package runs pkexec, so that dependency is still needed.
+  * d/copyright: use spaces rather than tabs to start continuation lines
+  * d/control.in: Update standards version to 4.6.1 (no changes needed)
+  * d/upstream/metadata: Update Gitlab URLs
+
+ -- Simon McVittie <smcv@debian.org>  Tue, 15 Nov 2022 08:36:43 +0000
+
+gnome-initial-setup (43.1-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Tue, 18 Oct 2022 13:08:46 -0400
+
 gnome-initial-setup (43.0-1ubuntu2) kinetic; urgency=medium
 
   * Update 0001-Add-Ubuntu-mode-with-special-pages.patch:
