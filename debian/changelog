@@ -1,4 +1,4 @@
-gnome-initial-setup (43.1-2ubuntu1) UNRELEASED; urgency=medium
+gnome-initial-setup (43.1-2ubuntu1) lunar; urgency=medium
 
   * Merge with Debian. Remaining changes:
     + debian/control.in:
