@@ -1,5 +1,6 @@
-gnome-initial-setup (43.1-2) UNRELEASED; urgency=medium
+gnome-initial-setup (43.1-2) unstable; urgency=medium
 
+  * Team upload
   * Depend on polkitd and pkexec instead of transitional policykit-1.
     This package runs pkexec, so that dependency is still needed.
   * d/copyright: use spaces rather than tabs to start continuation lines
