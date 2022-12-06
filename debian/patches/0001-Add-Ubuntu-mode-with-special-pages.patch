@@ -22,12 +22,12 @@ Subject: Add Ubuntu mode with special pages
  .../pages/summary/gis-summary-page.c               |   2 +-
  .../pages/ubuntu-report/gis-ubuntu-report-page.c   | 249 ++++++++
  .../pages/ubuntu-report/gis-ubuntu-report-page.h   |  52 ++
- .../pages/ubuntu-report/gis-ubuntu-report-page.ui  |  96 +++
+ .../pages/ubuntu-report/gis-ubuntu-report-page.ui  |  97 +++
  .../pages/ubuntu-report/meson.build                |  10 +
  .../ubuntu-report/ubuntu-report.gresource.xml      |   8 +
  .../pages/ubuntu-report/ubuntu-report.svg          |   1 +
  po/POTFILES.in                                     |   5 +
- 24 files changed, 1391 insertions(+), 5 deletions(-)
+ 24 files changed, 1392 insertions(+), 5 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/apps.gresource.xml
@@ -84,10 +84,10 @@ index ba8d78e..578ac13 100644
  configure_file(
      input: '20-gnome-initial-setup.rules.in',
 diff --git a/gnome-initial-setup/gis-driver.c b/gnome-initial-setup/gis-driver.c
-index b24644b..57eb9dc 100644
+index 0ff94af..53aa6b7 100644
 --- a/gnome-initial-setup/gis-driver.c
 +++ b/gnome-initial-setup/gis-driver.c
-@@ -101,6 +101,9 @@ struct _GisDriver {
+@@ -106,6 +106,9 @@ struct _GisDriver {
  
    const gchar *vendor_conf_file_path;
    GKeyFile *vendor_conf_file;
@@ -97,7 +97,7 @@ index b24644b..57eb9dc 100644
  };
  
  G_DEFINE_TYPE (GisDriver, gis_driver, ADW_TYPE_APPLICATION)
-@@ -933,6 +936,33 @@ gis_driver_save_data (GisDriver  *driver,
+@@ -938,6 +941,33 @@ gis_driver_save_data (GisDriver  *driver,
    return gis_assistant_save_data (driver->assistant, error);
  }
  
@@ -227,13 +227,13 @@ index 4d14fea..c98ad18 100644
          break;
  
 diff --git a/gnome-initial-setup/meson.build b/gnome-initial-setup/meson.build
-index 3127803..77d03de 100644
+index a3dd513..4eb365e 100644
 --- a/gnome-initial-setup/meson.build
 +++ b/gnome-initial-setup/meson.build
-@@ -64,6 +64,9 @@ dependencies = [
+@@ -63,6 +63,9 @@ dependencies = [
+     dependency ('libsecret-1', version: '>= 0.18.8'),
      dependency ('pwquality'),
      dependency ('rest-1.0'),
-     dependency ('webkit2gtk-5.0'),
 +    dependency ('snapd-glib-2'),
 +    dependency ('libsoup-3.0'),
 +    dependency ('sysmetrics'),
@@ -1178,10 +1178,10 @@ index 3230501..9654a7c 100644
  
  if libmalcontent_dep.found() and libmalcontent_ui_dep.found()
 diff --git a/gnome-initial-setup/pages/privacy/gis-privacy-page.c b/gnome-initial-setup/pages/privacy/gis-privacy-page.c
-index 40cfd88..af674cd 100644
+index 3632142..a64bd81 100644
 --- a/gnome-initial-setup/pages/privacy/gis-privacy-page.c
 +++ b/gnome-initial-setup/pages/privacy/gis-privacy-page.c
-@@ -228,7 +228,7 @@ activate_link (GtkLabel       *label,
+@@ -232,7 +232,7 @@ activate_link (GtkLabel       *label,
  static void
  gis_privacy_page_locale_changed (GisPage *page)
  {
@@ -1518,7 +1518,7 @@ index 0000000..9ba7500
 +#endif /* __GIS_UBUNTU_REPORT_PAGE_H__ */
 diff --git a/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui
 new file mode 100644
-index 0000000..fc77f8a
+index 0000000..bec8f3f
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui
 @@ -0,0 +1,97 @@
