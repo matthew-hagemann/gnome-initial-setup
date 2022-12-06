@@ -1,3 +1,20 @@
+gnome-initial-setup (43.2-1ubuntu1) lunar; urgency=medium
+
+  * Merge with Debian. Remaining changes:
+    + debian/control.in:
+      - Build-Depends on libsnapd-glib-dev and libsysmetrics-dev
+    + Add Ubuntu-specific patches:
+      - 0001-Make-summary-page-explicitly-request-navigation-butt.patch
+      - 0001-Ensure-stamp-file-if-the-user-quit-the-wizard.patch
+      - 0001-Add-Ubuntu-mode-with-special-pages.patch
+      - 0001-Display-the-ubuntu-welcome-wizard-in-Unity.patch
+      - 0006-goa-Add-Ubuntu-Single-Sign-On-to-the-list.patch
+      - 0007-goa-adjust-description-to-not-mention-email-or-conta.patch
+      - Don-t-show-Facebook-in-Ubuntu.patch
+      - 0008-Ubuntu-location-default.patch
+
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Tue, 06 Dec 2022 13:27:56 -0500
+
 gnome-initial-setup (43.2-1) unstable; urgency=medium
 
   * New upstream release
@@ -937,7 +954,7 @@ gnome-initial-setup (3.28.0-2ubuntu7) cosmic; urgency=medium
 
   [ Andrea Azzarone ]
   * Don't autostart if user quits the wizard before completing it
-    (LP: #1768929) 
+    (LP: #1768929)
 
   [ Jeremy Bicha ]
   * Drop debian/ubuntu-changes.png to use the version included in
@@ -997,7 +1014,7 @@ gnome-initial-setup (3.28.0-2ubuntu1) bionic; urgency=medium
   * debian/ubuntu-changes.png:
     - Show Ubuntu welcome pages (LP: #1755456)
   * debian/control:
-    - Build-Depends on libsnapd-glib-dev, libsoupd2.4-dev, 
+    - Build-Depends on libsnapd-glib-dev, libsoupd2.4-dev,
       libsysmetrics-dev
     - Enable langpack usage
 
