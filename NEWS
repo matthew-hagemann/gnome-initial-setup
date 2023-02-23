@@ -1,22 +1,42 @@
-43.2
-----
+44.beta
+-------
 
-* The webkitgtk-6.0 API version is now supported, in addition to the previous
-  webkit2gtk-5.0 API version.
+* Correctly align the 'Preview' links on the keyboard page. (#150, Automeris
+  naranja)
 
-* Bugs fixed:
- - The Shell quick settings menu will now be shown in the Initial Setup session.
-   This regressed when the previous menu was renamed in gnome-shell during the
-   43 cycle. (!166)
+* Update for removal of WebKitGTK sandbox API in 2.39.5. (!177, Michael Catanzaro)
 
- - Error messages shown during enterprise account setup can now be closed by
-   clicking the Close button. (!169)
+* Update password page to Adwaita style. (!178, Cassidy James Blaede)
+
+44.alpha.2
+----------
+
+* Unlike 44.alpha.1, this version really can be built against the new
+  webkitgtk-6.0 API from WebKitGTK 2.39.1, as well as webkit2gtk-5.0.
+  (Michael Catanzaro)
+
+* The close button on the "Failed to join domain" dialog now works. (#161)
+
+* The quick settings menu is now correctly shown in the Initial Setup session.
+  (!166)
+
+* The search fields on the keyboard layout and timezone pages now have
+  placeholder text, as recommended by the GNOME HIG. Thanks to sunflowerskater
+  for their first contribution to this project! (#144)
 
 * Translation updates:
  - Abkhazian
- - Dutch
- - Greek, Modern (1453-)
- - Icelandic
+ - Belarusian
+ - Hindi
+ - Interlingue (new in this version)
+
+44.alpha.1
+----------
+
+This is an early release to support building against the new webkitgtk-6.0 API
+from WebKitGTK 2.39.1, or webkit2gtk-5.0 as before. (!164)
+
+There are no other changes compared to the GNOME 43 branch.
 
 43.1
 ----
