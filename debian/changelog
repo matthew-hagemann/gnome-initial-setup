@@ -1,8 +1,8 @@
-gnome-initial-setup (44~beta-1) UNRELEASED; urgency=medium
+gnome-initial-setup (44~beta-0ubuntu1) lunar; urgency=medium
 
   * New upstream release
 
- -- Jeremy Bicha <jbicha@ubuntu.com>  Thu, 23 Feb 2023 17:49:47 -0500
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Thu, 23 Feb 2023 17:52:19 -0500
 
 gnome-initial-setup (43.2-1ubuntu1) lunar; urgency=medium
 
