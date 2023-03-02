@@ -1,3 +1,9 @@
+gnome-initial-setup (43.2-2) unstable; urgency=medium
+
+  * Add patch to fix broken icon and app name
+
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Thu, 02 Mar 2023 17:32:26 -0500
+
 gnome-initial-setup (43.2-1) unstable; urgency=medium
 
   * New upstream release
