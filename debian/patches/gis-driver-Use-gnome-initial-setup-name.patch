@@ -1,0 +1,22 @@
+From: Jeremy Bicha <jeremy.bicha@canonical.com>
+Date: Thu, 2 Mar 2023 17:22:15 -0500
+Subject: gis-driver: Use gnome-initial-setup name
+
+to match .desktop and service names
+---
+ gnome-initial-setup/gis-driver.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/gnome-initial-setup/gis-driver.c b/gnome-initial-setup/gis-driver.c
+index 1ddf3c6..759b61e 100644
+--- a/gnome-initial-setup/gis-driver.c
++++ b/gnome-initial-setup/gis-driver.c
+@@ -930,7 +930,7 @@ GisDriver *
+ gis_driver_new (GisDriverMode mode)
+ {
+   return g_object_new (GIS_TYPE_DRIVER,
+-                       "application-id", "org.gnome.InitialSetup",
++                       "application-id", "gnome-initial-setup",
+                        "mode", mode,
+                        NULL);
+ }
