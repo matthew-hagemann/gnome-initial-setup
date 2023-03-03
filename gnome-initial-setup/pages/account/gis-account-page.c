@@ -296,12 +296,13 @@ gis_account_page_class_init (GisAccountPageClass *klass)
   page_class->save_data = gis_account_page_save_data;
   page_class->shown = gis_account_page_shown;
   object_class->constructed = gis_account_page_constructed;
+
+  gis_add_style_from_resource ("/org/gnome/initial-setup/gis-account-page.css");
 }
 
 static void
 gis_account_page_init (GisAccountPage *page)
 {
-  g_resources_register (account_get_resource ());
   g_type_ensure (GIS_TYPE_ACCOUNT_PAGE_LOCAL);
   g_type_ensure (GIS_TYPE_ACCOUNT_PAGE_ENTERPRISE);
 
