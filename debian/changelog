@@ -1,5 +1,6 @@
-gnome-initial-setup (43.2-3) UNRELEASED; urgency=medium
+gnome-initial-setup (43.2-3) unstable; urgency=medium
 
+  * Team upload
   * d/p/Add-StartupWMClass-to-.desktop-file.patch:
     Replace previous patch for app ID handling with upstream equivalent.
     gnome-initial-setup is not a syntactically valid app ID. Return to the
@@ -9,8 +10,17 @@ gnome-initial-setup (43.2-3) UNRELEASED; urgency=medium
     Alt+(key above Tab) window switcher, unlike the patch in 43.2-2.
   * d/p/reenable-existing-user-mode.patch:
     Add a note of which upstream commit we're reverting
+  * d/patches: Reorder with closest-to-upstream first
+  * d/p/keyboard-Correctly-update-labels-for-IBus-engines.patch,
+    d/p/keyboard-Update-filter-and-sort-when-the-display-name-cha.patch:
+    Correctly update input method chooser with info from IBus.
+    This ensures that when the default is an IBus-based input method like
+    Anthy (currently GNOME's default for ja_JP in bookworm) or Mozc (requested
+    as a new default for ja_JP in #1029821), it will be displayed with its
+    correct label like "Japanese (Anthy)" or "日本語 (Mozc)" instead of
+    a placeholder name "anthy" or "mozc-jp". (Closes: #1032382)
 
- -- Simon McVittie <smcv@debian.org>  Sun, 05 Mar 2023 17:32:55 +0000
+ -- Simon McVittie <smcv@debian.org>  Sun, 05 Mar 2023 17:39:30 +0000
 
 gnome-initial-setup (43.2-2) unstable; urgency=medium
 
