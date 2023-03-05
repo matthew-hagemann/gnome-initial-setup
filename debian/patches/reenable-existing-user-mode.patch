@@ -2,16 +2,18 @@ From: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 Date: Thu, 17 Feb 2022 08:17:17 -0500
 Subject: Re-enable existing users mode since gnome-tour isn't in Debian
 
+This reverts commit 43f1870c "Disable existing-user mode".
+
 Forwarded: not-needed
 ---
  gnome-initial-setup/gnome-initial-setup.c | 14 --------------
  1 file changed, 14 deletions(-)
 
 diff --git a/gnome-initial-setup/gnome-initial-setup.c b/gnome-initial-setup/gnome-initial-setup.c
-index fd74bad..dba16e1 100644
+index 113ded3..4d14fea 100644
 --- a/gnome-initial-setup/gnome-initial-setup.c
 +++ b/gnome-initial-setup/gnome-initial-setup.c
-@@ -374,20 +374,6 @@ main (int argc, char *argv[])
+@@ -323,20 +323,6 @@ main (int argc, char *argv[])
    adw_style_manager_set_color_scheme (adw_style_manager_get_default (),
                                        ADW_COLOR_SCHEME_PREFER_LIGHT);
  
