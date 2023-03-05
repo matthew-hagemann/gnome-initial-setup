@@ -1,0 +1,48 @@
+From: Simon McVittie <smcv@debian.org>
+Date: Sun, 5 Mar 2023 15:54:51 +0000
+Subject: keyboard: Correctly update labels for IBus engines
+
+After the port from GTK 3 to 4, there's an additional level of indirection:
+the children of priv->input_list are GtkListBoxRow objects containing the
+widget whose user-data is the InputWidget. This means we didn't find the
+InputWidget and therefore couldn't update its display name.
+
+Fixes: ad500afc "keyboard: Port to GTK4"
+Bug: https://gitlab.gnome.org/GNOME/gnome-initial-setup/-/issues/180
+Signed-off-by: Simon McVittie <smcv@debian.org>
+Bug-Debian: https://bugs.debian.org/1032382
+Forwarded: https://gitlab.gnome.org/GNOME/gnome-initial-setup/-/issues/180
+---
+ gnome-initial-setup/pages/keyboard/cc-input-chooser.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/gnome-initial-setup/pages/keyboard/cc-input-chooser.c b/gnome-initial-setup/pages/keyboard/cc-input-chooser.c
+index efba249..3330517 100644
+--- a/gnome-initial-setup/pages/keyboard/cc-input-chooser.c
++++ b/gnome-initial-setup/pages/keyboard/cc-input-chooser.c
+@@ -572,18 +572,21 @@ update_ibus_active_sources (CcInputChooser *chooser)
+ {
+         CcInputChooserPrivate *priv;
+         IBusEngineDesc *engine_desc;
+-        GtkWidget *child;
++        GtkWidget *item;
+         const gchar *type;
+         const gchar *id;
+         gchar *name;
+ 
+         priv = cc_input_chooser_get_instance_private (chooser);
+-        child = gtk_widget_get_first_child (priv->input_list);
+-        while (child) {
++        item = gtk_widget_get_first_child (priv->input_list);
++        while (item) {
+                 InputWidget *row;
++                GtkWidget *child;
++
++                child = gtk_list_box_row_get_child (GTK_LIST_BOX_ROW (item));
+ 
+ 		row = get_input_widget (child);
+-                child = gtk_widget_get_next_sibling (child);
++                item = gtk_widget_get_next_sibling (item);
+ 
+ 		if (row == NULL)
+ 			continue;
