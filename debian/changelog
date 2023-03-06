@@ -9,7 +9,7 @@ gnome-initial-setup (43.2-4) UNRELEASED; urgency=medium
   * d/p/keyboard-Correctly-update-labels-for-IBus-engines.patch,
     d/p/keyboard-Update-filter-and-sort-when-the-display-name-cha.patch:
     Rework patches for xkb layout and IBus method selection, fixing a
-    crash on startup.
+    crash on startup (Closes: #1032448)
 
  -- Simon McVittie <smcv@debian.org>  Mon, 06 Mar 2023 23:10:42 +0000
 
