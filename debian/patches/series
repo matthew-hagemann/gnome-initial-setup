@@ -1,4 +1,5 @@
 Add-StartupWMClass-to-.desktop-file.patch
+keyboard-Resort-refilter-list-when-picking-shortlist.patch
 keyboard-Correctly-update-labels-for-IBus-engines.patch
 keyboard-Update-filter-and-sort-when-the-display-name-cha.patch
 reenable-existing-user-mode.patch

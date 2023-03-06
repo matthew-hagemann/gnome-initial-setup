@@ -11,33 +11,36 @@ Signed-off-by: Simon McVittie <smcv@debian.org>
 Bug-Debian: https://bugs.debian.org/1032382
 Forwarded: https://gitlab.gnome.org/GNOME/gnome-initial-setup/-/issues/180
 ---
- gnome-initial-setup/pages/keyboard/cc-input-chooser.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ gnome-initial-setup/pages/keyboard/cc-input-chooser.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
 diff --git a/gnome-initial-setup/pages/keyboard/cc-input-chooser.c b/gnome-initial-setup/pages/keyboard/cc-input-chooser.c
-index 3330517..2dfdc5a 100644
+index ae8f2d7..b851ec6 100644
 --- a/gnome-initial-setup/pages/keyboard/cc-input-chooser.c
 +++ b/gnome-initial-setup/pages/keyboard/cc-input-chooser.c
-@@ -582,8 +582,10 @@ update_ibus_active_sources (CcInputChooser *chooser)
-         while (item) {
-                 InputWidget *row;
-                 GtkWidget *child;
-+                GtkListBoxRow *list_box_row;
- 
--                child = gtk_list_box_row_get_child (GTK_LIST_BOX_ROW (item));
-+                list_box_row = GTK_LIST_BOX_ROW (item);
-+                child = gtk_list_box_row_get_child (list_box_row);
- 
- 		row = get_input_widget (child);
-                 item = gtk_widget_get_next_sibling (item);
-@@ -600,7 +602,9 @@ update_ibus_active_sources (CcInputChooser *chooser)
+@@ -589,6 +589,7 @@ static void
+ update_ibus_active_sources (CcInputChooser *chooser)
+ {
+         CcInputChooserPrivate *priv;
++        gboolean invalidate = FALSE;
+         IBusEngineDesc *engine_desc;
+         const gchar *type;
+         const gchar *id;
+@@ -615,9 +616,16 @@ update_ibus_active_sources (CcInputChooser *chooser)
                  if (engine_desc) {
                          name = engine_get_display_name (engine_desc);
                          gtk_label_set_text (GTK_LABEL (row->label), name);
 -                        g_free (name);
 +                        g_clear_pointer (&row->name, g_free);
 +                        row->name = g_steal_pointer (&name);
-+                        gtk_list_box_row_changed (list_box_row);
++                        invalidate = TRUE;
                  }
          }
++
++        if (invalidate) {
++                gtk_list_box_invalidate_sort (GTK_LIST_BOX (priv->input_list));
++                gtk_list_box_invalidate_filter (GTK_LIST_BOX (priv->input_list));
++        }
  }
+ 
+ static void
