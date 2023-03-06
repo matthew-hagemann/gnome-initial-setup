@@ -1,3 +1,18 @@
+gnome-initial-setup (43.2-4) UNRELEASED; urgency=medium
+
+  * d/p/keyboard-Resort-refilter-list-when-picking-shortlist.patch:
+    Add patch from upstream 44.rc to display more input methods and
+    keyboard layouts without clicking the "more..." button. This has
+    a known issue that the shortlist of keyboard layouts is often not
+    particularly useful, but at least it includes the default and
+    current layouts (possibly different) and some other possibilities.
+  * d/p/keyboard-Correctly-update-labels-for-IBus-engines.patch,
+    d/p/keyboard-Update-filter-and-sort-when-the-display-name-cha.patch:
+    Rework patches for xkb layout and IBus method selection, fixing a
+    crash on startup.
+
+ -- Simon McVittie <smcv@debian.org>  Mon, 06 Mar 2023 23:10:42 +0000
+
 gnome-initial-setup (43.2-3) unstable; urgency=medium
 
   * Team upload
