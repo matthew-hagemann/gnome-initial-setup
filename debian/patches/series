@@ -8,3 +8,4 @@ reenable-existing-user-mode.patch
 Don-t-show-Facebook-in-Ubuntu.patch
 0008-Ubuntu-location-default.patch
 ubuntu-distributor-logo.patch
+driver-Set-a-non-trivial-window-title.patch
