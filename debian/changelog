@@ -1,8 +1,15 @@
-gnome-initial-setup (44~rc-1) UNRELEASED; urgency=medium
+gnome-initial-setup (44~rc-0ubuntu1) lunar; urgency=medium
 
-  * New upstream release
+  [ Jeremy Bicha ]
+  * New upstream release (LP: #2009886)
 
- -- Jeremy Bicha <jbicha@ubuntu.com>  Fri, 03 Mar 2023 16:17:05 -0500
+  [ Simon McVittie ]
+  * d/README.source: Add some notes on how to smoke-test this package.
+    Thanks to Jeremy Bicha (via #1032448)
+  * d/p/driver-Set-a-non-trivial-window-title.patch:
+    Add patch to set a window title.
+
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Mon, 13 Mar 2023 16:41:44 -0400
 
 gnome-initial-setup (44~beta-0ubuntu1) lunar; urgency=medium
 
