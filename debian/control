@@ -7,7 +7,7 @@ Section: gnome
 Priority: optional
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 XSBC-Original-Maintainer: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>
-Uploaders: Jeremy Bicha <jbicha@ubuntu.com>
+Uploaders: Jeremy Bicha <jbicha@ubuntu.com>, Marco Trevisan (Treviño) <marco@ubuntu.com>
 Build-Depends: debhelper-compat (= 13),
                dh-sequence-gnome,
                gsettings-desktop-schemas-dev (>= 3.37.1),
@@ -39,7 +39,7 @@ Build-Depends: debhelper-compat (= 13),
                libsnapd-glib-dev,
                libsysmetrics-dev,
                libsystemd-dev [linux-any],
-               libwebkit2gtk-5.0-dev,
+               libwebkitgtk-6.0-dev,
                libxml2-utils,
                meson (>= 0.50.0),
                systemd ( >= 242),
