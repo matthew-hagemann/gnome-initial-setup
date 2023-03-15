@@ -1,3 +1,9 @@
+gnome-initial-setup (44~rc-0ubuntu2) lunar; urgency=medium
+
+  * Build against webkitgtk 6.0 instead of 5.0
+
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Wed, 15 Mar 2023 19:42:03 -0400
+
 gnome-initial-setup (44~rc-0ubuntu1) lunar; urgency=medium
 
   [ Jeremy Bicha ]
