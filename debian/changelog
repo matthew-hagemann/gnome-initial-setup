@@ -1,3 +1,10 @@
+gnome-initial-setup (43.2-5) unstable; urgency=medium
+
+  * Build against webkitgtk 6.0 instead of 5.0
+  * Cherry-pick a build fix for latest webkitgtk
+
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Wed, 15 Mar 2023 20:18:52 -0400
+
 gnome-initial-setup (43.2-4) unstable; urgency=medium
 
   * Team upload
