@@ -1,3 +1,24 @@
+gnome-initial-setup (43.2-6) unstable; urgency=medium
+
+  * Team upload
+  * d/p/privacy-Move-subtitles-to-separate-labels.patch:
+    Fix Mozilla Location Services privacy policy link in kiosk mode.
+    The privacy policy links on the Privacy page are meant to be overridden
+    to open in an embedded (WebKitGTK-based) web browser widget instead of
+    an external web browser, but a regression in the port to GTK 4 between
+    GNOME 42 and 43 caused this behaviour to break.
+    In existing-user mode (run on the first GNOME login for a new user
+    account), the link would previously have opened in the default web
+    browser (normally Firefox), which is harmless but was not the
+    intended UX.
+    In new-user mode (when no user accounts exist), Initial Setup runs in a
+    captive "kiosk mode" to create the first user account. In this mode, the
+    link would previously not do anything. A mitigation is that this failure
+    mode is rarely seen in Debian, because the installer normally creates a
+    user account. (Closes: #1033228)
+
+ -- Simon McVittie <smcv@debian.org>  Mon, 20 Mar 2023 15:27:27 +0000
+
 gnome-initial-setup (43.2-5) unstable; urgency=medium
 
   * Build against webkitgtk 6.0 instead of 5.0
