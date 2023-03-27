@@ -1,8 +1,9 @@
-gnome-initial-setup (44.0-1) UNRELEASED; urgency=medium
+gnome-initial-setup (44.0-1) experimental; urgency=medium
 
   * New upstream release
+  * Drop 4 patches applied in new release
 
- -- Jeremy Bicha <jbicha@ubuntu.com>  Mon, 27 Mar 2023 14:15:04 -0400
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Mon, 27 Mar 2023 14:27:06 -0400
 
 gnome-initial-setup (43.2-6) unstable; urgency=medium
 
