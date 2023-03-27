@@ -1,3 +1,10 @@
+gnome-initial-setup (44.0-1) experimental; urgency=medium
+
+  * New upstream release
+  * Drop 4 patches applied in new release
+
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Mon, 27 Mar 2023 14:27:06 -0400
+
 gnome-initial-setup (44~rc-0ubuntu2) lunar; urgency=medium
 
   * Build against webkitgtk 6.0 instead of 5.0
@@ -22,6 +29,86 @@ gnome-initial-setup (44~beta-0ubuntu1) lunar; urgency=medium
   * New upstream release
 
  -- Jeremy Bicha <jbicha@ubuntu.com>  Thu, 23 Feb 2023 17:52:19 -0500
+
+gnome-initial-setup (43.2-6) unstable; urgency=medium
+
+  * Team upload
+  * d/p/privacy-Move-subtitles-to-separate-labels.patch:
+    Fix Mozilla Location Services privacy policy link in kiosk mode.
+    The privacy policy links on the Privacy page are meant to be overridden
+    to open in an embedded (WebKitGTK-based) web browser widget instead of
+    an external web browser, but a regression in the port to GTK 4 between
+    GNOME 42 and 43 caused this behaviour to break.
+    In existing-user mode (run on the first GNOME login for a new user
+    account), the link would previously have opened in the default web
+    browser (normally Firefox), which is harmless but was not the
+    intended UX.
+    In new-user mode (when no user accounts exist), Initial Setup runs in a
+    captive "kiosk mode" to create the first user account. In this mode, the
+    link would previously not do anything. A mitigation is that this failure
+    mode is rarely seen in Debian, because the installer normally creates a
+    user account. (Closes: #1033228)
+
+ -- Simon McVittie <smcv@debian.org>  Mon, 20 Mar 2023 15:27:27 +0000
+
+gnome-initial-setup (43.2-5) unstable; urgency=medium
+
+  * Build against webkitgtk 6.0 instead of 5.0
+  * Cherry-pick a build fix for latest webkitgtk
+
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Wed, 15 Mar 2023 20:18:52 -0400
+
+gnome-initial-setup (43.2-4) unstable; urgency=medium
+
+  * Team upload
+  * d/p/keyboard-Resort-refilter-list-when-picking-shortlist.patch:
+    Add patch from upstream 44.rc to display more input methods and
+    keyboard layouts without clicking the "more..." button. This has
+    a known issue that the shortlist of keyboard layouts is often not
+    particularly useful, but at least it includes the default and
+    current layouts (possibly different) and some other possibilities.
+  * d/p/keyboard-Correctly-update-labels-for-IBus-engines.patch,
+    d/p/keyboard-Update-filter-and-sort-when-the-display-name-cha.patch:
+    Rework patches for xkb layout and IBus method selection, fixing a
+    crash on startup (Closes: #1032448)
+  * d/README.source: Add some notes on how to smoke-test this package.
+    Thanks to Jeremy Bicha (via #1032448)
+  * d/p/driver-Set-a-non-trivial-window-title.patch:
+    Add patch to set a window title.
+    This is one of the first things a new GNOME user will see, so let's
+    make it a bit more polished.
+
+ -- Simon McVittie <smcv@debian.org>  Mon, 06 Mar 2023 23:46:19 +0000
+
+gnome-initial-setup (43.2-3) unstable; urgency=medium
+
+  * Team upload
+  * d/p/Add-StartupWMClass-to-.desktop-file.patch:
+    Replace previous patch for app ID handling with upstream equivalent.
+    gnome-initial-setup is not a syntactically valid app ID. Return to the
+    syntactically valid app ID used upstream, and set the StartupWMClass
+    instead.
+    This gives us a correct window title in the Overview and the
+    Alt+(key above Tab) window switcher, unlike the patch in 43.2-2.
+  * d/p/reenable-existing-user-mode.patch:
+    Add a note of which upstream commit we're reverting
+  * d/patches: Reorder with closest-to-upstream first
+  * d/p/keyboard-Correctly-update-labels-for-IBus-engines.patch,
+    d/p/keyboard-Update-filter-and-sort-when-the-display-name-cha.patch:
+    Correctly update input method chooser with info from IBus.
+    This ensures that when the default is an IBus-based input method like
+    Anthy (currently GNOME's default for ja_JP in bookworm) or Mozc (requested
+    as a new default for ja_JP in #1029821), it will be displayed with its
+    correct label like "Japanese (Anthy)" or "日本語 (Mozc)" instead of
+    a placeholder name "anthy" or "mozc-jp". (Closes: #1032382)
+
+ -- Simon McVittie <smcv@debian.org>  Sun, 05 Mar 2023 17:39:30 +0000
+
+gnome-initial-setup (43.2-2) unstable; urgency=medium
+
+  * Add patch to fix broken icon and app name
+
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Thu, 02 Mar 2023 17:32:26 -0500
 
 gnome-initial-setup (43.2-1ubuntu1) lunar; urgency=medium
 

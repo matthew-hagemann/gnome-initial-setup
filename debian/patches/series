@@ -1,3 +1,6 @@
+keyboard-Correctly-update-labels-for-IBus-engines.patch
+keyboard-Update-filter-and-sort-when-the-display-name-cha.patch
+driver-Set-a-non-trivial-window-title.patch
 reenable-existing-user-mode.patch
 0001-Make-summary-page-explicitly-request-navigation-butt.patch
 0001-Ensure-stamp-file-if-the-user-quit-the-wizard.patch
@@ -8,4 +11,3 @@ reenable-existing-user-mode.patch
 Don-t-show-Facebook-in-Ubuntu.patch
 0008-Ubuntu-location-default.patch
 ubuntu-distributor-logo.patch
-driver-Set-a-non-trivial-window-title.patch
