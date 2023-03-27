@@ -217,32 +217,28 @@ input_widget_new (CcInputChooser *chooser,
 	widget->name = g_strdup (name);
 	widget->is_extra = is_extra;
 
-	widget->box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 10);
-	gtk_widget_set_halign (widget->box, GTK_ALIGN_FILL);
-	gtk_widget_set_margin_top (widget->box, 10);
-	gtk_widget_set_margin_bottom (widget->box, 10);
-	gtk_widget_set_margin_start (widget->box, 10);
-	gtk_widget_set_margin_end (widget->box, 10);
+	widget->box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
+        gtk_widget_set_margin_top (widget->box, 12);
+        gtk_widget_set_margin_bottom (widget->box, 12);
+        gtk_widget_set_margin_start (widget->box, 12);
+        gtk_widget_set_margin_end (widget->box, 12);
+        gtk_widget_set_halign (widget->box, GTK_ALIGN_FILL);
 
 	widget->label = gtk_label_new (name);
-        gtk_label_set_xalign (GTK_LABEL (widget->label), 0);
-        gtk_label_set_yalign (GTK_LABEL (widget->label), 0.5);
         gtk_label_set_ellipsize (GTK_LABEL (widget->label), PANGO_ELLIPSIZE_END);
         gtk_label_set_max_width_chars (GTK_LABEL (widget->label), 40);
-	gtk_label_set_width_chars (GTK_LABEL (widget->label), 40);
+        gtk_label_set_xalign (GTK_LABEL (widget->label), 0);
 	gtk_box_append (GTK_BOX (widget->box), widget->label);
-
 
         widget->checkmark = gtk_image_new_from_icon_name ("object-select-symbolic");
 	gtk_box_append (GTK_BOX (widget->box), widget->checkmark);
 
-        gtk_widget_set_margin_start (widget->checkmark, 10);
-	gtk_widget_set_margin_end (widget->checkmark, 10);
-	gtk_widget_set_halign (widget->box, GTK_ALIGN_START);
-
 	text = g_strdup_printf ("<a href='preview'>%s</a>", _("Preview"));
 	label = gtk_label_new ("");
 	gtk_label_set_markup (GTK_LABEL (label), text);
+        gtk_label_set_xalign (GTK_LABEL (label), 0);
+        gtk_widget_set_hexpand (label, TRUE);
+        gtk_widget_set_halign (label, GTK_ALIGN_END);
 	g_free (text);
 	g_signal_connect (label, "activate-link",
 			  G_CALLBACK (preview_cb), chooser);
@@ -259,6 +255,7 @@ sync_all_checkmarks (CcInputChooser *chooser)
 {
         CcInputChooserPrivate *priv;
         GtkWidget *row;
+        gboolean invalidate = FALSE;
 
         priv = cc_input_chooser_get_instance_private (chooser);
         row = gtk_widget_get_first_child (priv->input_list);
@@ -271,7 +268,7 @@ sync_all_checkmarks (CcInputChooser *chooser)
                 widget = get_input_widget (child);
 
                 if (widget == NULL)
-                        return;
+                        break;
 
 	        if (priv->id == NULL || priv->type == NULL)
 		        should_be_visible = FALSE;
@@ -280,13 +277,20 @@ sync_all_checkmarks (CcInputChooser *chooser)
                                             g_strcmp0 (widget->type, priv->type) == 0;
                 gtk_widget_set_opacity (widget->checkmark, should_be_visible ? 1.0 : 0.0);
 
-                if (widget->is_extra && should_be_visible)
+                if (widget->is_extra && should_be_visible) {
+                        g_debug ("Marking selected layout %s (%s:%s) as non-extra",
+                                 widget->name, widget->type, widget->id);
                         widget->is_extra = FALSE;
+                        invalidate = TRUE;
+                }
 
                 row = gtk_widget_get_next_sibling (row);
         }
 
-        gtk_list_box_invalidate_filter (GTK_LIST_BOX (priv->input_list));
+        if (invalidate) {
+                gtk_list_box_invalidate_sort (GTK_LIST_BOX (priv->input_list));
+                gtk_list_box_invalidate_filter (GTK_LIST_BOX (priv->input_list));
+        }
 }
 
 static GtkWidget *
@@ -344,10 +348,18 @@ choose_non_extras (CcInputChooser *chooser)
                 if (widget == NULL)
                         break;
 
+                g_debug ("Picking %s (%s:%s) as non-extra",
+                         widget->name, widget->type, widget->id);
                 widget->is_extra = FALSE;
 
                 row = gtk_widget_get_next_sibling (row);
         }
+
+        /* Changing is_extra above affects the ordering and the visibility
+         * of the newly non-extra rows.
+         */
+        gtk_list_box_invalidate_sort (GTK_LIST_BOX (priv->input_list));
+        gtk_list_box_invalidate_filter (GTK_LIST_BOX (priv->input_list));
 }
 
 static void

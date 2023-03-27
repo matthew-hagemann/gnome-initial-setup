@@ -1,78 +1,82 @@
-# Hungarian translation for gnome-initial-setup.
-# Copyright (C) 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2022, 2023 Free Software Foundation, Inc.
-# This file is distributed under the same license as the gnome-initial-setup package.
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-# Gabor Kelemen <kelemeng at gnome dot hu>, 2012, 2013, 2016, 2017.
-# Balázs Úr <ur.balazs at fsf dot hu>, 2013, 2014, 2015, 2018, 2019, 2020, 2021, 2022, 2023.
-# Balázs Meskó <mesko.balazs at fsf dot hu>, 2020, 2021.
 msgid ""
 msgstr ""
-"Project-Id-Version: gnome-initial-setup master\n"
-"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-initial-setup/issue"
-"s\n"
-"POT-Creation-Date: 2023-02-23 14:48+0000\n"
-"PO-Revision-Date: 2023-02-28 01:05+0100\n"
-"Last-Translator: Balázs Úr <ur.balazs at fsf dot hu>\n"
-"Language-Team: Hungarian <gnome-hu-list at gnome dot org>\n"
-"Language: hu\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-initial-setup/"
+"issues\n"
+"POT-Creation-Date: 2022-12-18 18:51+0700\n"
+"PO-Revision-Date: 2022-12-18 19:17+0700\n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.12\n"
+"Last-Translator: OIS <mistresssilvara@hotmail.com>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 22.08.2\n"
+"Language: ie\n"
 
 #: data/gnome-initial-setup-first-login.desktop.in.in:3
 #: data/gnome-initial-setup.desktop.in.in:3
 msgid "Initial Setup"
-msgstr "Kiinduló beállítások"
+msgstr "Inicial configuration"
 
 #: gnome-initial-setup/gis-assistant.c:403
 msgid "_Next"
-msgstr "_Következő"
+msgstr "_Sequent"
 
 #: gnome-initial-setup/gis-assistant.c:404
 msgid "_Accept"
-msgstr "Elfog_adás"
+msgstr "_Acceptar"
 
 #: gnome-initial-setup/gis-assistant.c:405
 msgid "_Skip"
-msgstr "_Kihagyás"
+msgstr "_Omisser"
 
 #: gnome-initial-setup/gis-assistant.c:406
 msgid "_Previous"
-msgstr "_Előző"
+msgstr "_Precedent"
 
 #: gnome-initial-setup/gis-assistant.c:407
 msgid "_Cancel"
-msgstr "Mé_gse"
+msgstr "A_nullar"
 
 #: gnome-initial-setup/gnome-initial-setup.c:282
 msgid "Force existing user mode"
-msgstr "Létező felhasználói mód kényszerítése"
+msgstr ""
 
 #: gnome-initial-setup/gnome-initial-setup.c:296
 msgid "— GNOME initial setup"
-msgstr "– GNOME kiinduló beállítások"
+msgstr "— Inicial configuration de GNOME"
 
-#: gnome-initial-setup/pages/account/gis-account-page-enterprise.c:200
+#: gnome-initial-setup/pages/account/gis-account-avatar-chooser.ui:39
+msgid "Take a Picture…"
+msgstr "Far un foto…"
+
+#: gnome-initial-setup/pages/account/gis-account-page-enterprise.c:197
 msgid "Failed to register account"
-msgstr "A fiók regisztrálása sikertelen"
+msgstr "Ne successat registrar un conto"
 
-#: gnome-initial-setup/pages/account/gis-account-page-enterprise.c:389
+#: gnome-initial-setup/pages/account/gis-account-page-enterprise.c:386
 msgid "No supported way to authenticate with this domain"
-msgstr "Nincs támogatott módszer a tartományban való hitelesítésre"
+msgstr ""
 
-#: gnome-initial-setup/pages/account/gis-account-page-enterprise.c:428
+#: gnome-initial-setup/pages/account/gis-account-page-enterprise.c:425
 msgid "Failed to join domain"
-msgstr "Nem sikerült a tartományhoz csatlakozni"
+msgstr "Ne successat intrar un dominia"
 
-#: gnome-initial-setup/pages/account/gis-account-page-enterprise.c:495
+#: gnome-initial-setup/pages/account/gis-account-page-enterprise.c:492
+#, fuzzy
 msgid "Failed to log into domain"
-msgstr "Nem sikerült bejelentkezni a tartományba"
+msgstr "Ne successat cluder li session."
 
 #: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:12
+#, fuzzy
 msgid "Enterprise Login"
-msgstr "Vállalati bejelentkezés"
+msgstr "Enterprise"
 
 #: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:13
 msgid ""
@@ -80,32 +84,31 @@ msgid ""
 "used on this device. You can also use this account to access company "
 "resources on the internet."
 msgstr ""
-"A vállalati bejelentkezés lehetővé teszi egy meglévő, központilag kezelt "
-"felhasználói fiók használatát ezen az eszközön. Ezt a fiókot arra is "
-"használhatja, hogy vállalati erőforrásokat érjen el az interneten."
 
 #: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:27
 #: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:153
 msgid "_Domain"
-msgstr "_Tartomány"
+msgstr "_Dominia"
 
 #: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:40
-#: gnome-initial-setup/pages/account/gis-account-page-local.ui:81
+#: gnome-initial-setup/pages/account/gis-account-page-local.ui:67
 msgid "_Username"
-msgstr "_Felhasználónév"
+msgstr "Nómine de _usator"
 
 #: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:53
-#: gnome-initial-setup/pages/password/gis-password-page.ui:25
+#: gnome-initial-setup/pages/password/gis-password-page.ui:32
 msgid "_Password"
-msgstr "_Jelszó"
+msgstr "_Contrasigne"
 
 #: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:99
+#, fuzzy
 msgid "Enterprise domain or realm name"
-msgstr "Vállalati tartomány- vagy zónanév"
+msgstr "Nómines de dominia es egal"
 
 #: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:126
+#, fuzzy
 msgid "Domain Administrator Login"
-msgstr "Tartományadminisztrátori bejelentkezés"
+msgstr "_Dominia"
 
 #: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:141
 msgid ""
@@ -113,203 +116,200 @@ msgid ""
 "domain. Please have your network administrator type the domain password "
 "here, and choose a unique computer name for your computer."
 msgstr ""
-"A vállalati bejelentkezések használatához a számítógépet be kell jegyezni "
-"egy tartományba. Kérje meg a hálózati rendszergazdát, hogy írja be itt a "
-"tartományának jelszavát, és válasszon egyedi nevet a számítógépnek."
 
 #: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:179
 msgid "_Computer"
-msgstr "S_zámítógép"
+msgstr "_Computator"
 
 #: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:203
 msgid "Administrator _Name"
-msgstr "Rendszergazda _neve"
+msgstr "_Nómine del administrator"
 
 #: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:227
 msgid "Administrator Password"
-msgstr "Rendszergazdai jelszó"
+msgstr "Contrasigne del administrator"
 
 #: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:260
 msgid "C_ontinue"
-msgstr "_Folytatás"
+msgstr "C_ontinuar"
 
 #: gnome-initial-setup/pages/account/gis-account-page-local.c:207
 msgid "Please check the name and username. You can choose a picture too."
-msgstr "Ellenőrizze a nevet és a felhasználónevet. Egy képet is választhat."
+msgstr ""
+"Ples controlar li nómine e li nómine de usator. Vu posse anc selecter un "
+"image."
 
 #: gnome-initial-setup/pages/account/gis-account-page-local.c:459
 msgid "We need a few details to complete setup."
-msgstr "Szükségünk van néhány részletre a beállítás befejezéséhez."
+msgstr ""
 
 #: gnome-initial-setup/pages/account/gis-account-page-local.c:555
 msgid "Administrator"
-msgstr "Rendszergazda"
+msgstr "Administrator"
 
 #: gnome-initial-setup/pages/account/gis-account-page-local.c:561
 #: gnome-initial-setup/pages/account/gis-account-page-local.c:604
 #, c-format
 msgid "Failed to create user '%s': "
-msgstr "A(z) „%s” felhasználó létrehozása sikertelen: "
+msgstr "Ne successat crear li usator «%s»: "
 
-#: gnome-initial-setup/pages/account/gis-account-page-local.ui:30
-msgid "Edit avatar"
-msgstr "Profilkép szerkesztése"
+#: gnome-initial-setup/pages/account/gis-account-page-local.ui:17
+msgid "Avatar image"
+msgstr "Image de avatar"
 
-#: gnome-initial-setup/pages/account/gis-account-page-local.ui:45
+#: gnome-initial-setup/pages/account/gis-account-page-local.ui:31
 #: gnome-initial-setup/pages/account/gis-account-page.c:274
 msgid "About You"
-msgstr "Önről"
+msgstr "Pri vos"
 
-#: gnome-initial-setup/pages/account/gis-account-page-local.ui:46
+#: gnome-initial-setup/pages/account/gis-account-page-local.ui:32
 msgid "Please provide a name and username. You can choose a picture too."
-msgstr "Adjon meg egy nevet és felhasználónevet. Egy képet is választhat."
+msgstr ""
+"Ples provider un nómine e un nómine de usator. Vu posse anc selecter un "
+"image."
 
-#: gnome-initial-setup/pages/account/gis-account-page-local.ui:58
+#: gnome-initial-setup/pages/account/gis-account-page-local.ui:44
 msgid "_Full Name"
-msgstr "_Teljes név"
+msgstr "_Nómine complet"
 
-#: gnome-initial-setup/pages/account/gis-account-page-local.ui:133
+#: gnome-initial-setup/pages/account/gis-account-page-local.ui:119
 msgid "Set up _parental controls for this user"
-msgstr "Szülői _felügyeleti eszközök beállítása ehhez a felhasználóhoz"
+msgstr ""
 
-#: gnome-initial-setup/pages/account/gis-account-page-local.ui:139
+#: gnome-initial-setup/pages/account/gis-account-page-local.ui:125
 msgid "For use by a parent or supervisor, who must set up their own password."
 msgstr ""
-"Szülőknek vagy csoportvezetőknek, akiknek saját jelszóval kell rendelkezniük."
 
 #: gnome-initial-setup/pages/account/gis-account-page.ui:32
+#, fuzzy
 msgid "_Enterprise Login"
-msgstr "_Vállalati bejelentkezés"
+msgstr "Enterprise"
 
 #: gnome-initial-setup/pages/account/gis-account-page.ui:41
 msgid "Go online to set up Enterprise Login."
-msgstr "A vállalati bejelentkezés beállításához csatlakozzon a hálózathoz."
+msgstr ""
 
 #: gnome-initial-setup/pages/account/um-realm-manager.c:310
 msgid "Cannot automatically join this type of domain"
-msgstr "Ilyen típusú tartományhoz nem lehet automatikusan csatlakozni"
+msgstr ""
 
 #: gnome-initial-setup/pages/account/um-realm-manager.c:373
-#, c-format
+#, fuzzy, c-format
 msgid "No such domain or realm found"
-msgstr "Nem található ilyen tartomány vagy zóna"
+msgstr "_Dominia:"
 
 #: gnome-initial-setup/pages/account/um-realm-manager.c:782
 #: gnome-initial-setup/pages/account/um-realm-manager.c:796
-#, c-format
+#, fuzzy, c-format
 msgid "Cannot log in as %s at the %s domain"
-msgstr "Nem lehet bejelentkezni %s néven a(z) %s tartományba"
+msgstr "[INUSAT]Log Out %s..."
 
 #: gnome-initial-setup/pages/account/um-realm-manager.c:788
 msgid "Invalid password, please try again"
-msgstr "Érvénytelen jelszó, próbálja újra"
+msgstr "Contrasigne es íncorect, ples repenar denov"
 
 #: gnome-initial-setup/pages/account/um-realm-manager.c:801
 #, c-format
 msgid "Couldn’t connect to the %s domain: %s"
-msgstr "Nem lehet csatlakozni a(z) %s tartományhoz: %s"
+msgstr ""
 
 #: gnome-initial-setup/pages/account/um-utils.c:153
 msgid "Sorry, that user name isn’t available. Please try another."
-msgstr "Elnézést, ez a felhasználónév nem érhető el. Próbáljon egy másikat."
+msgstr "Ti nómine de usator es índisponibil. Ples usar un altri."
 
 #: gnome-initial-setup/pages/account/um-utils.c:156
 #, c-format
 msgid "The username is too long."
-msgstr "A felhasználónév túl hosszú."
+msgstr "Li nómine de usator es tro long."
 
 #: gnome-initial-setup/pages/account/um-utils.c:159
 msgid "The username must start with a lower case letter from a-z."
-msgstr "A felhasználónévnek a-z közötti kisbetűvel kell kezdődnie."
+msgstr "Li nómine de usator deve comensar per líttere a-z."
 
 #: gnome-initial-setup/pages/account/um-utils.c:162
 msgid "That username isn’t available. Please try another."
-msgstr "Ez a felhasználónév nem érhető el. Próbáljon egy másikat."
+msgstr "Ti nómine es índisponibil. Ples usar un altri."
 
 #: gnome-initial-setup/pages/account/um-utils.c:165
 msgid ""
 "The username should only consist of lower case letters from a-z, digits, and "
 "the following characters: - _"
 msgstr ""
-"A felhasználónév csak a-z közötti kisbetűket, számjegyeket, és a következő "
-"karaktereket tartalmazhatja: - _"
+"Li nómine de usator posse contener solmen minuscules (a-z), ciffres e "
+"caracteres «-» e «_»."
 
 #: gnome-initial-setup/pages/account/um-utils.c:169
 msgid "This will be used to name your home folder and can’t be changed."
 msgstr ""
-"Ez a saját mappájának elnevezésére lesz használva és nem lehet "
-"megváltoztatni."
+"To va esser usat quam li nómine de vor hem-fólder e ne posse esser modificat."
 
 #: gnome-initial-setup/pages/goa/gis-goa-page.c:561
 msgid "Online Accounts"
-msgstr "Online fiókok"
+msgstr "Contos online"
 
 #: gnome-initial-setup/pages/goa/gis-goa-page.ui:12
 msgid "Connect Your Online Accounts"
-msgstr "Kapcsolódás az online fiókjaihoz"
+msgstr "Conexer vor contos online"
 
 #: gnome-initial-setup/pages/goa/gis-goa-page.ui:13
 msgid ""
 "Connect your accounts to easily access your email, online calendar, "
 "contacts, documents and photos."
 msgstr ""
-"Csatlakozzon fiókjaihoz a levelei, online naptára, névjegyei, dokumentumai "
-"és fényképei egyszerű eléréséhez."
+"Conexer vor contos por facil accesse a vor e-postage, calendare, contactes, "
+"documentes e fotos."
 
 #: gnome-initial-setup/pages/goa/gis-goa-page.ui:40
 msgid ""
 "Accounts can be added and removed at any time from the Settings application."
 msgstr ""
-"Fiókok bármikor felvehetők és eltávolíthatók a Beállítások alkalmazásban."
+"On posse adjunter e remover contos in omni témpor in li application "
+"Parametres."
 
 #. translators: This is the title of the "Show Account" dialog. The
 #. * %s is the name of the provider. e.g., 'Google'.
 #: gnome-initial-setup/pages/goa/gnome-initial-setup-goa-helper.c:428
 #, c-format
 msgid "%s Account"
-msgstr "%s-fiók"
+msgstr "Conto %s"
 
 #: gnome-initial-setup/pages/goa/gnome-initial-setup-goa-helper.c:431
 msgid "Remove Account"
-msgstr "Fiók eltávolítása"
+msgstr "Remover li conto"
 
-#: gnome-initial-setup/pages/keyboard/cc-input-chooser.c:236
+#: gnome-initial-setup/pages/keyboard/cc-input-chooser.c:243
 msgid "Preview"
-msgstr "Előnézet"
+msgstr "Previder"
 
-#: gnome-initial-setup/pages/keyboard/cc-input-chooser.c:295
+#: gnome-initial-setup/pages/keyboard/cc-input-chooser.c:299
 #: gnome-initial-setup/pages/language/cc-language-chooser.c:222
 msgid "More…"
-msgstr "Több…"
+msgstr "Plu…"
 
 #. Translators: a search for input methods or keyboard layouts
 #. * did not yield any results
 #.
-#: gnome-initial-setup/pages/keyboard/cc-input-chooser.c:317
+#: gnome-initial-setup/pages/keyboard/cc-input-chooser.c:321
+#, fuzzy
 msgid "No inputs found"
-msgstr "Bemeneti források nem találhatók"
+msgstr "Analogic intradas"
 
 #: gnome-initial-setup/pages/keyboard/gis-keyboard-page.c:504
 #: gnome-initial-setup/pages/keyboard/gis-keyboard-page.ui:15
 msgid "Typing"
-msgstr "Gépelés"
+msgstr "Tippada"
 
 #: gnome-initial-setup/pages/keyboard/gis-keyboard-page.ui:16
 msgid "Select your keyboard layout or an input method."
-msgstr "Válassza ki a billentyűzetkiosztását vagy egy beviteli módot."
-
-#: gnome-initial-setup/pages/keyboard/input-chooser.ui:8
-#| msgid "Select your keyboard layout or an input method."
-msgid "Search keyboards and input methods"
-msgstr "Billentyűzetek és beviteli módok keresése"
+msgstr "Selecter vor arangeament de tastatura o li metode de intrada"
 
 #: gnome-initial-setup/pages/language/cc-language-chooser.c:242
 msgid "No languages found"
-msgstr "Nyelvek nem találhatók"
+msgstr "Null lingues trovat"
 
 #: gnome-initial-setup/pages/language/gis-language-page.c:262
 msgid "Welcome"
-msgstr "Üdvözlet"
+msgstr "Benevenit"
 
 #. Translators: This is meant to be a warm, engaging welcome message,
 #. * like greeting somebody at the door. If the exclamation mark is not
@@ -317,24 +317,25 @@ msgstr "Üdvözlet"
 #.
 #: gnome-initial-setup/pages/language/gis-welcome-widget.c:132
 msgid "Welcome!"
-msgstr "Üdvözöljük!"
+msgstr "Benevenit!"
 
 #: gnome-initial-setup/pages/network/gis-network-page.c:297
 msgctxt "Wireless access point"
 msgid "Other…"
-msgstr "Egyéb…"
+msgstr "Altri…"
 
 #: gnome-initial-setup/pages/network/gis-network-page.c:379
 msgid "Wireless networking is disabled"
-msgstr "Vezeték nélküli hálózatok letiltva"
+msgstr "Retes sin fil es desactivat"
 
 #: gnome-initial-setup/pages/network/gis-network-page.c:386
+#, fuzzy
 msgid "Checking for available wireless networks"
-msgstr "Elérhető vezeték nélküli hálózatok keresése"
+msgstr "Rete sin fil índisponibil"
 
 #: gnome-initial-setup/pages/network/gis-network-page.c:781
 msgid "Network"
-msgstr "Hálózat"
+msgstr "Rete"
 
 #: gnome-initial-setup/pages/network/gis-network-page.ui:15
 msgid "Wi-Fi"
@@ -345,78 +346,73 @@ msgid ""
 "Connecting to the internet helps you get new apps, information, and other "
 "upgrades. It also helps set the time and your location automatically."
 msgstr ""
-"Az internethez csatlakozás segít új alkalmazásokat, információkat és más "
-"frissítéseket beszerezni. Valamint segít az idő és a helyzetének automatikus "
-"beállításában is."
 
 #: gnome-initial-setup/pages/network/gis-network-page.ui:56
 msgid "No wireless available"
-msgstr "Vezeték nélküli nem érhető el"
+msgstr "Rete sin fil índisponibil"
 
 #: gnome-initial-setup/pages/network/gis-network-page.ui:69
 msgid "Turn On"
-msgstr "Bekapcsolás"
+msgstr "Activar"
 
 #. Translators: The placeholder is the user’s full name.
 #: gnome-initial-setup/pages/parental-controls/gis-parental-controls-page.c:102
 #, c-format
 msgid "Parental Controls for %s"
-msgstr "%s szülői felügyeleti eszközei"
+msgstr "Controles de genitor por %s"
 
 #: gnome-initial-setup/pages/parental-controls/gis-parental-controls-page.c:104
 msgid "Set restrictions on what this user can run or install."
 msgstr ""
-"Állítson be korlátozásokat, hogy ez a felhasználó mit futtathat vagy "
-"telepíthet."
 
 #: gnome-initial-setup/pages/parental-controls/gis-parental-controls-page.c:199
 msgid "Parental Controls"
-msgstr "Szülői felügyeleti eszközök"
+msgstr "Controles de genitor"
 
 #. Don’t break UI compatibility if parental controls are disabled.
 #: gnome-initial-setup/pages/password/gis-password-page.c:90
 msgid "Set a Password"
-msgstr "Jelszó beállítása"
+msgstr "Assignar un contrasigne"
 
 #: gnome-initial-setup/pages/password/gis-password-page.c:91
 #: gnome-initial-setup/pages/password/gis-password-page.c:100
+#, fuzzy
 msgid "Be careful not to lose your password."
-msgstr "Legyen óvatos, ne veszítse el a jelszavát."
+msgstr "_Memorar li contrasigne:"
 
 #. Translators: The placeholder is for the user’s full name.
 #: gnome-initial-setup/pages/password/gis-password-page.c:98
 #, c-format
 msgid "Set a Password for %s"
-msgstr "Jelszó beállítása %s számára"
+msgstr "Assignar un contrasigne por %s"
 
 #: gnome-initial-setup/pages/password/gis-password-page.c:106
 msgid "Set a Parent Password"
-msgstr "Szülői jelszó beállítása"
+msgstr "Assignar un contrasigne de genitor"
 
 #. Translators: The placeholder is the full name of the child user on the system.
 #: gnome-initial-setup/pages/password/gis-password-page.c:108
 #, c-format
 msgid "This password will control access to the parental controls for %s."
 msgstr ""
-"Ez a jelszó fogja vezérelni %s hozzáférését a szülői felügyeleti eszközökhöz."
 
 #: gnome-initial-setup/pages/password/gis-password-page.c:243
+#, fuzzy
 msgid "The passwords do not match."
-msgstr "A jelszavak nem egyeznek."
+msgstr "Contrasignes"
 
 #: gnome-initial-setup/pages/password/gis-password-page.c:437
 msgid "Password"
-msgstr "Jelszó"
+msgstr "Contrasigne"
 
-#: gnome-initial-setup/pages/password/gis-password-page.ui:62
-#| msgid "_Password"
-msgid "_Confirm Password"
-msgstr "Jelszó _megerősítése"
+#: gnome-initial-setup/pages/password/gis-password-page.ui:53
+msgid "_Confirm"
+msgstr "_Confirmar"
 
 #: gnome-initial-setup/pages/password/pw-utils.c:81
 msgctxt "Password hint"
 msgid "The new password needs to be different from the old one."
-msgstr "Az új jelszónak különböznie kell a régitől."
+msgstr ""
 
 #: gnome-initial-setup/pages/password/pw-utils.c:83
 msgctxt "Password hint"
@@ -424,8 +420,6 @@ msgid ""
 "This password is very similar to your last one. Try changing some letters "
 "and numbers."
 msgstr ""
-"Ez a jelszó nagyon hasonló a legutóbbihoz. Próbáljon meg kicserélni néhány "
-"betűt vagy számot."
 
 #: gnome-initial-setup/pages/password/pw-utils.c:85
 #: gnome-initial-setup/pages/password/pw-utils.c:93
@@ -434,56 +428,51 @@ msgid ""
 "This password is very similar to your last one. Try changing the password a "
 "bit more."
 msgstr ""
-"Ez a jelszó nagyon hasonló a legutóbbihoz. Próbálja meg kicsit jobban "
-"megváltoztatni a jelszót."
 
 #: gnome-initial-setup/pages/password/pw-utils.c:87
 msgctxt "Password hint"
 msgid ""
 "This is a weak password. A password without your user name would be stronger."
-msgstr "Ez egy gyenge jelszó. A jelszó a felhasználóneve nélkül erősebb lenne."
+msgstr ""
 
 #: gnome-initial-setup/pages/password/pw-utils.c:89
 msgctxt "Password hint"
 msgid "This is a weak password. Try to avoid using your name in the password."
 msgstr ""
-"Ez egy gyenge jelszó. Próbálja elkerülni a saját nevének használatát a "
-"jelszavában."
 
 #: gnome-initial-setup/pages/password/pw-utils.c:91
+#, fuzzy
 msgctxt "Password hint"
 msgid ""
 "This is a weak password. Try to avoid some of the words included in the "
 "password."
-msgstr ""
-"Ez egy gyenge jelszó. Próbáljon elkerülni néhány szót, amely a jelszóban "
-"szerepel."
+msgstr "To es un debil contrasigne. Ples evitar ordinari paroles."
 
 #: gnome-initial-setup/pages/password/pw-utils.c:95
 msgctxt "Password hint"
 msgid "This is a weak password. Try to avoid common words."
-msgstr "Ez egy gyenge jelszó. Próbálja elkerülni a gyakori szavakat."
+msgstr "To es un debil contrasigne. Ples evitar ordinari paroles."
 
 #: gnome-initial-setup/pages/password/pw-utils.c:97
+#, fuzzy
 msgctxt "Password hint"
 msgid "This is a weak password. Try to avoid reordering existing words."
-msgstr ""
-"Ez egy gyenge jelszó. Próbálja elkerülni a meglévő szavak átrendezését."
+msgstr "To es un debil contrasigne. Ples evitar ordinari paroles."
 
 #: gnome-initial-setup/pages/password/pw-utils.c:99
 msgctxt "Password hint"
 msgid "This is a weak password. Try to use more numbers."
-msgstr "Ez egy gyenge jelszó. Próbáljon több számot használni."
+msgstr "To es un debil contrasigne. Ples usar plu ciffres."
 
 #: gnome-initial-setup/pages/password/pw-utils.c:101
 msgctxt "Password hint"
 msgid "This is a weak password. Try to use more uppercase letters."
-msgstr "Ez egy gyenge jelszó. Próbáljon több nagybetűt használni."
+msgstr "To es un debil contrasigne. Ples usar plu majuscules."
 
 #: gnome-initial-setup/pages/password/pw-utils.c:103
 msgctxt "Password hint"
 msgid "This is a weak password. Try to use more lowercase letters."
-msgstr "Ez egy gyenge jelszó. Próbáljon több kisbetűt használni."
+msgstr "To es un debil contrasigne. Ples usar plu minuscules."
 
 #: gnome-initial-setup/pages/password/pw-utils.c:105
 msgctxt "Password hint"
@@ -491,8 +480,6 @@ msgid ""
 "This is a weak password. Try to use more special characters, like "
 "punctuation."
 msgstr ""
-"Ez egy gyenge jelszó. Próbáljon több különleges karaktert használni, például "
-"írásjeleket."
 
 #: gnome-initial-setup/pages/password/pw-utils.c:107
 msgctxt "Password hint"
@@ -500,14 +487,11 @@ msgid ""
 "This is a weak password. Try to use a mixture of letters, numbers and "
 "punctuation."
 msgstr ""
-"Ez egy gyenge jelszó. Próbáljon betűket, számokat és írásjeleket vegyesen "
-"használni."
 
 #: gnome-initial-setup/pages/password/pw-utils.c:109
 msgctxt "Password hint"
 msgid "This is a weak password. Try to avoid repeating the same character."
 msgstr ""
-"Ez egy gyenge jelszó. Próbálja elkerülni az azonos karakterek ismétlését."
 
 #: gnome-initial-setup/pages/password/pw-utils.c:111
 msgctxt "Password hint"
@@ -515,35 +499,28 @@ msgid ""
 "This is a weak password. Try to avoid repeating the same type of character: "
 "you need to mix up letters, numbers and punctuation."
 msgstr ""
-"Ez egy gyenge jelszó. Próbálja elkerülni az azonos típusú karakterek "
-"ismétlődését: használjon felváltva betűket, számokat és írásjeleket."
 
 #: gnome-initial-setup/pages/password/pw-utils.c:113
 msgctxt "Password hint"
 msgid "This is a weak password. Try to avoid sequences like 1234 or abcd."
-msgstr ""
-"Ez egy gyenge jelszó.. Próbálja elkerülni az olyan sorozatokat, mint az 1234 "
-"vagy az abcd."
+msgstr "To es un debil contrasigne. Ples evitar sequenties quam 1234 o abcd."
 
 #: gnome-initial-setup/pages/password/pw-utils.c:115
 msgctxt "Password hint"
 msgid ""
 "This is a weak password. Try to add more letters, numbers and punctuation."
 msgstr ""
-"Ez egy gyenge jelszó. Próbáljon betűket, számokat és írásjeleket vegyesen "
-"használni."
 
 #: gnome-initial-setup/pages/password/pw-utils.c:117
 msgctxt "Password hint"
 msgid "Mix uppercase and lowercase and try to use a number or two."
-msgstr "Használjon vegyesen kis- és nagybetűket, illetve egy-két számot."
+msgstr "Usa ambi majuscules e minuscules e adjunte un pare de ciffres."
 
 #: gnome-initial-setup/pages/password/pw-utils.c:119
 msgctxt "Password hint"
 msgid ""
 "Adding more letters, numbers and punctuation will make the password stronger."
 msgstr ""
-"További betűk, számok és írásjelek hozzáadása még erősebbé teheti a jelszót."
 
 #. Translators: the first parameter here is the name of a distribution,
 #. * like "Fedora" or "Ubuntu". It falls back to "GNOME" if we can't
@@ -555,9 +532,6 @@ msgid ""
 "Sends technical reports that have personal information automatically "
 "removed. Data is collected by %1$s (<a href='%2$s'>privacy policy</a>)."
 msgstr ""
-"Műszaki jelentéseket küld, amelyekből a személyes információk automatikusan "
-"el lesznek távolítva. Az adatokat a(z) %1$s gyűjti (<a "
-"href='%2$s'>adatvédelmi irányelv</a>)."
 
 #. Translators: the parameter here is the name of a distribution,
 #. * like "Fedora" or "Ubuntu". It falls back to "GNOME" if we can't
@@ -569,21 +543,19 @@ msgid ""
 "Sends technical reports that have personal information automatically "
 "removed. Data is collected by %s."
 msgstr ""
-"Műszaki jelentéseket küld, amelyekből a személyes információk automatikusan "
-"el lesznek távolítva. Az adatokat a(z) %s gyűjti."
 
 #: gnome-initial-setup/pages/privacy/gis-privacy-page.c:200
 msgid "Privacy Policy"
-msgstr "Adatvédelmi irányelv"
+msgstr "Politica de privatie"
 
 #: gnome-initial-setup/pages/privacy/gis-privacy-page.c:235
 #: gnome-initial-setup/pages/privacy/gis-privacy-page.ui:14
 msgid "Privacy"
-msgstr "Adatvédelem"
+msgstr "Privatie"
 
 #: gnome-initial-setup/pages/privacy/gis-privacy-page.ui:27
 msgid "Location Services"
-msgstr "Helymeghatározó szolgáltatások"
+msgstr "Servicies de localisation"
 
 #: gnome-initial-setup/pages/privacy/gis-privacy-page.ui:28
 msgid ""
@@ -591,26 +563,23 @@ msgid ""
 "Mozilla Location Service (<a href='https://location.services.mozilla.com/"
 "privacy'>privacy policy</a>)."
 msgstr ""
-"Lehetővé teszi az alkalmazások számára a földrajzi helyzetének "
-"meghatározását. A Mozilla helymeghatározó szolgáltatását használja (<a "
-"href='https://location.services.mozilla.com/privacy'>adatvédelmi irányelv</"
-"a>)."
+"Permisse a applicationes saver vor localisation geografic. Usa li Mozilla "
+"Location Service (<a href='https://location.services.mozilla.com/"
+"privacy'>politica de privatie</a>)."
 
 #: gnome-initial-setup/pages/privacy/gis-privacy-page.ui:44
 msgid "Automatic Problem Reporting"
-msgstr "Automatikus hibajelentés"
+msgstr "Automatic raporta de problemas"
 
 #: gnome-initial-setup/pages/privacy/gis-privacy-page.ui:62
 msgid ""
 "Privacy controls can be changed at any time from the Settings application."
 msgstr ""
-"Az adatvédelem jellemzői bármikor megváltoztathatók a Beállítások "
-"alkalmazásban."
 
 #: gnome-initial-setup/pages/software/gis-software-page.c:109
 #: gnome-initial-setup/pages/software/gis-software-page.ui:11
 msgid "Third-Party Repositories"
-msgstr "Harmadik féltől származó tárolók"
+msgstr "Repositorias de 3-im partise"
 
 #: gnome-initial-setup/pages/software/gis-software-page.c:110
 msgid ""
@@ -618,18 +587,14 @@ msgid ""
 "external sources, including popular apps and drivers that are important for "
 "some devices. Some proprietary software is included."
 msgstr ""
-"A harmadik féltől származó tárolók további szoftvereket biztosítanak a "
-"kiválasztott külső forrásokból. Szerepelnek köztük népszerű alkalmazások, "
-"valamint firmware-ek, amelyek egyes eszközök esetén fontosak. Tulajdonosi "
-"(zárt) szoftvereket is tartalmazhatnak."
 
 #: gnome-initial-setup/pages/software/gis-software-page.c:120
 msgid "_Disable Third-Party Repositories"
-msgstr "Harmadik féltől származó tárolók _letiltása"
+msgstr "_Depermisser repositorias de 3-im partise"
 
 #: gnome-initial-setup/pages/software/gis-software-page.c:125
 msgid "_Enable Third-Party Repositories"
-msgstr "Harmadik féltől származó tárolók _engedélyezése"
+msgstr "_Usar repositorias de 3-im partise"
 
 #. Translators: the parameter here is the name of a distribution,
 #. * like "Fedora" or "Ubuntu". It falls back to "GNOME" if we can't
@@ -637,7 +602,7 @@ msgstr "Harmadik féltől származó tárolók _engedélyezése"
 #: gnome-initial-setup/pages/summary/gis-summary-page.c:232
 #, c-format
 msgid "_Start Using %s"
-msgstr "A(z) %s használatba _vétele"
+msgstr "_Comensar usar %s"
 
 #. Translators: the parameter here is the name of a distribution,
 #. * like "Fedora" or "Ubuntu". It falls back to "GNOME" if we can't
@@ -645,19 +610,15 @@ msgstr "A(z) %s használatba _vétele"
 #: gnome-initial-setup/pages/summary/gis-summary-page.c:239
 #, c-format
 msgid "%s is ready to be used. We hope that you love it!"
-msgstr "A(z) %s használatra kész. Reméljük, hogy imádni fogja!"
+msgstr "%s es pret por usa. Noi espera que vu va amar it!"
 
 #: gnome-initial-setup/pages/summary/gis-summary-page.c:263
 msgid "Setup Complete"
-msgstr "A beállítás befejeződött"
+msgstr "Configuration es compleet"
 
 #: gnome-initial-setup/pages/summary/gis-summary-page.ui:7
 msgid "All done!"
-msgstr "Minden készen van!"
-
-#: gnome-initial-setup/pages/timezone/gis-location-entry.c:117
-msgid "Search cities"
-msgstr "Városok keresése"
+msgstr "Finit!"
 
 #. Recurse, adding the ADM1 name to the country name
 #. Translators: this is the name of a location followed by a region, for example:
@@ -669,8 +630,8 @@ msgstr "Városok keresése"
 #. * 'London, United Kingdom'
 #. * You shouldn't need to translate this string unless the language has a different comma.
 #.
-#: gnome-initial-setup/pages/timezone/gis-location-entry.c:549
-#: gnome-initial-setup/pages/timezone/gis-location-entry.c:577
+#: gnome-initial-setup/pages/timezone/gis-location-entry.c:548
+#: gnome-initial-setup/pages/timezone/gis-location-entry.c:576
 #, c-format
 msgid "%s, %s"
 msgstr "%s, %s"
@@ -692,7 +653,7 @@ msgstr "UTC%:::z"
 #. Translators: This is the time format used in 12-hour mode.
 #: gnome-initial-setup/pages/timezone/gis-timezone-page.c:312
 msgid "%l:%M %p"
-msgstr "%H:%M"
+msgstr "%l:%M %p"
 
 #. Translators: This is the time format used in 24-hour mode.
 #: gnome-initial-setup/pages/timezone/gis-timezone-page.c:315
@@ -709,19 +670,17 @@ msgstr "%s (%s)"
 #: gnome-initial-setup/pages/timezone/gis-timezone-page.c:484
 #: gnome-initial-setup/pages/timezone/gis-timezone-page.ui:12
 msgid "Time Zone"
-msgstr "Időzóna"
+msgstr "Zone horari"
 
 #: gnome-initial-setup/pages/timezone/gis-timezone-page.ui:13
 msgid ""
 "The time zone will be set automatically if your location can be found. You "
 "can also search for a city to set it yourself."
 msgstr ""
-"Az időzóna automatikusan beállításra kerül, ha a tartózkodási helye "
-"megtalálható. Kereshet is a beállítandó városra."
 
 #: gnome-initial-setup/pages/timezone/gis-timezone-page.ui:44
 msgid "Please search for a nearby city"
-msgstr "Keressen egy közeli várost"
+msgstr "Ples serchar un vicin cité"
 
 #. Translators: This is meant to be a warm, engaging welcome message,
 #. * like greeting somebody at the door. If the exclamation mark is not
@@ -734,20 +693,18 @@ msgstr "Keressen egy közeli várost"
 #: gnome-initial-setup/pages/welcome/gis-welcome-page.c:75
 #, c-format
 msgid "Welcome to %s !"
-msgstr "Üdvözli a(z) %s !"
+msgstr "Benevenit a %s!"
 
 #: gnome-initial-setup/pages/welcome/gis-welcome-page.ui:4
 msgid "Setup"
-msgstr "Beállítás"
+msgstr "Configurar"
 
 #: gnome-initial-setup/pages/welcome/gis-welcome-page.ui:39
 msgid ""
 "Setup will guide you through making an account and enabling some features. "
 "We’ll have you up and running in no time."
 msgstr ""
-"A beállítás végigvezeti egy fiók létrehozásán és engedélyez egyes "
-"funkciókat. Segítünk, hogy pillanatok alatt elkészüljön."
 
 #: gnome-initial-setup/pages/welcome/gis-welcome-page.ui:49
 msgid "_Start Setup"
-msgstr "Beállítás _indítása"
+msgstr "_Comensar configuration"
