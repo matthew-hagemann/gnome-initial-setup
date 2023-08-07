@@ -25,4 +25,4 @@ index a64bd81..9304762 100644
 +  gtk_switch_set_active (GTK_SWITCH (priv->location_switch), FALSE);
    gtk_switch_set_active (GTK_SWITCH (priv->reporting_switch), TRUE);
  
-   update_os_data (page);
+   if (update_os_data (page))
