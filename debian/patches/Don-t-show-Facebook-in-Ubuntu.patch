@@ -11,7 +11,7 @@ LP: #1797736
  1 file changed, 22 insertions(+), 1 deletion(-)
 
 diff --git a/gnome-initial-setup/pages/goa/gis-goa-page.c b/gnome-initial-setup/pages/goa/gis-goa-page.c
-index 4fea8d0..4897868 100644
+index 52ed052..98f1d9f 100644
 --- a/gnome-initial-setup/pages/goa/gis-goa-page.c
 +++ b/gnome-initial-setup/pages/goa/gis-goa-page.c
 @@ -174,6 +174,25 @@ run_goa_helper_async (const gchar         *command,

@@ -12,7 +12,7 @@ Subject: [PATCH 4/6] Make summary page explicitly request navigation buttons
  5 files changed, 54 insertions(+), 3 deletions(-)
 
 diff --git a/gnome-initial-setup/gis-assistant.c b/gnome-initial-setup/gis-assistant.c
-index 8b62f25..f0c24e5 100644
+index a3122b7..40c5f04 100644
 --- a/gnome-initial-setup/gis-assistant.c
 +++ b/gnome-initial-setup/gis-assistant.c
 @@ -47,6 +47,7 @@ struct _GisAssistant
@@ -202,7 +202,7 @@ index 9e46b45..742cc71 100644
  void         gis_page_set_needs_accept (GisPage *page, gboolean needs_accept);
  gboolean     gis_page_get_has_forward (GisPage *page);
 diff --git a/gnome-initial-setup/pages/summary/gis-summary-page.c b/gnome-initial-setup/pages/summary/gis-summary-page.c
-index b947455..8d86cce 100644
+index 0aee2da..b3f2371 100644
 --- a/gnome-initial-setup/pages/summary/gis-summary-page.c
 +++ b/gnome-initial-setup/pages/summary/gis-summary-page.c
 @@ -249,6 +249,8 @@ gis_summary_page_constructed (GObject *object)

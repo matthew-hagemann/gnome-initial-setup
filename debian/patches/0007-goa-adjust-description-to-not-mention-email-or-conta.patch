@@ -11,7 +11,7 @@ Forwarded: https://gitlab.gnome.org/GNOME/gnome-initial-setup/merge_requests/13/
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/gnome-initial-setup/pages/goa/gis-goa-page.ui b/gnome-initial-setup/pages/goa/gis-goa-page.ui
-index 96dab4e..30d178d 100644
+index c273afc..ae5530d 100644
 --- a/gnome-initial-setup/pages/goa/gis-goa-page.ui
 +++ b/gnome-initial-setup/pages/goa/gis-goa-page.ui
 @@ -10,7 +10,7 @@

@@ -12,7 +12,7 @@ we might need to revisit the use of the logo but workaround for now
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/gnome-initial-setup/pages/language/gis-language-page.c b/gnome-initial-setup/pages/language/gis-language-page.c
-index f62b2ad..3007181 100644
+index 87b9f2d..1ededc5 100644
 --- a/gnome-initial-setup/pages/language/gis-language-page.c
 +++ b/gnome-initial-setup/pages/language/gis-language-page.c
 @@ -192,7 +192,7 @@ update_distro_logo (GisLanguagePage *page)

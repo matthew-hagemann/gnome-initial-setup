@@ -10,7 +10,7 @@ Forwared: not-needed
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/gnome-initial-setup/pages/goa/gis-goa-page.c b/gnome-initial-setup/pages/goa/gis-goa-page.c
-index 905355b..4fea8d0 100644
+index 47c5cb2..52ed052 100644
 --- a/gnome-initial-setup/pages/goa/gis-goa-page.c
 +++ b/gnome-initial-setup/pages/goa/gis-goa-page.c
 @@ -306,7 +306,7 @@ populate_provider_list (GisGoaPage *page)
