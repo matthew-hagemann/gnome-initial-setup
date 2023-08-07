@@ -472,7 +472,7 @@ gis_driver_add_page (GisDriver *driver,
 void
 gis_driver_hide_window (GisDriver *driver)
 {
-  gtk_widget_hide (GTK_WIDGET (driver->main_window));
+  gtk_widget_set_visible (GTK_WIDGET (driver->main_window), FALSE);
 }
 
 static gboolean
@@ -799,6 +799,7 @@ gis_driver_startup (GApplication *app)
                                     "application", app,
                                     "icon-name", "preferences-system",
                                     "deletable", FALSE,
+                                    "title", _("Initial Setup"),
                                     NULL);
 
   g_signal_connect (driver->main_window,
