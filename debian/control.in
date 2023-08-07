@@ -5,6 +5,7 @@ Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 XSBC-Original-Maintainer: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>
 Uploaders: @GNOME_TEAM@
 Build-Depends: debhelper-compat (= 13),
+               dconf-cli,
                dh-sequence-gnome,
                gsettings-desktop-schemas-dev (>= 3.37.1),
                itstool,
@@ -40,7 +41,7 @@ Build-Depends: debhelper-compat (= 13),
                meson (>= 0.50.0),
                systemd ( >= 242),
 Rules-Requires-Root: no
-Standards-Version: 4.6.1
+Standards-Version: 4.6.2
 XS-Debian-Vcs-Git: https://salsa.debian.org/gnome-team/gnome-initial-setup.git
 XS-Debian-Vcs-Browser: https://salsa.debian.org/gnome-team/gnome-initial-setup
 Vcs-Git: https://salsa.debian.org/gnome-team/gnome-initial-setup.git -b ubuntu/master

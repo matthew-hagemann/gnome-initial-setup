@@ -1,3 +1,19 @@
+gnome-initial-setup (45~beta-1) unstable; urgency=medium
+
+  * New upstream release
+  * Build-Depend on dconf-cli
+  * Drop 3 patches applied in new release
+  * Add patch to revert switch to Tecla since Tecla #7 is unfixed
+
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Mon, 07 Aug 2023 10:18:22 -0400
+
+gnome-initial-setup (44.0-2) unstable; urgency=medium
+
+  * Update standards version to 4.6.2, no changes needed
+  * Release to unstable
+
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Sun, 23 Jul 2023 16:28:52 -0400
+
 gnome-initial-setup (44.0-1ubuntu1) lunar; urgency=medium
 
   * Merge with Debian. Remaining changes:
