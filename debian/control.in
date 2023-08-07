@@ -4,6 +4,7 @@ Priority: optional
 Maintainer: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>
 Uploaders: @GNOME_TEAM@
 Build-Depends: debhelper-compat (= 13),
+               dconf-cli,
                dh-sequence-gnome,
                gsettings-desktop-schemas-dev (>= 3.37.1),
                itstool,

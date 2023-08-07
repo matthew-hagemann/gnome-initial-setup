@@ -8,6 +8,7 @@ Priority: optional
 Maintainer: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>
 Uploaders: Jeremy Bícha <jbicha@ubuntu.com>, Jordi Mallach <jordi@debian.org>, Laurent Bigonville <bigon@debian.org>, Marco Trevisan (Treviño) <marco@ubuntu.com>, Sebastien Bacher <seb128@debian.org>
 Build-Depends: debhelper-compat (= 13),
+               dconf-cli,
                dh-sequence-gnome,
                gsettings-desktop-schemas-dev (>= 3.37.1),
                itstool,
