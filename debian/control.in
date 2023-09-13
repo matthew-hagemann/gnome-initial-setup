@@ -53,6 +53,7 @@ Architecture: linux-any
 Depends: ${shlibs:Depends},
          pkexec (>= 0.103),
          polkitd (>= 0.103),
+         tecla (>= 45~rc),
          adduser,
          gnome-settings-daemon (>= 3.24),
          ${logo:Depends},
