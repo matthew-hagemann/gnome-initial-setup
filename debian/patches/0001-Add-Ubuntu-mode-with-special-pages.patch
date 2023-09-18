@@ -400,6 +400,8 @@ index 0000000..4565dc0
 +
 +  storecmd = g_find_program_in_path ("snap-store.ubuntu-software");
 +  if (storecmd == NULL)
++    storecmd = g_find_program_in_path ("snap-store.snap-store");
++  if (storecmd == NULL)
 +    storecmd = g_find_program_in_path ("gnome-software");
 +  if (storecmd == NULL) {
 +    g_warning ("Failed to find snap-store or gnome-software");
