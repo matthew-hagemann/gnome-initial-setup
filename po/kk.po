@@ -8,18 +8,19 @@ msgstr ""
 "Project-Id-Version: gnome-initial-setup master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-initial-setup/"
 "issues\n"
-"POT-Creation-Date: 2022-08-26 20:46+0000\n"
-"PO-Revision-Date: 2022-09-18 12:51+0600\n"
+"POT-Creation-Date: 2023-08-23 14:24+0000\n"
+"PO-Revision-Date: 2023-08-25 21:56+0600\n"
 "Last-Translator: Baurzhan Muftakhidinov <baurthefirst@gmail.com>\n"
 "Language-Team: Kazakh <kk@li.org>\n"
 "Language: kk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.1.1\n"
+"X-Generator: Poedit 3.3.2\n"
 
 #: data/gnome-initial-setup-first-login.desktop.in.in:3
 #: data/gnome-initial-setup.desktop.in.in:3
+#: gnome-initial-setup/gis-driver.c:802
 msgid "Initial Setup"
 msgstr "Бастапқы баптау"
 
@@ -40,6 +41,7 @@ msgid "_Previous"
 msgstr "А_лдыңғы"
 
 #: gnome-initial-setup/gis-assistant.c:407
+#: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:254
 msgid "_Cancel"
 msgstr "Ба_с тарту"
 
@@ -51,23 +53,19 @@ msgstr "Бар пайдаланушы режимін мәжбүрлету"
 msgid "— GNOME initial setup"
 msgstr "— GNOME бастапқы баптау"
 
-#: gnome-initial-setup/pages/account/gis-account-avatar-chooser.ui:39
-msgid "Take a Picture…"
-msgstr "Фотоны түсіру…"
-
-#: gnome-initial-setup/pages/account/gis-account-page-enterprise.c:182
+#: gnome-initial-setup/pages/account/gis-account-page-enterprise.c:200
 msgid "Failed to register account"
 msgstr "Тіркелгіні тіркеу сәтсіз"
 
-#: gnome-initial-setup/pages/account/gis-account-page-enterprise.c:371
+#: gnome-initial-setup/pages/account/gis-account-page-enterprise.c:389
 msgid "No supported way to authenticate with this domain"
 msgstr "Бұл доменде аутентификациялаудың қолдауы бар тәсілдері жоқ"
 
-#: gnome-initial-setup/pages/account/gis-account-page-enterprise.c:410
+#: gnome-initial-setup/pages/account/gis-account-page-enterprise.c:428
 msgid "Failed to join domain"
 msgstr "Доменде тіркеу сәтсіз"
 
-#: gnome-initial-setup/pages/account/gis-account-page-enterprise.c:477
+#: gnome-initial-setup/pages/account/gis-account-page-enterprise.c:495
 msgid "Failed to log into domain"
 msgstr "Доменге кіру сәтсіз"
 
@@ -87,17 +85,17 @@ msgstr ""
 "аласыз."
 
 #: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:27
-#: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:162
+#: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:153
 msgid "_Domain"
 msgstr "До_мен"
 
 #: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:40
-#: gnome-initial-setup/pages/account/gis-account-page-local.ui:67
+#: gnome-initial-setup/pages/account/gis-account-page-local.ui:81
 msgid "_Username"
 msgstr "_Пайдаланушы аты"
 
 #: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:53
-#: gnome-initial-setup/pages/password/gis-password-page.ui:32
+#: gnome-initial-setup/pages/password/gis-password-page.ui:25
 msgid "_Password"
 msgstr "_Пароль"
 
@@ -105,11 +103,11 @@ msgstr "_Пароль"
 msgid "Enterprise domain or realm name"
 msgstr "Кәсіпорын доменінің (realm) аты"
 
-#: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:137
+#: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:126
 msgid "Domain Administrator Login"
 msgstr "Домен әкімшісінің логині"
 
-#: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:150
+#: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:141
 msgid ""
 "In order to use enterprise logins, this computer needs to be enrolled in a "
 "domain. Please have your network administrator type the domain password "
@@ -119,19 +117,19 @@ msgstr ""
 "Желілік әкімшісі осында өз домендік паролін енгізуі тиіс және компьютеріңіз "
 "үшін бірегей атауды таңдау керек."
 
-#: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:188
+#: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:179
 msgid "_Computer"
 msgstr "_Компьютер"
 
-#: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:212
+#: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:203
 msgid "Administrator _Name"
 msgstr "Әкімші а_ты"
 
-#: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:236
+#: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:227
 msgid "Administrator Password"
 msgstr "Әкімші паролі"
 
-#: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:268
+#: gnome-initial-setup/pages/account/gis-account-page-enterprise.ui:260
 msgid "C_ontinue"
 msgstr "Жа_лғастыру"
 
@@ -155,30 +153,30 @@ msgstr "Әкімші"
 msgid "Failed to create user '%s': "
 msgstr "\"%s\" пайдаланушысын жасау сәтсіз аяқталды: "
 
-#: gnome-initial-setup/pages/account/gis-account-page-local.ui:17
-msgid "Avatar image"
-msgstr "Аватар суреті"
+#: gnome-initial-setup/pages/account/gis-account-page-local.ui:30
+msgid "Edit avatar"
+msgstr "Аватарды түзету"
 
-#: gnome-initial-setup/pages/account/gis-account-page-local.ui:31
+#: gnome-initial-setup/pages/account/gis-account-page-local.ui:45
 #: gnome-initial-setup/pages/account/gis-account-page.c:274
 msgid "About You"
 msgstr "Өзіңіз туралы"
 
-#: gnome-initial-setup/pages/account/gis-account-page-local.ui:32
+#: gnome-initial-setup/pages/account/gis-account-page-local.ui:46
 msgid "Please provide a name and username. You can choose a picture too."
 msgstr ""
 "Атыңыз және пайдаланушы атын енгізіңіз. Сонымен қатар, сіз суретті де таңдай "
 "аласыз."
 
-#: gnome-initial-setup/pages/account/gis-account-page-local.ui:44
+#: gnome-initial-setup/pages/account/gis-account-page-local.ui:58
 msgid "_Full Name"
 msgstr "Тол_ық аты"
 
-#: gnome-initial-setup/pages/account/gis-account-page-local.ui:119
+#: gnome-initial-setup/pages/account/gis-account-page-local.ui:133
 msgid "Set up _parental controls for this user"
 msgstr "Бұл пайдаланушы үшін ат_а-ана бақылауын орнату"
 
-#: gnome-initial-setup/pages/account/gis-account-page-local.ui:125
+#: gnome-initial-setup/pages/account/gis-account-page-local.ui:139
 msgid "For use by a parent or supervisor, who must set up their own password."
 msgstr "Ата-ана немесе басқарушы қолдануы үшін, олар өз паролін орнатуы тиіс."
 
@@ -262,8 +260,7 @@ msgstr ""
 "үшін желілік тіркелгілерді қосыңыз."
 
 #: gnome-initial-setup/pages/goa/gis-goa-page.ui:40
-msgid ""
-"Accounts can be added and removed at any time from the Settings application."
+msgid "Accounts can be added and removed at any time from the Settings app."
 msgstr ""
 "Тіркелгілерді кез-кезген кезде Баптаулар ішінен қосу немесе өшіруге болады."
 
@@ -271,7 +268,6 @@ msgstr ""
 #. * %s is the name of the provider. e.g., 'Google'.
 #: gnome-initial-setup/pages/goa/gnome-initial-setup-goa-helper.c:428
 #, c-format
-#| msgid "Add Account"
 msgid "%s Account"
 msgstr "%s тіркелгісі"
 
@@ -283,7 +279,7 @@ msgstr "Тіркелгіні өшіру"
 msgid "Preview"
 msgstr "Алдын-ала қарау"
 
-#: gnome-initial-setup/pages/keyboard/cc-input-chooser.c:299
+#: gnome-initial-setup/pages/keyboard/cc-input-chooser.c:307
 #: gnome-initial-setup/pages/language/cc-language-chooser.c:222
 msgid "More…"
 msgstr "Көбірек…"
@@ -291,11 +287,11 @@ msgstr "Көбірек…"
 #. Translators: a search for input methods or keyboard layouts
 #. * did not yield any results
 #.
-#: gnome-initial-setup/pages/keyboard/cc-input-chooser.c:321
+#: gnome-initial-setup/pages/keyboard/cc-input-chooser.c:329
 msgid "No inputs found"
 msgstr "Кіріс көздері табылмады"
 
-#: gnome-initial-setup/pages/keyboard/gis-keyboard-page.c:504
+#: gnome-initial-setup/pages/keyboard/gis-keyboard-page.c:502
 #: gnome-initial-setup/pages/keyboard/gis-keyboard-page.ui:15
 msgid "Typing"
 msgstr "Теру"
@@ -303,6 +299,10 @@ msgstr "Теру"
 #: gnome-initial-setup/pages/keyboard/gis-keyboard-page.ui:16
 msgid "Select your keyboard layout or an input method."
 msgstr "Пернетақта жаймасын не енгізу тәсілін таңдау."
+
+#: gnome-initial-setup/pages/keyboard/input-chooser.ui:8
+msgid "Search keyboards and input methods"
+msgstr "Пернетақта жаймасын немесе енгізу тәсілдері ішінен іздеу"
 
 #: gnome-initial-setup/pages/language/cc-language-chooser.c:242
 msgid "No languages found"
@@ -404,13 +404,13 @@ msgstr "Бұл пароль %s үшін ата-ана бақылауына қа�
 msgid "The passwords do not match."
 msgstr "Парольдер өзара сәйкес келмейді."
 
-#: gnome-initial-setup/pages/password/gis-password-page.c:437
+#: gnome-initial-setup/pages/password/gis-password-page.c:434
 msgid "Password"
 msgstr "Пароль"
 
-#: gnome-initial-setup/pages/password/gis-password-page.ui:53
-msgid "_Confirm"
-msgstr "Ра_стау"
+#: gnome-initial-setup/pages/password/gis-password-page.ui:62
+msgid "_Confirm Password"
+msgstr "Парольді ра_стау"
 
 #: gnome-initial-setup/pages/password/pw-utils.c:81
 msgctxt "Password hint"
@@ -544,36 +544,33 @@ msgstr ""
 "қылуға болады."
 
 #. Translators: the first parameter here is the name of a distribution,
-#. * like "Fedora" or "Ubuntu". It falls back to "GNOME" if we can't
-#. * detect any distribution.
+#. * like "Fedora" or "Ubuntu".
 #.
-#: gnome-initial-setup/pages/privacy/gis-privacy-page.c:68
+#: gnome-initial-setup/pages/privacy/gis-privacy-page.c:71
 #, c-format
 msgid ""
-"Sends technical reports that have personal information automatically "
-"removed. Data is collected by %1$s (<a href='%2$s'>privacy policy</a>)."
+"Sends technical reports that do not contain personal information. Data is "
+"collected by %1$s (<a href='%2$s'>privacy policy</a>)."
 msgstr ""
-"Жеке ақпараты автоматты түрде өшірілген техникалық есептерді жібереді. "
-"Деректерді %1$s жинайды (<a href='%2$s'>жекелік саясаты</a>)."
+"Жеке ақпараты жоқ техникалық есептерді жібереді. Деректерді %1$s жинайды (<a "
+"href='%2$s'>жекелік саясаты</a>)."
 
 #. Translators: the parameter here is the name of a distribution,
-#. * like "Fedora" or "Ubuntu". It falls back to "GNOME" if we can't
-#. * detect any distribution.
+#. * like "Fedora" or "Ubuntu".
 #.
-#: gnome-initial-setup/pages/privacy/gis-privacy-page.c:78
+#: gnome-initial-setup/pages/privacy/gis-privacy-page.c:80
 #, c-format
 msgid ""
-"Sends technical reports that have personal information automatically "
-"removed. Data is collected by %s."
+"Sends technical reports that do not contain personal information. Data is "
+"collected by %s."
 msgstr ""
-"Жеке ақпараты автоматты түрде өшірілген техникалық есептерді жібереді. "
-"Деректерді %s жинайды."
+"Жеке ақпараты жоқ техникалық есептерді жібереді. Деректерді %s жинайды."
 
-#: gnome-initial-setup/pages/privacy/gis-privacy-page.c:196
+#: gnome-initial-setup/pages/privacy/gis-privacy-page.c:200
 msgid "Privacy Policy"
 msgstr "Жекелік саясаты"
 
-#: gnome-initial-setup/pages/privacy/gis-privacy-page.c:231
+#: gnome-initial-setup/pages/privacy/gis-privacy-page.c:232
 #: gnome-initial-setup/pages/privacy/gis-privacy-page.ui:14
 msgid "Privacy"
 msgstr "Жекелік"
@@ -582,32 +579,31 @@ msgstr "Жекелік"
 msgid "Location Services"
 msgstr "Орналасулар қызметі"
 
-#: gnome-initial-setup/pages/privacy/gis-privacy-page.ui:28
+#: gnome-initial-setup/pages/privacy/gis-privacy-page.ui:44
 msgid ""
-"Allows applications to determine your geographical location. Uses the "
-"Mozilla Location Service (<a href='https://location.services.mozilla.com/"
+"Allows apps to determine your geographical location. Uses the Mozilla "
+"Location Service (<a href='https://location.services.mozilla.com/"
 "privacy'>privacy policy</a>)."
 msgstr ""
 "Қолданбаларға сіздің географиялық орналасуыңызды білуді рұқсат етеді. "
 "Mozilla орналасулар қызметін қолданады (<a href='https://location.services."
 "mozilla.com/privacy'>жекелік саясаты</a>)."
 
-#: gnome-initial-setup/pages/privacy/gis-privacy-page.ui:44
+#: gnome-initial-setup/pages/privacy/gis-privacy-page.ui:60
 msgid "Automatic Problem Reporting"
 msgstr "Мәселелер жөнінде автохабарлау"
 
-#: gnome-initial-setup/pages/privacy/gis-privacy-page.ui:62
-msgid ""
-"Privacy controls can be changed at any time from the Settings application."
+#: gnome-initial-setup/pages/privacy/gis-privacy-page.ui:92
+msgid "Privacy controls can be changed at any time from the Settings app."
 msgstr ""
 "Жекелік баптауларын кез-кезген кезде Баптаулар ішінен өзгертуге болады."
 
-#: gnome-initial-setup/pages/software/gis-software-page.c:109
+#: gnome-initial-setup/pages/software/gis-software-page.c:111
 #: gnome-initial-setup/pages/software/gis-software-page.ui:11
 msgid "Third-Party Repositories"
 msgstr "Үшінші жақты репозиторийлер"
 
-#: gnome-initial-setup/pages/software/gis-software-page.c:110
+#: gnome-initial-setup/pages/software/gis-software-page.c:112
 msgid ""
 "Third-party repositories provide access to additional software from selected "
 "external sources, including popular apps and drivers that are important for "
@@ -618,11 +614,11 @@ msgstr ""
 "сондай-ақ кейбір құрылғылар үшін маңызды бинарлық кодтар жатады. Кейбір "
 "проприетарлы бағдарламалық қамтама да бар."
 
-#: gnome-initial-setup/pages/software/gis-software-page.c:120
+#: gnome-initial-setup/pages/software/gis-software-page.c:122
 msgid "_Disable Third-Party Repositories"
 msgstr "Үшінші жақты репозиторийлерді сөн_діру"
 
-#: gnome-initial-setup/pages/software/gis-software-page.c:125
+#: gnome-initial-setup/pages/software/gis-software-page.c:127
 msgid "_Enable Third-Party Repositories"
 msgstr "Үшінші жақты репозиторийлерді іск_е қосу"
 
@@ -650,6 +646,10 @@ msgstr "Баптау аяқталды"
 msgid "All done!"
 msgstr "Бәрі дайын!"
 
+#: gnome-initial-setup/pages/timezone/gis-location-entry.c:117
+msgid "Search cities"
+msgstr "Қалалар ішінен іздеу"
+
 #. Recurse, adding the ADM1 name to the country name
 #. Translators: this is the name of a location followed by a region, for example:
 #. * 'London, United Kingdom'
@@ -660,8 +660,8 @@ msgstr "Бәрі дайын!"
 #. * 'London, United Kingdom'
 #. * You shouldn't need to translate this string unless the language has a different comma.
 #.
-#: gnome-initial-setup/pages/timezone/gis-location-entry.c:548
-#: gnome-initial-setup/pages/timezone/gis-location-entry.c:576
+#: gnome-initial-setup/pages/timezone/gis-location-entry.c:549
+#: gnome-initial-setup/pages/timezone/gis-location-entry.c:577
 #, c-format
 msgid "%s, %s"
 msgstr "%s, %s"
@@ -742,6 +742,45 @@ msgstr ""
 #: gnome-initial-setup/pages/welcome/gis-welcome-page.ui:49
 msgid "_Start Setup"
 msgstr "Бастапқы баптауды ба_стау"
+
+#: po/EXTRA_STRINGS.sh:1
+msgid "Force live user mode"
+msgstr "Тірі пайдаланушы режимін мәжбүрлету"
+
+#: po/EXTRA_STRINGS.sh:2
+msgid "Force OEM mode"
+msgstr "OEM режимін мәжбүрлету"
+
+#: po/EXTRA_STRINGS.sh:3
+msgid "Install or Try?"
+msgstr "Орнату немесе қолданып көру?"
+
+#: po/EXTRA_STRINGS.sh:4
+msgid ""
+"This live media can be used to install GNOME, or it can be used to try GNOME "
+"as a temporary system. Installation can be started at any time using the "
+"install icon in Activities."
+msgstr ""
+"Бұл тірі тасушыны GNOME орнату үшін пайдалануға болады немесе GNOME жүйесін "
+"уақытша жүйе ретінде сынап көру үшін пайдалануға болады. Орнатуды Әрекеттер "
+"ішіндегі орнату белгішесін пайдаланып кез келген уақытта бастауға болады."
+
+#: po/EXTRA_STRINGS.sh:5
+msgid "Install…"
+msgstr "Орнату…"
+
+#: po/EXTRA_STRINGS.sh:6
+msgid "Try"
+msgstr "Қолданып көру"
+
+#~ msgid "Take a Picture…"
+#~ msgstr "Фотоны түсіру…"
+
+#~ msgid "Avatar image"
+#~ msgstr "Аватар суреті"
+
+#~ msgid "_Confirm"
+#~ msgstr "Ра_стау"
 
 #~ msgid "This is a weak password."
 #~ msgstr "Бұл пароль әлсіз."
