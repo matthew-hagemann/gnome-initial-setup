@@ -12,7 +12,7 @@ Subject: Add Ubuntu mode with special pages
  gnome-initial-setup/meson.build                    |   3 +
  gnome-initial-setup/pages/apps/apps.gresource.xml  |   8 +
  .../pages/apps/default-snap-icon.svg               |   1 +
- gnome-initial-setup/pages/apps/gis-apps-page.c     | 689 +++++++++++++++++++++
+ gnome-initial-setup/pages/apps/gis-apps-page.c     | 691 +++++++++++++++++++++
  gnome-initial-setup/pages/apps/gis-apps-page.h     |  52 ++
  gnome-initial-setup/pages/apps/gis-apps-page.ui    | 109 ++++
  gnome-initial-setup/pages/apps/meson.build         |  10 +
@@ -27,7 +27,7 @@ Subject: Add Ubuntu mode with special pages
  .../ubuntu-report/ubuntu-report.gresource.xml      |   8 +
  .../pages/ubuntu-report/ubuntu-report.svg          |   1 +
  po/POTFILES.in                                     |   5 +
- 24 files changed, 1392 insertions(+), 5 deletions(-)
+ 24 files changed, 1394 insertions(+), 5 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/apps.gresource.xml
@@ -264,10 +264,10 @@ index 0000000..0d8dd94
 \ No newline at end of file
 diff --git a/gnome-initial-setup/pages/apps/gis-apps-page.c b/gnome-initial-setup/pages/apps/gis-apps-page.c
 new file mode 100644
-index 0000000..4565dc0
+index 0000000..e4698db
 --- /dev/null
 +++ b/gnome-initial-setup/pages/apps/gis-apps-page.c
-@@ -0,0 +1,689 @@
+@@ -0,0 +1,691 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2018 Canonical Ltd.
@@ -1659,13 +1659,13 @@ index 0000000..8c1d52c
 @@ -0,0 +1 @@
 +<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="Layer_1" x="0px" y="0px" width="150px" height="150px" viewBox="0 0 400 400" style="enable-background:new 0 0 400 400;" xml:space="preserve"> <style type="text/css"> .st0{fill:#666666; fill-opacity:0.25;} </style> <g> <path class="st0" d="M301.4,372.4C271.7,390,237,400,200,400C89.5,400,0,310.5,0,200C0,89.5,89.5,0,200,0c110.5,0,200,89.5,200,200 c0,36.4-9.7,70.6-26.8,100l0,0L400,400l-100-26.8L301.4,372.4L301.4,372.4z"/> </g> </svg>
 diff --git a/po/POTFILES.in b/po/POTFILES.in
-index b8391ec..4ec8809 100644
+index 656fe0f..4027d14 100644
 --- a/po/POTFILES.in
 +++ b/po/POTFILES.in
-@@ -45,3 +45,8 @@ gnome-initial-setup/pages/timezone/gis-timezone-page.c
- gnome-initial-setup/pages/timezone/gis-timezone-page.ui
+@@ -46,3 +46,8 @@ gnome-initial-setup/pages/timezone/gis-timezone-page.ui
  gnome-initial-setup/pages/welcome/gis-welcome-page.c
  gnome-initial-setup/pages/welcome/gis-welcome-page.ui
+ po/EXTRA_STRINGS.sh
 +gnome-initial-setup/pages/timezone/gis-timezone-page.ui
 +gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
 +gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui
