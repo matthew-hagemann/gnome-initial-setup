@@ -1,3 +1,11 @@
+gnome-initial-setup (45.0-1ubuntu3) mantic; urgency=medium
+
+  * debian/patches/0001-Add-Ubuntu-mode-with-special-pages.patch:
+    - update the 'Ready to go' screen for the ubuntu software -> app center
+      change in mantic (lp: #2036981)
+
+ -- Nathan Pratta Teodosio <nathan.teodosio@canonical.com>  Tue, 26 Sep 2023 11:20:36 +0200
+
 gnome-initial-setup (45.0-1ubuntu2) mantic; urgency=medium
 
   * debian/patches/0001-Add-Ubuntu-mode-with-special-pages.patch:
