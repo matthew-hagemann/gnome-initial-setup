@@ -1221,7 +1221,7 @@ new file mode 100644
 index 0000000..d4ac843
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
-@@ -0,0 +1,373 @@
+@@ -0,0 +1,374 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2018 Canonical Ltd.
@@ -1289,8 +1289,6 @@ index 0000000..d4ac843
 +    "/org/gnome/initial-setup/ubuntu-report.svg"));
 +  g_object_set (priv->header, "paintable", gtk_image_get_paintable (GTK_IMAGE (image)), NULL);
 +
-+  gis_page_set_skippable (GIS_PAGE (page), TRUE);
-+
 +  gis_page_set_complete (GIS_PAGE (page), TRUE);
 +}
 +
@@ -1325,7 +1323,7 @@ index 0000000..d4ac843
 +      return;
 +    }
 +  }
-+  g_task_return_pointer (task, (gpointer)report, NULL);
++  g_task_return_pointer (task, (char *) g_steal_pointer (&report), NULL);
 +}
 +
 +static void
@@ -1339,11 +1337,12 @@ index 0000000..d4ac843
 +  GisUbuntuReportPage *page = GIS_UBUNTU_REPORT_PAGE(user_data);
 +  GisUbuntuReportPagePrivate *priv = gis_ubuntu_report_page_get_instance_private (page);
 +
-+  gtk_widget_set_visible(GTK_WIDGET(priv->show_report_b), TRUE);
-+  gtk_widget_set_visible(GTK_WIDGET(priv->cancel_report_b), FALSE);
++  gtk_widget_set_visible (GTK_WIDGET (priv->show_report_b), TRUE);
++  gtk_widget_set_visible (GTK_WIDGET (priv->cancel_report_b), FALSE);
 +
 +  if (g_cancellable_is_cancelled (priv->cancellable)) {
-+    g_cancellable_reset (priv->cancellable);
++    g_clear_object (&priv->cancellable);
++    priv->cancellable = g_cancellable_new ();
 +    return;
 +  }
 +  priv->report = g_task_propagate_pointer (task, &error);
@@ -1475,7 +1474,9 @@ index 0000000..d4ac843
 +      return;
 +    }
 +    g_task_return_boolean (task, TRUE);
-+  } else if (!data->report) {
++    return;
++  }
++  if (!data->report) {
 +    error = sysmetrics_collect (&data->report);
 +
 +    if (error != NULL) {
