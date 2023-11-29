@@ -1221,7 +1221,7 @@ new file mode 100644
 index 0000000..d4ac843
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
-@@ -0,0 +1,249 @@
+@@ -0,0 +1,373 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2018 Canonical Ltd.
@@ -1256,12 +1256,22 @@ index 0000000..d4ac843
 +struct _GisUbuntuReportPagePrivate {
 +  GtkWidget *opt_in_check;
 +  GtkWidget *header;
++  GtkWidget *cancel_report_b;
++  GtkWidget *show_report_b;
 +  GCancellable *cancellable;
 +  gchar *report;
 +};
 +typedef struct _GisUbuntuReportPagePrivate GisUbuntuReportPagePrivate;
 +
 +G_DEFINE_TYPE_WITH_PRIVATE (GisUbuntuReportPage, gis_ubuntu_report_page, GIS_TYPE_PAGE);
++
++static void
++cancel_report (GtkButton *button, GisUbuntuReportPagePrivate *priv)
++{
++  gtk_widget_set_visible (GTK_WIDGET (priv->cancel_report_b), FALSE);
++  gtk_widget_set_visible (GTK_WIDGET (priv->show_report_b), TRUE);
++  g_cancellable_cancel (priv->cancellable);
++}
 +
 +static void
 +gis_ubuntu_report_page_constructed (GObject *object)
@@ -1273,6 +1283,7 @@ index 0000000..d4ac843
 +  G_OBJECT_CLASS (gis_ubuntu_report_page_parent_class)->constructed (object);
 +
 +  priv->cancellable = g_cancellable_new ();
++  g_signal_connect(priv->cancel_report_b, "clicked", G_CALLBACK(cancel_report), priv);
 +
 +  image = g_object_ref_sink (gtk_image_new_from_resource (
 +    "/org/gnome/initial-setup/ubuntu-report.svg"));
@@ -1298,14 +1309,44 @@ index 0000000..d4ac843
 +}
 +
 +static void
-+show_report (GtkButton *button, GisUbuntuReportPage *page)
++on_collect_report_thread (GTask        *task,
++                          gpointer      source_object,
++                          gpointer      task_data,
++                          GCancellable *cancellable)
 +{
-+  GisUbuntuReportPagePrivate *priv = gis_ubuntu_report_page_get_instance_private (page);
 +  g_autofree char *error = NULL;
-+  GtkWidget *dialog, *scroll, *text_view;
++  gchar *report = (gchar *)task_data;
 +
-+  if (priv->report == NULL)
-+    error = sysmetrics_collect (&priv->report);
++  if (report == NULL) {
++    error = sysmetrics_collect (&report);
++    if (error != NULL) {
++      g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
++                               "Failed to get report data: %s", error);
++      return;
++    }
++  }
++  g_task_return_pointer (task, (gpointer)report, NULL);
++}
++
++static void
++on_show_report_callback (GObject      *source_object,
++                         GAsyncResult *res,
++                         gpointer      user_data)
++{
++  GtkWidget *dialog, *scroll, *text_view;
++  GTask *task = G_TASK (res);
++  g_autofree char *error = NULL;
++  GisUbuntuReportPage *page = GIS_UBUNTU_REPORT_PAGE(user_data);
++  GisUbuntuReportPagePrivate *priv = gis_ubuntu_report_page_get_instance_private (page);
++
++  gtk_widget_set_visible(GTK_WIDGET(priv->show_report_b), TRUE);
++  gtk_widget_set_visible(GTK_WIDGET(priv->cancel_report_b), FALSE);
++
++  if (g_cancellable_is_cancelled (priv->cancellable)) {
++    g_cancellable_reset (priv->cancellable);
++    return;
++  }
++  priv->report = g_task_propagate_pointer (task, &error);
 +
 +  if (error != NULL) {
 +    dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (page))),
@@ -1326,7 +1367,7 @@ index 0000000..d4ac843
 +                                        GTK_DIALOG_MODAL |
 +                                        GTK_DIALOG_DESTROY_WITH_PARENT |
 +                                        GTK_DIALOG_USE_HEADER_BAR,
-+                                       NULL, NULL);
++                                        NULL, NULL);
 +  gtk_widget_set_size_request (dialog, 800, 600);
 +
 +  scroll = gtk_scrolled_window_new ();
@@ -1348,6 +1389,23 @@ index 0000000..d4ac843
 +                            G_CALLBACK (gtk_window_destroy),
 +                            dialog);
 +  gtk_widget_show (dialog);
++
++}
++
++static void
++show_report (GtkButton *button, GisUbuntuReportPage *page)
++{
++  GisUbuntuReportPagePrivate *priv = gis_ubuntu_report_page_get_instance_private (page);
++  g_autofree char *error = NULL;
++  g_autoptr(GTask) task = NULL;
++
++  gtk_widget_set_visible (GTK_WIDGET (priv->show_report_b), FALSE);
++  gtk_widget_set_visible (GTK_WIDGET (priv->cancel_report_b), TRUE);
++
++  task = g_task_new (page, priv->cancellable, on_show_report_callback, page);
++  g_task_set_task_data (task, g_steal_pointer (&priv->report), NULL);
++  g_task_set_return_on_cancel (task, TRUE);
++  g_task_run_in_thread (task, on_collect_report_thread);
 +}
 +
 +static void
@@ -1387,31 +1445,95 @@ index 0000000..d4ac843
 +                     GDK_CURRENT_TIME, priv->cancellable, on_show_uri_cb, page);
 +}
 +
++typedef struct {
++  gboolean send_allowed;
++  gchar *report;
++} SendReportThreadData;
++
++static void
++send_report_thread_data_free (SendReportThreadData *data)
++{
++  g_free (data->report);
++  g_free (data);
++}
++
++static void
++on_collect_send_report_thread (GTask *task,
++                               gpointer source_object,
++                               gpointer task_data,
++                               GCancellable *cancellable)
++{
++  SendReportThreadData *data = task_data;
++  g_autofree char *error = NULL;
++
++  if (!data->send_allowed) {
++    error = sysmetrics_send_decline (FALSE, "");
++
++    if (error != NULL) {
++      g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
++                               "Failed to send decline: %s", error);
++      return;
++    }
++    g_task_return_boolean (task, TRUE);
++  } else if (!data->report) {
++    error = sysmetrics_collect (&data->report);
++
++    if (error != NULL) {
++      g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
++                               "Failed to get report data: %s", error);
++      return;
++    }
++  }
++  g_assert (data->report);
++
++  error = sysmetrics_send_report (data->report, FALSE, "");
++
++  if (error != NULL) {
++    g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
++                             "Failed to send report: %s", error);
++    return;
++  }
++
++  g_task_return_boolean (task, TRUE);
++}
++
++static void
++on_collect_send_report_callback (GObject *source_object,
++                                 GAsyncResult *res,
++                                 gpointer user_data)
++{
++  GTask *task = G_TASK (res);
++  g_autoptr (GError) error = NULL;
++
++  if (!g_task_propagate_boolean (task, &error)) {
++    g_warning ("%s", error->message);
++  }
++}
++
++/* Retrieve and send the report (or decline thereof).
++ * Don't wait on the server to respond though, go to next page immediately.
++ * Ubuntu Report will take care of sending it via a Systemd service if the
++ * thread doesn't manage to do it anyway.
++ */
 +static gboolean
 +gis_ubuntu_report_page_apply (GisPage *page, GCancellable *cancellable)
 +{
 +  GisUbuntuReportPagePrivate *priv = gis_ubuntu_report_page_get_instance_private (GIS_UBUNTU_REPORT_PAGE (page));
 +  g_autofree char *error = NULL;
++  g_autoptr(GTask) task = NULL;
++  SendReportThreadData *data;
 +
-+  if (gtk_check_button_get_active (GTK_CHECK_BUTTON (priv->opt_in_check))) {
-+    if (priv->report == NULL) {
-+      error = sysmetrics_collect (&priv->report);
-+      if (error != NULL) {
-+        g_warning ("Failed to get report data: %s", error);
-+        return FALSE;
-+      }
-+    }
++  task = g_task_new (page, NULL, on_collect_send_report_callback, NULL);
++  data = g_new0 (SendReportThreadData, 1);
++  data->send_allowed = gtk_check_button_get_active (GTK_CHECK_BUTTON (priv->opt_in_check));
++  data->report = g_steal_pointer (&priv->report);
++  g_task_set_task_data (task, g_steal_pointer (&data),
++                        (GDestroyNotify) send_report_thread_data_free);
 +
-+    error = sysmetrics_send_report (priv->report, FALSE, "");
-+    if (error != NULL)
-+      g_warning ("Failed to send report: %s", error);
-+  } else {
-+    error = sysmetrics_send_decline (FALSE, "");
-+    if (error != NULL)
-+      g_warning ("Failed to send decline: %s", error);
-+  }
++  g_task_run_in_thread (task, on_collect_send_report_thread);
 +
-+  return FALSE;
++  gis_page_apply_complete (GIS_PAGE (page), TRUE);
++  return TRUE;
 +}
 +
 +static void
@@ -1444,6 +1566,8 @@ index 0000000..d4ac843
 +
 +  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass), "/org/gnome/initial-setup/gis-ubuntu-report-page.ui");
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuReportPage, header);
++  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuReportPage, show_report_b);
++  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuReportPage, cancel_report_b);
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuReportPage, opt_in_check);
 +  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), show_report);
 +  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), show_legal);
@@ -1534,7 +1658,7 @@ new file mode 100644
 index 0000000..bec8f3f
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui
-@@ -0,0 +1,97 @@
+@@ -0,0 +1,109 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
 +  <template class="GisUbuntuReportPage" parent="GisPage">
@@ -1593,9 +1717,21 @@ index 0000000..bec8f3f
 +                  <class name="linked" />
 +                </style>
 +                <child>
-+                  <object class="GtkButton">
-+                    <property name="label" translatable="1">Show the First Report</property>
-+                    <signal name="clicked" handler="show_report"/>
++                  <object class="GtkFixed">
++                  <property name="visible">True</property>
++                    <child>
++                      <object class="GtkButton" id="show_report_b">
++                        <property name="visible">True</property>
++                        <property name="label" translatable="1">Show the First Report</property>
++                        <signal name="clicked" handler="show_report"/>
++                      </object>
++                    </child>
++                    <child>
++                      <object class="GtkButton" id="cancel_report_b">
++                        <property name="visible">False</property>
++                        <property name="label" translatable="1">Cancel</property>
++                      </object>
++                    </child>
 +                  </object>
 +                </child>
 +                <child>
