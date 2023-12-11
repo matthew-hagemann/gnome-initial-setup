@@ -21,14 +21,14 @@ Subject: Add Ubuntu mode with special pages
  gnome-initial-setup/pages/meson.build              |   2 +
  .../pages/privacy/gis-privacy-page.c               |   2 +-
  .../pages/summary/gis-summary-page.c               |   2 +-
- .../pages/ubuntu-report/gis-ubuntu-report-page.c   | 426 +++++++++++++
+ .../pages/ubuntu-report/gis-ubuntu-report-page.c   | 459 ++++++++++++++
  .../pages/ubuntu-report/gis-ubuntu-report-page.h   |  52 ++
  .../pages/ubuntu-report/gis-ubuntu-report-page.ui  | 104 ++++
  .../pages/ubuntu-report/meson.build                |  10 +
  .../ubuntu-report/ubuntu-report.gresource.xml      |   8 +
  .../pages/ubuntu-report/ubuntu-report.svg          |   1 +
  po/POTFILES.in                                     |   5 +
- 25 files changed, 1592 insertions(+), 5 deletions(-)
+ 25 files changed, 1625 insertions(+), 5 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/app-center.svg
@@ -1229,10 +1229,10 @@ index b3f2371..6e33010 100644
      }
 diff --git a/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
 new file mode 100644
-index 0000000..7ef461c
+index 0000000..32bc8a2
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
-@@ -0,0 +1,426 @@
+@@ -0,0 +1,459 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2018 Canonical Ltd.
@@ -1462,11 +1462,13 @@ index 0000000..7ef461c
 +typedef struct {
 +  gboolean send_allowed;
 +  gchar *report;
++  guint timeout_id;
 +} SendReportThreadData;
 +
 +static void
 +send_report_thread_data_free (SendReportThreadData *data)
 +{
++  g_clear_handle_id (&data->timeout_id, g_source_remove);
 +  g_free (data->report);
 +  g_free (data);
 +}
@@ -1483,6 +1485,9 @@ index 0000000..7ef461c
 +  if (!data->send_allowed) {
 +    error = sysmetrics_send_decline (FALSE, "");
 +
++    if (g_task_get_completed (task))
++      return;
++
 +    if (error != NULL) {
 +      g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
 +                               "Failed to send decline: %s", error);
@@ -1493,6 +1498,9 @@ index 0000000..7ef461c
 +  }
 +  if (!data->report) {
 +    error = sysmetrics_collect (&data->report);
++
++    if (g_task_get_completed (task))
++      return;
 +
 +    if (error != NULL) {
 +      g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
@@ -1506,6 +1514,9 @@ index 0000000..7ef461c
 +
 +  g_assert (data->report);
 +  error = sysmetrics_send_report (data->report, FALSE, "");
++
++  if (g_task_get_completed (task))
++    return;
 +
 +  if (error != NULL) {
 +    g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
@@ -1572,6 +1583,27 @@ index 0000000..7ef461c
 +  gis_page_apply_complete (GIS_PAGE (page), TRUE);
 +}
 +
++static gboolean
++on_apply_timeout (gpointer data)
++{
++  SendReportThreadData *task_data;
++  GTask *task = G_TASK (data);
++
++  task_data = g_task_get_task_data (task);
++  task_data->timeout_id = 0;
++
++  if (g_task_get_completed (task)) {
++    return FALSE;
++  }
++
++  /* Here we can't just g_task_return_error, because it won't make the error
++   * being handled until the task thread is terminated. So we just cancel it
++   * adding some special handling on callback.
++   */
++  g_cancellable_cancel (g_task_get_cancellable (task));
++  return FALSE;
++}
++
 +/* Retrieve and send the report (or decline thereof).
 + * Don't wait on the server to respond though, go to next page immediately.
 + * Ubuntu Report will take care of sending it via a Systemd service if the
@@ -1591,6 +1623,7 @@ index 0000000..7ef461c
 +
 +  task = g_task_new (page, cancellable, on_collect_send_report_callback, NULL);
 +  g_task_set_return_on_cancel (task, TRUE);
++  data->timeout_id = g_timeout_add_seconds (15, on_apply_timeout, task);
 +  g_task_set_task_data (task, g_steal_pointer (&data),
 +                        (GDestroyNotify) send_report_thread_data_free);
 +
