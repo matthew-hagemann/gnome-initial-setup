@@ -21,14 +21,14 @@ Subject: Add Ubuntu mode with special pages
  gnome-initial-setup/pages/meson.build              |   2 +
  .../pages/privacy/gis-privacy-page.c               |   2 +-
  .../pages/summary/gis-summary-page.c               |   2 +-
- .../pages/ubuntu-report/gis-ubuntu-report-page.c   | 374 +++++++++++
+ .../pages/ubuntu-report/gis-ubuntu-report-page.c   | 378 +++++++++++
  .../pages/ubuntu-report/gis-ubuntu-report-page.h   |  52 ++
  .../pages/ubuntu-report/gis-ubuntu-report-page.ui  | 104 ++++
  .../pages/ubuntu-report/meson.build                |  10 +
  .../ubuntu-report/ubuntu-report.gresource.xml      |   8 +
  .../pages/ubuntu-report/ubuntu-report.svg          |   1 +
  po/POTFILES.in                                     |   5 +
- 25 files changed, 1540 insertions(+), 5 deletions(-)
+ 25 files changed, 1544 insertions(+), 5 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/app-center.svg
@@ -1229,10 +1229,10 @@ index b3f2371..6e33010 100644
      }
 diff --git a/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
 new file mode 100644
-index 0000000..c0c4ca4
+index 0000000..c99946c
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
-@@ -0,0 +1,374 @@
+@@ -0,0 +1,378 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2018 Canonical Ltd.
@@ -1326,17 +1326,16 @@ index 0000000..c0c4ca4
 +                          gpointer      task_data,
 +                          GCancellable *cancellable)
 +{
-+  g_autofree char *error = NULL;
-+  gchar *report = task_data;
++  g_autofree char *report = NULL;
++  g_autofree char *error_msg = NULL;
 +
-+  if (report == NULL) {
-+    error = sysmetrics_collect (&report);
-+    if (error != NULL) {
-+      g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED, "%s", error);
-+      return;
-+    }
++  error_msg = sysmetrics_collect (&report);
++  if (error_msg != NULL) {
++    g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED, "%s", error_msg);
++    return;
 +  }
-+  g_task_return_pointer (task, g_steal_pointer (&report), NULL);
++
++  g_task_return_pointer (task, g_steal_pointer (&report), g_free);
 +}
 +
 +static void
@@ -1413,7 +1412,12 @@ index 0000000..c0c4ca4
 +  gtk_widget_set_visible (GTK_WIDGET (priv->cancel_report_b), TRUE);
 +
 +  task = g_task_new (page, priv->cancellable, on_show_report_callback, page);
-+  g_task_set_task_data (task, g_steal_pointer (&priv->report), NULL);
++
++  if (priv->report) {
++    g_task_return_pointer (task, g_steal_pointer (&priv->report), NULL);
++    return;
++  }
++
 +  g_task_set_return_on_cancel (task, TRUE);
 +  g_task_run_in_thread (task, on_collect_report_thread);
 +}
