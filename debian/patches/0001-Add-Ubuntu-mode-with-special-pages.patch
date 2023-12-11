@@ -21,14 +21,14 @@ Subject: Add Ubuntu mode with special pages
  gnome-initial-setup/pages/meson.build              |   2 +
  .../pages/privacy/gis-privacy-page.c               |   2 +-
  .../pages/summary/gis-summary-page.c               |   2 +-
- .../pages/ubuntu-report/gis-ubuntu-report-page.c   | 459 ++++++++++++++
+ .../pages/ubuntu-report/gis-ubuntu-report-page.c   | 461 ++++++++++++++
  .../pages/ubuntu-report/gis-ubuntu-report-page.h   |  52 ++
  .../pages/ubuntu-report/gis-ubuntu-report-page.ui  | 104 ++++
  .../pages/ubuntu-report/meson.build                |  10 +
  .../ubuntu-report/ubuntu-report.gresource.xml      |   8 +
  .../pages/ubuntu-report/ubuntu-report.svg          |   1 +
  po/POTFILES.in                                     |   5 +
- 25 files changed, 1625 insertions(+), 5 deletions(-)
+ 25 files changed, 1627 insertions(+), 5 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/app-center.svg
@@ -1229,10 +1229,10 @@ index b3f2371..6e33010 100644
      }
 diff --git a/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
 new file mode 100644
-index 0000000..32bc8a2
+index 0000000..a1fb678
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
-@@ -0,0 +1,459 @@
+@@ -0,0 +1,461 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2018 Canonical Ltd.
@@ -1490,12 +1490,14 @@ index 0000000..32bc8a2
 +
 +    if (error != NULL) {
 +      g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
-+                               "Failed to send decline: %s", error);
++                               _("Failed to send report decline: %s"), error);
 +      return;
 +    }
++
 +    g_task_return_boolean (task, TRUE);
 +    return;
 +  }
++
 +  if (!data->report) {
 +    error = sysmetrics_collect (&data->report);
 +
@@ -1504,7 +1506,7 @@ index 0000000..32bc8a2
 +
 +    if (error != NULL) {
 +      g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
-+                               "Failed to get report data: %s", error);
++                               _("Failed to get report information: %s"), error);
 +      return;
 +    }
 +  }
@@ -1520,7 +1522,7 @@ index 0000000..32bc8a2
 +
 +  if (error != NULL) {
 +    g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
-+                             "Failed to send report: %s", error);
++                             _("Failed to send report information: %s"), error);
 +    return;
 +  }
 +
