@@ -14,7 +14,7 @@ Subject: Add Ubuntu mode with special pages
  .../pages/apps/default-snap-icon.svg               |   1 +
  gnome-initial-setup/pages/apps/gis-apps-page.c     | 691 +++++++++++++++++++++
  gnome-initial-setup/pages/apps/gis-apps-page.h     |  52 ++
- gnome-initial-setup/pages/apps/gis-apps-page.ui    | 109 ++++
+ gnome-initial-setup/pages/apps/gis-apps-page.ui    | 119 ++++
  gnome-initial-setup/pages/apps/meson.build         |  10 +
  gnome-initial-setup/pages/goa/gis-goa-page.c       |   7 +
  gnome-initial-setup/pages/meson.build              |   2 +
@@ -1659,7 +1659,7 @@ new file mode 100644
 index 0000000..bec8f3f
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui
-@@ -0,0 +1,109 @@
+@@ -0,0 +1,104 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
 +  <template class="GisUbuntuReportPage" parent="GisPage">
@@ -1718,21 +1718,16 @@ index 0000000..bec8f3f
 +                  <class name="linked" />
 +                </style>
 +                <child>
-+                  <object class="GtkFixed">
-+                  <property name="visible">True</property>
-+                    <child>
-+                      <object class="GtkButton" id="show_report_b">
-+                        <property name="visible">True</property>
-+                        <property name="label" translatable="1">Show the First Report</property>
-+                        <signal name="clicked" handler="show_report"/>
-+                      </object>
-+                    </child>
-+                    <child>
-+                      <object class="GtkButton" id="cancel_report_b">
-+                        <property name="visible">False</property>
-+                        <property name="label" translatable="1">Cancel</property>
-+                      </object>
-+                    </child>
++                  <object class="GtkButton" id="show_report_b">
++                    <property name="visible">True</property>
++                    <property name="label" translatable="1">Show the First Report</property>
++                    <signal name="clicked" handler="show_report"/>
++                  </object>
++                </child>
++                <child>
++                  <object class="GtkButton" id="cancel_report_b">
++                    <property name="visible">False</property>
++                    <property name="label" translatable="1">Cancel</property>
 +                  </object>
 +                </child>
 +                <child>
