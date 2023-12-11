@@ -1229,7 +1229,7 @@ index b3f2371..6e33010 100644
      }
 diff --git a/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
 new file mode 100644
-index 0000000..7a1d221
+index 0000000..c0c4ca4
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
 @@ -0,0 +1,374 @@
@@ -1281,7 +1281,10 @@ index 0000000..7a1d221
 +{
 +  gtk_widget_set_visible (GTK_WIDGET (priv->cancel_report_b), FALSE);
 +  gtk_widget_set_visible (GTK_WIDGET (priv->show_report_b), TRUE);
++
 +  g_cancellable_cancel (priv->cancellable);
++  g_clear_object (&priv->cancellable);
++  priv->cancellable = g_cancellable_new ();
 +}
 +
 +static void
@@ -1324,17 +1327,16 @@ index 0000000..7a1d221
 +                          GCancellable *cancellable)
 +{
 +  g_autofree char *error = NULL;
-+  gchar *report = (gchar *)task_data;
++  gchar *report = task_data;
 +
 +  if (report == NULL) {
 +    error = sysmetrics_collect (&report);
 +    if (error != NULL) {
-+      g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
-+                               "Failed to get report data: %s", error);
++      g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED, "%s", error);
 +      return;
 +    }
 +  }
-+  g_task_return_pointer (task, (char *) g_steal_pointer (&report), NULL);
++  g_task_return_pointer (task, g_steal_pointer (&report), NULL);
 +}
 +
 +static void
@@ -1344,26 +1346,25 @@ index 0000000..7a1d221
 +{
 +  GtkWidget *dialog, *scroll, *text_view;
 +  GTask *task = G_TASK (res);
-+  g_autofree char *error = NULL;
-+  GisUbuntuReportPage *page = GIS_UBUNTU_REPORT_PAGE(user_data);
++  g_autoptr (GError) error = NULL;
++  GisUbuntuReportPage *page = GIS_UBUNTU_REPORT_PAGE (user_data);
 +  GisUbuntuReportPagePrivate *priv = gis_ubuntu_report_page_get_instance_private (page);
 +
 +  gtk_widget_set_visible (GTK_WIDGET (priv->show_report_b), TRUE);
 +  gtk_widget_set_visible (GTK_WIDGET (priv->cancel_report_b), FALSE);
 +
-+  if (g_cancellable_is_cancelled (priv->cancellable)) {
-+    g_clear_object (&priv->cancellable);
-+    priv->cancellable = g_cancellable_new ();
-+    return;
-+  }
 +  priv->report = g_task_propagate_pointer (task, &error);
++
++  if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
++    return;
 +
 +  if (error != NULL) {
 +    dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (page))),
 +                                     GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
 +                                     GTK_MESSAGE_ERROR,
 +                                     GTK_BUTTONS_CLOSE,
-+                                     _("Failed to get report information: %s"), error);
++                                     _("Failed to get report information: %s"),
++                                     error->message);
 +    g_signal_connect_swapped (dialog,
 +                              "response",
 +                              G_CALLBACK (gtk_window_destroy),
@@ -1399,7 +1400,6 @@ index 0000000..7a1d221
 +                            G_CALLBACK (gtk_window_destroy),
 +                            dialog);
 +  gtk_widget_show (dialog);
-+
 +}
 +
 +static void
