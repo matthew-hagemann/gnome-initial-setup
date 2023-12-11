@@ -21,14 +21,14 @@ Subject: Add Ubuntu mode with special pages
  gnome-initial-setup/pages/meson.build              |   2 +
  .../pages/privacy/gis-privacy-page.c               |   2 +-
  .../pages/summary/gis-summary-page.c               |   2 +-
- .../pages/ubuntu-report/gis-ubuntu-report-page.c   | 378 +++++++++++
+ .../pages/ubuntu-report/gis-ubuntu-report-page.c   | 426 +++++++++++++
  .../pages/ubuntu-report/gis-ubuntu-report-page.h   |  52 ++
  .../pages/ubuntu-report/gis-ubuntu-report-page.ui  | 104 ++++
  .../pages/ubuntu-report/meson.build                |  10 +
  .../ubuntu-report/ubuntu-report.gresource.xml      |   8 +
  .../pages/ubuntu-report/ubuntu-report.svg          |   1 +
  po/POTFILES.in                                     |   5 +
- 25 files changed, 1544 insertions(+), 5 deletions(-)
+ 25 files changed, 1592 insertions(+), 5 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/app-center.svg
@@ -1229,10 +1229,10 @@ index b3f2371..6e33010 100644
      }
 diff --git a/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
 new file mode 100644
-index 0000000..c99946c
+index 0000000..7ef461c
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
-@@ -0,0 +1,378 @@
+@@ -0,0 +1,426 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2018 Canonical Ltd.
@@ -1500,8 +1500,11 @@ index 0000000..c99946c
 +      return;
 +    }
 +  }
-+  g_assert (data->report);
 +
++  if (g_task_return_error_if_cancelled (task))
++    return;
++
++  g_assert (data->report);
 +  error = sysmetrics_send_report (data->report, FALSE, "");
 +
 +  if (error != NULL) {
@@ -1514,16 +1517,59 @@ index 0000000..c99946c
 +}
 +
 +static void
++on_error_dialog_dismissed (GisUbuntuReportPage *page)
++{
++  gis_page_apply_complete (GIS_PAGE (page), TRUE);
++}
++
++static void
++show_report_error_dialog (GisUbuntuReportPage *page,
++                          const char          *message)
++{
++  GtkWidget *dialog;
++
++  dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (page))),
++                                   GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
++                                   GTK_MESSAGE_ERROR,
++                                   GTK_BUTTONS_CLOSE,
++                                   "%s", message);
++  g_signal_connect_swapped (dialog,
++                            "response",
++                            G_CALLBACK (on_error_dialog_dismissed),
++                            page);
++  g_signal_connect_swapped (dialog,
++                            "response",
++                            G_CALLBACK (gtk_window_destroy),
++                            dialog);
++
++  gtk_widget_show (g_steal_pointer (&dialog));
++}
++
++static void
 +on_collect_send_report_callback (GObject *source_object,
 +                                 GAsyncResult *res,
 +                                 gpointer user_data)
 +{
 +  GTask *task = G_TASK (res);
++  GisUbuntuReportPage *page = GIS_UBUNTU_REPORT_PAGE (source_object);
 +  g_autoptr (GError) error = NULL;
++
++  gtk_widget_set_sensitive (GTK_WIDGET (page), TRUE);
 +
 +  if (!g_task_propagate_boolean (task, &error)) {
 +    g_warning ("%s", error->message);
++
++    if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
++      /* User cancelled the action, so let's back to selection */
++      gis_page_apply_complete (GIS_PAGE (page), FALSE);
++      return;
++    }
++
++    show_report_error_dialog (page, error->message);
++    return;
 +  }
++
++  gis_page_apply_complete (GIS_PAGE (page), TRUE);
 +}
 +
 +/* Retrieve and send the report (or decline thereof).
@@ -1539,16 +1585,18 @@ index 0000000..c99946c
 +  g_autoptr(GTask) task = NULL;
 +  SendReportThreadData *data;
 +
-+  task = g_task_new (page, NULL, on_collect_send_report_callback, NULL);
 +  data = g_new0 (SendReportThreadData, 1);
 +  data->send_allowed = gtk_check_button_get_active (GTK_CHECK_BUTTON (priv->opt_in_check));
 +  data->report = g_steal_pointer (&priv->report);
++
++  task = g_task_new (page, cancellable, on_collect_send_report_callback, NULL);
++  g_task_set_return_on_cancel (task, TRUE);
 +  g_task_set_task_data (task, g_steal_pointer (&data),
 +                        (GDestroyNotify) send_report_thread_data_free);
 +
++  gtk_widget_set_sensitive (GTK_WIDGET (page), FALSE);
 +  g_task_run_in_thread (task, on_collect_send_report_thread);
 +
-+  gis_page_apply_complete (GIS_PAGE (page), TRUE);
 +  return TRUE;
 +}
 +
