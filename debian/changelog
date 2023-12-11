@@ -1,4 +1,4 @@
-gnome-initial-setup (45.0-1ubuntu4) UNRELEASED; urgency=medium
+gnome-initial-setup (45.0-1ubuntu4) noble; urgency=medium
 
   [ Nathan Pratta Teodosio ]
   * Do not block on calls to Ubuntu Report (LP: #1761742).
@@ -13,7 +13,7 @@ gnome-initial-setup (45.0-1ubuntu4) UNRELEASED; urgency=medium
   * ubuntu-report-page: Add timeout before failing during report send
   * ubuntu-report-page: translate errors
 
- -- Marco Trevisan (Treviño) <marco@ubuntu.com>  Mon, 11 Dec 2023 22:55:08 +0100
+ -- Marco Trevisan (Treviño) <marco@ubuntu.com>  Mon, 11 Dec 2023 22:58:05 +0100
 
 gnome-initial-setup (45.0-1ubuntu3) mantic; urgency=medium
 
