@@ -1,3 +1,20 @@
+gnome-initial-setup (45.0-1ubuntu4) UNRELEASED; urgency=medium
+
+  [ Nathan Pratta Teodosio ]
+  * Do not block on calls to Ubuntu Report (LP: #1761742).
+  * Do not set the page as skippable.
+
+  [ Marco Trevisan (Treviño) ]
+  * debian/patches: Refresh indexes
+  * ubuntu-report-page: Use linked style for show-report buttons
+  * ubuntu-report-page: Fix error handling on show report
+  * ubuntu-report-page: Avoid firing a new thread if the report is available
+  * ubuntu-report-page: Go to next page once report is sent or on error
+  * ubuntu-report-page: Add timeout before failing during report send
+  * ubuntu-report-page: translate errors
+
+ -- Marco Trevisan (Treviño) <marco@ubuntu.com>  Mon, 11 Dec 2023 22:55:08 +0100
+
 gnome-initial-setup (45.0-1ubuntu3) mantic; urgency=medium
 
   * debian/patches/0001-Add-Ubuntu-mode-with-special-pages.patch:
