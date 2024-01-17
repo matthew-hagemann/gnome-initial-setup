@@ -1,8 +1,12 @@
-gnome-initial-setup (46~alpha-1) UNRELEASED; urgency=medium
+gnome-initial-setup (46~alpha-1) unstable; urgency=medium
 
   * New upstream release
+    - GNOME Online Accounts integration was removed.
+      Use the GNOME Settings app instead. (LP: #2049513)
+  * Update architectures where malcontent is available
+  * Stop using debian/control.in and dh_gnome_clean
 
- -- Jeremy Bícha <jbicha@ubuntu.com>  Wed, 17 Jan 2024 11:28:22 -0500
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Wed, 17 Jan 2024 11:37:21 -0500
 
 gnome-initial-setup (45.0-1) unstable; urgency=medium
 
