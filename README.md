@@ -25,7 +25,6 @@ Welcome are displayed:
  * Privacy
  * Timezone
  * Software (currently only used by Fedora)
- * Online Accounts
  * Account
  * Password
  * Parental Controls (if malcontent is enabled)
@@ -72,7 +71,6 @@ make sense in this mode. This results in the following workflow:
  * Keyboard
  * Network
  * Privacy
- * Online Accounts
  * Summary
 
 Although this mode is unreachable in the upstream version of Initial Setup, both
@@ -109,11 +107,6 @@ skip=timezone
 existing_user_only=language;keyboard
 # Only show the privacy page in the 'first boot' situation
 new_user_only=privacy
-
-[goa]
-# Offer a different set of GNOME Online Accounts providers on the Online
-# Accounts page
-providers=owncloud;imap_smtp
 ```
 
 License
