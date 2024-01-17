@@ -6,8 +6,8 @@ Subject: Display the ubuntu welcome wizard in Unity Don't display the "what's
 
 ---
  data/gnome-initial-setup-first-login.desktop.in.in |  2 +-
- gnome-initial-setup/gnome-initial-setup.c          | 11 +++++++++++
- 2 files changed, 12 insertions(+), 1 deletion(-)
+ gnome-initial-setup/gnome-initial-setup.c          | 10 ++++++++++
+ 2 files changed, 11 insertions(+), 1 deletion(-)
 
 diff --git a/data/gnome-initial-setup-first-login.desktop.in.in b/data/gnome-initial-setup-first-login.desktop.in.in
 index f3d0df7..38f86cf 100644
@@ -23,15 +23,14 @@ index f3d0df7..38f86cf 100644
  AutostartCondition=unless-exists gnome-initial-setup-done
  X-GNOME-HiddenUnderSystemd=@systemd_hidden@
 diff --git a/gnome-initial-setup/gnome-initial-setup.c b/gnome-initial-setup/gnome-initial-setup.c
-index 0cded7c..02fa259 100644
+index 0cded7c..3981241 100644
 --- a/gnome-initial-setup/gnome-initial-setup.c
 +++ b/gnome-initial-setup/gnome-initial-setup.c
-@@ -89,6 +89,15 @@ static PageData ubuntu_page_table[] = {
+@@ -89,6 +89,14 @@ static PageData ubuntu_page_table[] = {
    { NULL },
  };
  
 +static PageData unity_page_table[] = {
-+  PAGE (goa,            FALSE),
 +  PAGE (ubuntu_report,  FALSE),
 +  PAGE (account,        TRUE),
 +  PAGE (password,       TRUE),
@@ -42,7 +41,7 @@ index 0cded7c..02fa259 100644
  #undef PAGE
  
  static gboolean
-@@ -233,6 +242,8 @@ rebuild_pages_cb (GisDriver *driver)
+@@ -233,6 +241,8 @@ rebuild_pages_cb (GisDriver *driver)
  
    if (is_desktop ("ubuntu"))
      page_data = ubuntu_page_table;
