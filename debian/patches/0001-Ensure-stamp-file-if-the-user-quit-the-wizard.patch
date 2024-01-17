@@ -7,10 +7,10 @@ Subject: Ensure stamp file if the user quit the wizard
  1 file changed, 12 insertions(+)
 
 diff --git a/gnome-initial-setup/gis-driver.c b/gnome-initial-setup/gis-driver.c
-index 98b4fc3..c4dba79 100644
+index 0b3f542..f00a2f2 100644
 --- a/gnome-initial-setup/gis-driver.c
 +++ b/gnome-initial-setup/gis-driver.c
-@@ -594,6 +594,17 @@ gis_driver_is_small_screen (GisDriver *driver)
+@@ -588,6 +588,17 @@ gis_driver_is_small_screen (GisDriver *driver)
    return driver->small_screen;
  }
  

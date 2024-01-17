@@ -14,10 +14,10 @@ Subject: Ubuntu-location-default
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/gnome-initial-setup/pages/privacy/gis-privacy-page.c b/gnome-initial-setup/pages/privacy/gis-privacy-page.c
-index 362327b..1b87a54 100644
+index 42834e4..c7142bb 100644
 --- a/gnome-initial-setup/pages/privacy/gis-privacy-page.c
 +++ b/gnome-initial-setup/pages/privacy/gis-privacy-page.c
-@@ -120,7 +120,7 @@ gis_privacy_page_constructed (GObject *object)
+@@ -185,7 +185,7 @@ gis_privacy_page_constructed (GObject *object)
    priv->location_settings = g_settings_new ("org.gnome.system.location");
    priv->privacy_settings = g_settings_new ("org.gnome.desktop.privacy");
  
@@ -25,4 +25,4 @@ index 362327b..1b87a54 100644
 +  gtk_switch_set_active (GTK_SWITCH (priv->location_switch), FALSE);
    gtk_switch_set_active (GTK_SWITCH (priv->reporting_switch), TRUE);
  
-   if (update_os_data (page))
+ #ifdef HAVE_WEBKITGTK

@@ -5,10 +5,9 @@ Subject: Add Ubuntu mode with special pages
 ---
  data/its/polkit.its                                |   8 +
  data/its/polkit.loc                                |   6 +
- data/meson.build                                   |   1 -
  gnome-initial-setup/gis-driver.c                   |  30 +
  gnome-initial-setup/gis-driver.h                   |   6 +
- gnome-initial-setup/gnome-initial-setup.c          |  39 +-
+ gnome-initial-setup/gnome-initial-setup.c          |  38 +-
  gnome-initial-setup/meson.build                    |   3 +
  gnome-initial-setup/pages/apps/app-center.svg      |   3 +
  gnome-initial-setup/pages/apps/apps.gresource.xml  |   9 +
@@ -17,7 +16,6 @@ Subject: Add Ubuntu mode with special pages
  gnome-initial-setup/pages/apps/gis-apps-page.h     |  52 ++
  gnome-initial-setup/pages/apps/gis-apps-page.ui    | 119 ++++
  gnome-initial-setup/pages/apps/meson.build         |  10 +
- gnome-initial-setup/pages/goa/gis-goa-page.c       |   7 +
  gnome-initial-setup/pages/meson.build              |   2 +
  .../pages/privacy/gis-privacy-page.c               |   2 +-
  .../pages/summary/gis-summary-page.c               |   2 +-
@@ -28,7 +26,7 @@ Subject: Add Ubuntu mode with special pages
  .../ubuntu-report/ubuntu-report.gresource.xml      |   8 +
  .../pages/ubuntu-report/ubuntu-report.svg          |   1 +
  po/POTFILES.in                                     |   5 +
- 25 files changed, 1627 insertions(+), 5 deletions(-)
+ 23 files changed, 1619 insertions(+), 4 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/app-center.svg
@@ -73,23 +71,11 @@ index 0000000..12c7bf0
 +  </locatingRule>
 +</locatingRules>
 \ No newline at end of file
-diff --git a/data/meson.build b/data/meson.build
-index 6a4ef7d..733aebb 100644
---- a/data/meson.build
-+++ b/data/meson.build
-@@ -103,7 +103,6 @@ if enable_systemd
-     install_data('gnome-initial-setup.conf', install_dir: systemd_sysusersdir)
- endif
- 
--
- rules_dir = join_paths(data_dir, 'polkit-1', 'rules.d')
- configure_file(
-     input: '20-gnome-initial-setup.rules.in',
 diff --git a/gnome-initial-setup/gis-driver.c b/gnome-initial-setup/gis-driver.c
-index c4dba79..e4b572b 100644
+index f00a2f2..980ab31 100644
 --- a/gnome-initial-setup/gis-driver.c
 +++ b/gnome-initial-setup/gis-driver.c
-@@ -106,6 +106,9 @@ struct _GisDriver {
+@@ -100,6 +100,9 @@ struct _GisDriver {
  
    const gchar *vendor_conf_file_path;
    GKeyFile *vendor_conf_file;
@@ -151,10 +137,10 @@ index 9b935e2..fc5ed02 100644
  
  G_END_DECLS
 diff --git a/gnome-initial-setup/gnome-initial-setup.c b/gnome-initial-setup/gnome-initial-setup.c
-index 4d14fea..c98ad18 100644
+index 7ca2bc2..0cded7c 100644
 --- a/gnome-initial-setup/gnome-initial-setup.c
 +++ b/gnome-initial-setup/gnome-initial-setup.c
-@@ -41,6 +41,8 @@
+@@ -40,6 +40,8 @@
  #include "pages/parental-controls/gis-parental-controls-page.h"
  #include "pages/password/gis-password-page.h"
  #include "pages/summary/gis-summary-page.h"
@@ -163,12 +149,11 @@ index 4d14fea..c98ad18 100644
  
  #define VENDOR_PAGES_GROUP "pages"
  #define VENDOR_SKIP_KEY "skip"
-@@ -80,6 +82,16 @@ static PageData page_table[] = {
+@@ -78,6 +80,15 @@ static PageData page_table[] = {
    { NULL },
  };
  
 +static PageData ubuntu_page_table[] = {
-+  PAGE (goa,            FALSE),
 +  PAGE (ubuntu_report,  FALSE),
 +  PAGE (privacy,        FALSE),
 +  PAGE (account,        TRUE),
@@ -180,7 +165,7 @@ index 4d14fea..c98ad18 100644
  #undef PAGE
  
  static gboolean
-@@ -190,6 +202,25 @@ destroy_page (gpointer data)
+@@ -188,6 +199,25 @@ destroy_page (gpointer data)
      gis_assistant_remove_page (GIS_ASSISTANT (assistant), page);
  }
  
@@ -206,7 +191,7 @@ index 4d14fea..c98ad18 100644
  static void
  rebuild_pages_cb (GisDriver *driver)
  {
-@@ -202,7 +233,11 @@ rebuild_pages_cb (GisDriver *driver)
+@@ -200,7 +230,11 @@ rebuild_pages_cb (GisDriver *driver)
  
    assistant = gis_driver_get_assistant (driver);
    current_page = gis_assistant_get_current_page (assistant);
@@ -219,7 +204,7 @@ index 4d14fea..c98ad18 100644
  
    g_ptr_array_free (skipped_pages, TRUE);
    skipped_pages = g_ptr_array_new_with_free_func (destroy_page);
-@@ -210,7 +245,7 @@ rebuild_pages_cb (GisDriver *driver)
+@@ -208,7 +242,7 @@ rebuild_pages_cb (GisDriver *driver)
    if (current_page != NULL) {
      destroy_pages_after (assistant, current_page);
  
@@ -229,13 +214,13 @@ index 4d14fea..c98ad18 100644
          break;
  
 diff --git a/gnome-initial-setup/meson.build b/gnome-initial-setup/meson.build
-index a6a014d..a40d16c 100644
+index beb96ec..8f23f8b 100644
 --- a/gnome-initial-setup/meson.build
 +++ b/gnome-initial-setup/meson.build
-@@ -64,6 +64,9 @@ dependencies = [
+@@ -62,6 +62,9 @@ dependencies = [
+     dependency ('krb5'),
      dependency ('libsecret-1', version: '>= 0.18.8'),
      dependency ('pwquality'),
-     dependency ('rest-1.0'),
 +    dependency ('snapd-glib-2'),
 +    dependency ('libsoup-3.0'),
 +    dependency ('sysmetrics'),
@@ -1170,29 +1155,11 @@ index 0000000..dec2b38
 +    'gis-apps-page.c',
 +    'gis-apps-page.h',
 +)
-diff --git a/gnome-initial-setup/pages/goa/gis-goa-page.c b/gnome-initial-setup/pages/goa/gis-goa-page.c
-index 6d0a4a2..47c5cb2 100644
---- a/gnome-initial-setup/pages/goa/gis-goa-page.c
-+++ b/gnome-initial-setup/pages/goa/gis-goa-page.c
-@@ -309,6 +309,13 @@ populate_provider_list (GisGoaPage *page)
-     (gchar *[]) { "google", "owncloud", "windows_live", "facebook", NULL };
- 
-   listed_providers = run_goa_helper_sync ("list-providers", NULL);
-+
-+  if (!listed_providers)
-+    {
-+      gtk_widget_hide (GTK_WIDGET (page));
-+      return;
-+    }
-+
-   providers_variant = g_variant_parse (G_VARIANT_TYPE ("a(ssviu)"),
-                                        listed_providers,
-                                        NULL,
 diff --git a/gnome-initial-setup/pages/meson.build b/gnome-initial-setup/pages/meson.build
-index 3230501..9654a7c 100644
+index 8d327f6..578ce5d 100644
 --- a/gnome-initial-setup/pages/meson.build
 +++ b/gnome-initial-setup/pages/meson.build
-@@ -10,6 +10,8 @@ pages = [
+@@ -9,6 +9,8 @@ pages = [
     'software',
     'summary',
     'welcome',
@@ -1202,10 +1169,10 @@ index 3230501..9654a7c 100644
  
  if libmalcontent_dep.found() and libmalcontent_ui_dep.found()
 diff --git a/gnome-initial-setup/pages/privacy/gis-privacy-page.c b/gnome-initial-setup/pages/privacy/gis-privacy-page.c
-index b910651..362327b 100644
+index 959fcae..42834e4 100644
 --- a/gnome-initial-setup/pages/privacy/gis-privacy-page.c
 +++ b/gnome-initial-setup/pages/privacy/gis-privacy-page.c
-@@ -229,7 +229,7 @@ activate_link (GtkLabel       *label,
+@@ -243,7 +243,7 @@ gis_privacy_page_apply (GisPage *gis_page,
  static void
  gis_privacy_page_locale_changed (GisPage *page)
  {
@@ -1900,10 +1867,10 @@ index 0000000..8c1d52c
 @@ -0,0 +1 @@
 +<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="Layer_1" x="0px" y="0px" width="150px" height="150px" viewBox="0 0 400 400" style="enable-background:new 0 0 400 400;" xml:space="preserve"> <style type="text/css"> .st0{fill:#666666; fill-opacity:0.25;} </style> <g> <path class="st0" d="M301.4,372.4C271.7,390,237,400,200,400C89.5,400,0,310.5,0,200C0,89.5,89.5,0,200,0c110.5,0,200,89.5,200,200 c0,36.4-9.7,70.6-26.8,100l0,0L400,400l-100-26.8L301.4,372.4L301.4,372.4z"/> </g> </svg>
 diff --git a/po/POTFILES.in b/po/POTFILES.in
-index 656fe0f..4027d14 100644
+index 10536d1..7b2c21d 100644
 --- a/po/POTFILES.in
 +++ b/po/POTFILES.in
-@@ -46,3 +46,8 @@ gnome-initial-setup/pages/timezone/gis-timezone-page.ui
+@@ -43,3 +43,8 @@ gnome-initial-setup/pages/timezone/gis-timezone-page.ui
  gnome-initial-setup/pages/welcome/gis-welcome-page.c
  gnome-initial-setup/pages/welcome/gis-welcome-page.ui
  po/EXTRA_STRINGS.sh
