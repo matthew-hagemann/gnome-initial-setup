@@ -3,8 +3,10 @@ gnome-initial-setup (46~alpha-1) unstable; urgency=medium
   * New upstream release
     - GNOME Online Accounts integration was removed.
       Use the GNOME Settings app instead. (LP: #2049513)
+  * Drop obsolete Build-Depends: librest-dev
   * Update architectures where malcontent is available
   * Stop using debian/control.in and dh_gnome_clean
+  * Add patch to restore ability to close Initial Setup in existing user mode
 
  -- Jeremy Bícha <jbicha@ubuntu.com>  Wed, 17 Jan 2024 11:37:21 -0500
 
