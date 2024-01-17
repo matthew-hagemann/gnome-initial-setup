@@ -27,12 +27,6 @@
 #include <locale.h>
 #include <stdlib.h>
 
-#ifdef HAVE_WEBKITGTK_6_0
-#include <webkit/webkit.h>
-#else
-#include <webkit2/webkit2.h>
-#endif
-
 #include "cc-common-language.h"
 #include "gis-assistant.h"
 
@@ -761,6 +755,12 @@ window_realize_cb (GtkWidget *widget, gpointer user_data)
   update_screen_size (driver);
 }
 
+static bool
+window_close_request_cb (GtkWidget *widget, gpointer user_data)
+{
+  return true;
+}
+
 static void
 connect_to_gdm (GisDriver *driver)
 {
@@ -784,13 +784,8 @@ static void
 gis_driver_startup (GApplication *app)
 {
   GisDriver *driver = GIS_DRIVER (app);
-  WebKitWebContext *context = webkit_web_context_get_default ();
 
   G_APPLICATION_CLASS (gis_driver_parent_class)->startup (app);
-
-#if !WEBKIT_CHECK_VERSION(2, 39, 5)
-  webkit_web_context_set_sandbox_enabled (context, TRUE);
-#endif
 
   if (driver->mode == GIS_DRIVER_MODE_NEW_USER)
     connect_to_gdm (driver);
@@ -806,6 +801,11 @@ gis_driver_startup (GApplication *app)
                     "realize",
                     G_CALLBACK (window_realize_cb),
                     (gpointer)app);
+
+  g_signal_connect (driver->main_window,
+                    "close-request",
+                    G_CALLBACK (window_close_request_cb),
+                    NULL);
 
   driver->assistant = g_object_new (GIS_TYPE_ASSISTANT, NULL);
   gtk_window_set_child (GTK_WINDOW (driver->main_window),
