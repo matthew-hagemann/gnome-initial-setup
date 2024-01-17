@@ -6,7 +6,7 @@ Source: gnome-initial-setup
 Section: gnome
 Priority: optional
 Maintainer: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>
-Uploaders: Jeremy Bícha <jbicha@ubuntu.com>, Jordi Mallach <jordi@debian.org>, Laurent Bigonville <bigon@debian.org>, Marco Trevisan (Treviño) <marco@ubuntu.com>, Sebastien Bacher <seb128@debian.org>
+Uploaders: Jeremy Bícha <jbicha@ubuntu.com>, Laurent Bigonville <bigon@debian.org>, Marco Trevisan (Treviño) <marco@ubuntu.com>, Sebastien Bacher <seb128@debian.org>
 Build-Depends: debhelper-compat (= 13),
                dconf-cli,
                dh-sequence-gnome,
@@ -27,8 +27,7 @@ Build-Depends: debhelper-compat (= 13),
                libibus-1.0-dev (>= 1.5.2),
                libjson-glib-dev,
                libkrb5-dev,
-               libmalcontent-0-dev [amd64 arm64 armel armhf i386 mipsel mips64el ppc64el s390x hppa hurd-i386 ppc64 riscv64],
-               libmalcontent-ui-dev [amd64 arm64 armel armhf i386 mipsel mips64el ppc64el s390x hppa hurd-i386 ppc64 riscv64],
+               libmalcontent-ui-dev (>= 0.7.0) [amd64 arm64 armel armhf i386 mips64el ppc64el riscv64 s390x hppa powerpc ppc64 x32],
                libnm-dev (>= 1.2),
                libnma-gtk4-dev (>= 1.0),
                libpango1.0-dev (>= 1.32.5),
