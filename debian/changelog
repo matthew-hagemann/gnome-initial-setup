@@ -1,4 +1,4 @@
-gnome-initial-setup (46~alpha-2ubuntu1) UNRELEASED; urgency=medium
+gnome-initial-setup (46~alpha-2ubuntu1) noble; urgency=medium
 
   * Merge with Debian. Remaining changes:
     + debian/control.in:
@@ -12,8 +12,9 @@ gnome-initial-setup (46~alpha-2ubuntu1) UNRELEASED; urgency=medium
       - ubuntu-distributor-logo.patch
   * Refresh patches
   * Drop obsolete Online Accounts patches
+  * Update Unity patch to show the Privacy>Location page too
 
- -- Jeremy Bícha <jbicha@ubuntu.com>  Wed, 17 Jan 2024 15:39:37 -0500
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Mon, 22 Jan 2024 08:10:22 -0500
 
 gnome-initial-setup (46~alpha-2) unstable; urgency=medium
 
