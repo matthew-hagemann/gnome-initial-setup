@@ -1,3 +1,19 @@
+gnome-initial-setup (46~beta-1ubuntu1) noble; urgency=medium
+
+  * Merge with Debian. Remaining changes:
+    + debian/control:
+      - Add Build-Depends: libsnapd-glib-dev and libsysmetrics-dev
+    + Add Ubuntu-specific patches:
+      - 0001-Make-summary-page-explicitly-request-navigation-butt.patch
+      - 0001-Ensure-stamp-file-if-the-user-quit-the-wizard.patch
+      - 0001-Add-Ubuntu-mode-with-special-pages.patch
+      - 0001-Display-the-ubuntu-welcome-wizard-in-Unity.patch
+      - 0008-Ubuntu-location-default.patch
+      - ubuntu-distributor-logo.patch
+  * Update patches
+
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Mon, 12 Feb 2024 14:28:07 -0500
+
 gnome-initial-setup (46~beta-1) unstable; urgency=medium
 
   * New upstream release
