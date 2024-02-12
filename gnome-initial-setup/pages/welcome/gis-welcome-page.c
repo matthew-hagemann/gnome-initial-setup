@@ -36,8 +36,7 @@ struct _GisWelcomePage
 
 typedef struct
 {
-  GtkWidget *header;
-  GtkWidget *title;
+  AdwStatusPage *status_page;
 } GisWelcomePagePrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GisWelcomePage, gis_welcome_page, GIS_TYPE_PAGE)
@@ -46,23 +45,11 @@ static void
 update_welcome_title (GisWelcomePage *page)
 {
   GisWelcomePagePrivate *priv = gis_welcome_page_get_instance_private (page);
-  g_autofree char *name = g_get_os_info (G_OS_INFO_KEY_NAME);
-  g_autofree char *entity = NULL;
+  g_autofree char *name = g_get_os_info (G_OS_INFO_KEY_PRETTY_NAME);
   g_autofree char *text = NULL;
 
-  if (name != NULL)
-    {
-      g_autofree char *version = g_get_os_info (G_OS_INFO_KEY_VERSION_ID);
-
-      if (version)
-        entity = g_strdup_printf ("%s %s", name, version);
-      else
-        entity = g_strdup (name);
-    }
-  else
-    {
-      entity = g_strdup ("GNOME");
-    }
+  if (!name)
+    name = g_strdup ("GNOME");
 
   /* Translators: This is meant to be a warm, engaging welcome message,
    * like greeting somebody at the door. If the exclamation mark is not
@@ -72,9 +59,9 @@ update_welcome_title (GisWelcomePage *page)
    * keep or remove. The %s is getting replaced with the name and version
    * of the OS, e.g. "GNOME 3.38"
    */
-  text = g_strdup_printf (_("Welcome to %s !"), entity);
+  text = g_strdup_printf (_("Welcome to %s !"), name);
 
-  gtk_label_set_label (GTK_LABEL (priv->title), text);
+  adw_status_page_set_title (ADW_STATUS_PAGE (priv->status_page), text);
 }
 
 static void
@@ -107,8 +94,7 @@ gis_welcome_page_class_init (GisWelcomePageClass *klass)
 
   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass), "/org/gnome/initial-setup/gis-welcome-page.ui");
 
-  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisWelcomePage, header);
-  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisWelcomePage, title);
+  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisWelcomePage, status_page);
   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), start_setup);
 
   page_class->page_id = PAGE_ID;
@@ -119,6 +105,8 @@ static void
 gis_welcome_page_init (GisWelcomePage *page)
 {
   gtk_widget_init_template (GTK_WIDGET (page));
+
+  gis_add_style_from_resource ("/org/gnome/initial-setup/gis-welcome-page.css");
 }
 
 GisPage *
