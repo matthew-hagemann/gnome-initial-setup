@@ -12,21 +12,21 @@ Subject: Add Ubuntu mode with special pages
  gnome-initial-setup/pages/apps/app-center.svg      |   3 +
  gnome-initial-setup/pages/apps/apps.gresource.xml  |   9 +
  .../pages/apps/default-snap-icon.svg               |   1 +
- gnome-initial-setup/pages/apps/gis-apps-page.c     | 691 +++++++++++++++++++++
- gnome-initial-setup/pages/apps/gis-apps-page.h     |  52 ++
+ gnome-initial-setup/pages/apps/gis-apps-page.c     | 679 +++++++++++++++++++++
+ gnome-initial-setup/pages/apps/gis-apps-page.h     |  33 +
  gnome-initial-setup/pages/apps/gis-apps-page.ui    | 119 ++++
  gnome-initial-setup/pages/apps/meson.build         |  10 +
  gnome-initial-setup/pages/meson.build              |   2 +
  .../pages/privacy/gis-privacy-page.c               |   2 +-
  .../pages/summary/gis-summary-page.c               |   2 +-
- .../pages/ubuntu-report/gis-ubuntu-report-page.c   | 461 ++++++++++++++
- .../pages/ubuntu-report/gis-ubuntu-report-page.h   |  52 ++
+ .../pages/ubuntu-report/gis-ubuntu-report-page.c   | 456 ++++++++++++++
+ .../pages/ubuntu-report/gis-ubuntu-report-page.h   |  33 +
  .../pages/ubuntu-report/gis-ubuntu-report-page.ui  | 104 ++++
  .../pages/ubuntu-report/meson.build                |  10 +
  .../ubuntu-report/ubuntu-report.gresource.xml      |   8 +
  .../pages/ubuntu-report/ubuntu-report.svg          |   1 +
  po/POTFILES.in                                     |   5 +
- 23 files changed, 1619 insertions(+), 4 deletions(-)
+ 23 files changed, 1564 insertions(+), 4 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/app-center.svg
@@ -261,10 +261,10 @@ index 0000000..0d8dd94
 \ No newline at end of file
 diff --git a/gnome-initial-setup/pages/apps/gis-apps-page.c b/gnome-initial-setup/pages/apps/gis-apps-page.c
 new file mode 100644
-index 0000000..3abc3b3
+index 0000000..719ed77
 --- /dev/null
 +++ b/gnome-initial-setup/pages/apps/gis-apps-page.c
-@@ -0,0 +1,691 @@
+@@ -0,0 +1,679 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2018 Canonical Ltd.
@@ -298,7 +298,9 @@ index 0000000..3abc3b3
 +
 +#define ICONS_SIZE 64
 +
-+struct _GisAppsPagePrivate {
++struct _GisAppsPage {
++  GisPage parent;
++
 +  SoupSession *soup_session;
 +  SnapdClient *client;
 +
@@ -314,9 +316,8 @@ index 0000000..3abc3b3
 +  GPtrArray *installed_snaps;
 +  GPtrArray *featured_snaps;
 +};
-+typedef struct _GisAppsPagePrivate GisAppsPagePrivate;
 +
-+G_DEFINE_TYPE_WITH_PRIVATE (GisAppsPage, gis_apps_page, GIS_TYPE_PAGE);
++G_DEFINE_TYPE (GisAppsPage, gis_apps_page, GIS_TYPE_PAGE);
 +
 +struct _GisSnapTile
 +{
@@ -359,26 +360,24 @@ index 0000000..3abc3b3
 +  gis_page_set_skippable (GIS_PAGE (page), TRUE);
 +
 +  gis_page_set_complete (GIS_PAGE (page), TRUE);
-+  gtk_widget_show (GTK_WIDGET (page));
 +}
 +
 +static void
 +gis_apps_page_dispose (GObject *object)
 +{
 +  GisAppsPage *page = GIS_APPS_PAGE (object);
-+  GisAppsPagePrivate *priv = gis_apps_page_get_instance_private (page);
 +
-+  g_clear_object (&priv->client);
-+  g_clear_object (&priv->soup_session);
-+  g_clear_pointer (&priv->installed_snaps, g_ptr_array_unref);
-+  g_clear_pointer (&priv->featured_snaps, g_ptr_array_unref);
++  g_clear_object (&page->client);
++  g_clear_object (&page->soup_session);
++  g_clear_pointer (&page->installed_snaps, g_ptr_array_unref);
++  g_clear_pointer (&page->featured_snaps, g_ptr_array_unref);
 +
-+  g_cancellable_cancel (priv->cancellable);
-+  g_clear_object (&priv->cancellable);
++  g_cancellable_cancel (page->cancellable);
++  g_clear_object (&page->cancellable);
 +
-+  if (priv->featured_snaps_timeout_id != 0) {
-+    g_source_remove (priv->featured_snaps_timeout_id);
-+    priv->featured_snaps_timeout_id = 0;
++  if (page->featured_snaps_timeout_id != 0) {
++    g_source_remove (page->featured_snaps_timeout_id);
++    page->featured_snaps_timeout_id = 0;
 +  }
 +
 +  G_OBJECT_CLASS (gis_apps_page_parent_class)->dispose (object);
@@ -472,16 +471,14 @@ index 0000000..3abc3b3
 +prev_featured (GtkButton   *button,
 +               GisAppsPage *page)
 +{
-+  GisAppsPagePrivate *priv = gis_apps_page_get_instance_private (page);
-+  prev_page (priv->featured_stack, priv->prev_featured_button, priv->next_featured_button);
++  prev_page (page->featured_stack, page->prev_featured_button, page->next_featured_button);
 +}
 +
 +static void
 +next_featured (GtkButton   *button,
 +               GisAppsPage *page)
 +{
-+  GisAppsPagePrivate *priv = gis_apps_page_get_instance_private (page);
-+  next_page (priv->featured_stack, priv->prev_featured_button, priv->next_featured_button);
++  next_page (page->featured_stack, page->prev_featured_button, page->next_featured_button);
 +}
 +
 +static void
@@ -491,11 +488,11 @@ index 0000000..3abc3b3
 +  GObjectClass *object_class = G_OBJECT_CLASS (klass);
 +
 +  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass), "/org/gnome/initial-setup/gis-apps-page.ui");
-+  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisAppsPage, main_stack);
-+  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisAppsPage, spinner);
-+  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisAppsPage, featured_stack);
-+  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisAppsPage, prev_featured_button);
-+  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisAppsPage, next_featured_button);
++  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisAppsPage, main_stack);
++  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisAppsPage, spinner);
++  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisAppsPage, featured_stack);
++  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisAppsPage, prev_featured_button);
++  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisAppsPage, next_featured_button);
 +  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), open_software);
 +  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), prev_featured);
 +  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), next_featured);
@@ -778,7 +775,7 @@ index 0000000..3abc3b3
 +    gtk_flow_box_set_selection_mode (GTK_FLOW_BOX (flow_box), GTK_SELECTION_NONE);
 +    g_signal_connect (flow_box, "child-activated",
 +                      G_CALLBACK (on_app_clicked), NULL);
-+    gtk_widget_show (flow_box);
++    gtk_widget_set_visible (flow_box, TRUE);
 +    gtk_flow_box_set_row_spacing (GTK_FLOW_BOX (flow_box), 10);
 +    gtk_flow_box_set_column_spacing (GTK_FLOW_BOX (flow_box), 10);
 +    gtk_stack_add_child (GTK_STACK (stack), flow_box);
@@ -790,26 +787,25 @@ index 0000000..3abc3b3
 +static void
 +gis_app_page_populate_featured_snaps (GisAppsPage *page)
 +{
-+    GisAppsPagePrivate *priv = gis_apps_page_get_instance_private (page);
 +    GtkSizeGroup *size_group;
 +    guint i, n_tiles = 0, n_extra = 0;
 +    GtkWidget *first_child;
 +
 +    size_group = gtk_size_group_new (GTK_SIZE_GROUP_BOTH);
 +
-+    for (i = 0; i < priv->featured_snaps->len; i++) {
-+      SnapdSnap *snap = g_ptr_array_index (priv->featured_snaps, i);
++    for (i = 0; i < page->featured_snaps->len; i++) {
++      SnapdSnap *snap = g_ptr_array_index (page->featured_snaps, i);
 +      GtkWidget *tile;
 +
 +      /* Skip if already installed */
-+      if (priv->installed_snaps != NULL && contains_snap (priv->installed_snaps, snapd_snap_get_name (snap)))
++      if (page->installed_snaps != NULL && contains_snap (page->installed_snaps, snapd_snap_get_name (snap)))
 +        continue;
 +
-+      tile = gis_snap_tile_new (snap, priv->soup_session, priv->cancellable);
-+      gtk_widget_show (tile);
++      tile = gis_snap_tile_new (snap, page->soup_session, page->cancellable);
++      gtk_widget_set_visible (tile, TRUE);
 +      gtk_size_group_add_widget (size_group, tile);
 +
-+      add_tile (priv->featured_stack, tile);
++      add_tile (page->featured_stack, tile);
 +      n_tiles += 1;
 +    }
 +
@@ -818,16 +814,16 @@ index 0000000..3abc3b3
 +      n_extra = 15 - n_tiles % 15;
 +    for (i = 0; i < n_extra; i++) {
 +      GtkWidget *spacer = gtk_label_new ("");
-+      gtk_widget_show (spacer);
++      gtk_widget_set_visible (spacer, TRUE);
 +      gtk_size_group_add_widget (size_group, spacer);
-+      add_tile (priv->featured_stack, spacer);
++      add_tile (page->featured_stack, spacer);
 +    }
 +
-+    first_child = gtk_widget_get_first_child (priv->featured_stack);
-+    gtk_widget_set_visible (priv->next_featured_button,
++    first_child = gtk_widget_get_first_child (page->featured_stack);
++    gtk_widget_set_visible (page->next_featured_button,
 +      first_child && gtk_widget_get_next_sibling (first_child) != NULL);
 +
-+    gtk_widget_set_visible (priv->prev_featured_button,
++    gtk_widget_set_visible (page->prev_featured_button,
 +      first_child && gtk_widget_get_next_sibling (first_child) != NULL);
 +}
 +
@@ -854,12 +850,11 @@ index 0000000..3abc3b3
 +    }
 +  } else {
 +    GisAppsPage *page = GIS_APPS_PAGE (user_data);
-+    GisAppsPagePrivate *priv = gis_apps_page_get_instance_private (page);
 +
-+    priv->featured_snaps = g_steal_pointer (&featured_snaps);
++    page->featured_snaps = g_steal_pointer (&featured_snaps);
 +
-+    gtk_spinner_stop (GTK_SPINNER (priv->spinner));
-+    gtk_stack_set_visible_child_name (GTK_STACK (priv->main_stack), "page_snaps");
++    gtk_spinner_stop (GTK_SPINNER (page->spinner));
++    gtk_stack_set_visible_child_name (GTK_STACK (page->main_stack), "page_snaps");
 +
 +    gis_app_page_populate_featured_snaps (page);
 +  }
@@ -869,15 +864,14 @@ index 0000000..3abc3b3
 +gis_app_page_get_featured_snaps_timeout (gpointer user_data)
 +{
 +  GisAppsPage *page = GIS_APPS_PAGE (user_data);
-+  GisAppsPagePrivate *priv = gis_apps_page_get_instance_private (page);
 +
-+  priv->featured_snaps_timeout_id = 0;
++  page->featured_snaps_timeout_id = 0;
 +
-+  snapd_client_find_section_async (priv->client,
++  snapd_client_find_section_async (page->client,
 +                                   SNAPD_FIND_FLAGS_NONE,
 +                                   "ubuntu-firstrun",
 +                                   NULL,
-+                                   priv->cancellable,
++                                   page->cancellable,
 +                                   gis_app_page_on_featured_snaps_ready,
 +                                   page);
 +
@@ -887,12 +881,10 @@ index 0000000..3abc3b3
 +void
 +gis_apps_page_try_to_get_featured_snaps (GisAppsPage *page)
 +{
-+  GisAppsPagePrivate *priv = gis_apps_page_get_instance_private (page);
++  g_return_if_fail (page->featured_snaps == NULL);
 +
-+  g_return_if_fail (priv->featured_snaps == NULL);
-+
-+  if (priv->featured_snaps_timeout_id == 0)
-+    priv->featured_snaps_timeout_id = g_timeout_add_seconds (1, gis_app_page_get_featured_snaps_timeout, page);
++  if (page->featured_snaps_timeout_id == 0)
++    page->featured_snaps_timeout_id = g_timeout_add_seconds (1, gis_app_page_get_featured_snaps_timeout, page);
 +}
 +
 +void
@@ -901,7 +893,6 @@ index 0000000..3abc3b3
 +                                       gpointer user_data)
 +{
 +  GisAppsPage *page;
-+  GisAppsPagePrivate *priv;
 +  SnapdClient *client = SNAPD_CLIENT (source_object);
 +  g_autoptr(GPtrArray) installed_snaps = NULL;
 +  g_autoptr(GError) error = NULL;
@@ -919,32 +910,29 @@ index 0000000..3abc3b3
 +  }
 +
 +  page = GIS_APPS_PAGE (user_data);
-+  priv = gis_apps_page_get_instance_private (page);
 +
-+  priv->installed_snaps = g_steal_pointer (&installed_snaps);
++  page->installed_snaps = g_steal_pointer (&installed_snaps);
 +  gis_apps_page_try_to_get_featured_snaps (page);
 +}
 +
 +static void
 +gis_apps_page_init (GisAppsPage *page)
 +{
-+  GisAppsPagePrivate *priv = gis_apps_page_get_instance_private (page);
-+
 +  g_resources_register (apps_get_resource ());
 +
 +  gtk_widget_init_template (GTK_WIDGET (page));
 +
-+  priv->soup_session = soup_session_new ();
-+  priv->client = snapd_client_new ();
-+  priv->cancellable = g_cancellable_new ();
++  page->soup_session = soup_session_new ();
++  page->client = snapd_client_new ();
++  page->cancellable = g_cancellable_new ();
 +
-+  gtk_stack_set_visible_child_name (GTK_STACK (priv->main_stack), "page_spinner");
-+  gtk_spinner_start (GTK_SPINNER (priv->spinner));
++  gtk_stack_set_visible_child_name (GTK_STACK (page->main_stack), "page_spinner");
++  gtk_spinner_start (GTK_SPINNER (page->spinner));
 +
-+  snapd_client_get_snaps_async (priv->client,
++  snapd_client_get_snaps_async (page->client,
 +                                SNAPD_GET_SNAPS_FLAGS_NONE,
 +                                NULL,
-+                                priv->cancellable,
++                                page->cancellable,
 +                                gis_app_page_on_installed_snaps_ready,
 +                                page);
 +}
@@ -958,10 +946,10 @@ index 0000000..3abc3b3
 +}
 diff --git a/gnome-initial-setup/pages/apps/gis-apps-page.h b/gnome-initial-setup/pages/apps/gis-apps-page.h
 new file mode 100644
-index 0000000..9494b9e
+index 0000000..e451214
 --- /dev/null
 +++ b/gnome-initial-setup/pages/apps/gis-apps-page.h
-@@ -0,0 +1,52 @@
+@@ -0,0 +1,33 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2018 Canonical Ltd.
@@ -988,26 +976,7 @@ index 0000000..9494b9e
 +G_BEGIN_DECLS
 +
 +#define GIS_TYPE_APPS_PAGE            (gis_apps_page_get_type ())
-+#define GIS_APPS_PAGE(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GIS_TYPE_APPS_PAGE, GisAppsPage))
-+#define GIS_APPS_PAGE_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass),  GIS_TYPE_APPS_PAGE, GisAppsPageClass))
-+#define GIS_IS_APPS_PAGE(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GIS_TYPE_APPS_PAGE))
-+#define GIS_IS_APPS_PAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass),  GIS_TYPE_APPS_PAGE))
-+#define GIS_APPS_PAGE_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj),  GIS_TYPE_APPS_PAGE, GisAppsPageClass))
-+
-+typedef struct _GisAppsPage        GisAppsPage;
-+typedef struct _GisAppsPageClass   GisAppsPageClass;
-+
-+struct _GisAppsPage
-+{
-+  GisPage parent;
-+};
-+
-+struct _GisAppsPageClass
-+{
-+  GisPageClass parent_class;
-+};
-+
-+GType gis_apps_page_get_type (void);
++G_DECLARE_FINAL_TYPE (GisAppsPage, gis_apps_page, GIS, APPS_PAGE, GisPage);
 +
 +GisPage *gis_prepare_apps_page (GisDriver *driver);
 +
@@ -1196,10 +1165,10 @@ index 5e90e8a..d34aad3 100644
      }
 diff --git a/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
 new file mode 100644
-index 0000000..a1fb678
+index 0000000..7321984
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
-@@ -0,0 +1,461 @@
+@@ -0,0 +1,456 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2018 Canonical Ltd.
@@ -1231,7 +1200,9 @@ index 0000000..a1fb678
 +#include <gio/gio.h>
 +#include <libsysmetrics.h>
 +
-+struct _GisUbuntuReportPagePrivate {
++struct _GisUbuntuReportPage {
++  GisPage parent;
++
 +  GtkWidget *opt_in_check;
 +  GtkWidget *header;
 +  GtkWidget *cancel_report_b;
@@ -1239,36 +1210,34 @@ index 0000000..a1fb678
 +  GCancellable *cancellable;
 +  gchar *report;
 +};
-+typedef struct _GisUbuntuReportPagePrivate GisUbuntuReportPagePrivate;
 +
-+G_DEFINE_TYPE_WITH_PRIVATE (GisUbuntuReportPage, gis_ubuntu_report_page, GIS_TYPE_PAGE);
++G_DEFINE_TYPE (GisUbuntuReportPage, gis_ubuntu_report_page, GIS_TYPE_PAGE);
 +
 +static void
-+cancel_report (GtkButton *button, GisUbuntuReportPagePrivate *priv)
++cancel_report (GtkButton *button, GisUbuntuReportPage *page)
 +{
-+  gtk_widget_set_visible (GTK_WIDGET (priv->cancel_report_b), FALSE);
-+  gtk_widget_set_visible (GTK_WIDGET (priv->show_report_b), TRUE);
++  gtk_widget_set_visible (GTK_WIDGET (page->cancel_report_b), FALSE);
++  gtk_widget_set_visible (GTK_WIDGET (page->show_report_b), TRUE);
 +
-+  g_cancellable_cancel (priv->cancellable);
-+  g_clear_object (&priv->cancellable);
-+  priv->cancellable = g_cancellable_new ();
++  g_cancellable_cancel (page->cancellable);
++  g_clear_object (&page->cancellable);
++  page->cancellable = g_cancellable_new ();
 +}
 +
 +static void
 +gis_ubuntu_report_page_constructed (GObject *object)
 +{
 +  GisUbuntuReportPage *page = GIS_UBUNTU_REPORT_PAGE (object);
-+  GisUbuntuReportPagePrivate *priv = gis_ubuntu_report_page_get_instance_private (page);
 +  g_autoptr(GtkWidget) image = NULL;
 +
 +  G_OBJECT_CLASS (gis_ubuntu_report_page_parent_class)->constructed (object);
 +
-+  priv->cancellable = g_cancellable_new ();
-+  g_signal_connect(priv->cancel_report_b, "clicked", G_CALLBACK(cancel_report), priv);
++  page->cancellable = g_cancellable_new ();
++  g_signal_connect(page->cancel_report_b, "clicked", G_CALLBACK(cancel_report), page);
 +
 +  image = g_object_ref_sink (gtk_image_new_from_resource (
 +    "/org/gnome/initial-setup/ubuntu-report.svg"));
-+  g_object_set (priv->header, "paintable", gtk_image_get_paintable (GTK_IMAGE (image)), NULL);
++  g_object_set (page->header, "paintable", gtk_image_get_paintable (GTK_IMAGE (image)), NULL);
 +
 +  gis_page_set_complete (GIS_PAGE (page), TRUE);
 +}
@@ -1277,12 +1246,11 @@ index 0000000..a1fb678
 +gis_ubuntu_report_page_finalize (GObject *object)
 +{
 +  GisUbuntuReportPage *page = GIS_UBUNTU_REPORT_PAGE (object);
-+  GisUbuntuReportPagePrivate *priv = gis_ubuntu_report_page_get_instance_private (page);
 +
-+  g_cancellable_cancel (priv->cancellable);
-+  g_clear_object (&priv->cancellable);
++  g_cancellable_cancel (page->cancellable);
++  g_clear_object (&page->cancellable);
 +
-+  g_free (priv->report);
++  g_free (page->report);
 +
 +  G_OBJECT_CLASS (gis_ubuntu_report_page_parent_class)->finalize (object);
 +}
@@ -1314,12 +1282,11 @@ index 0000000..a1fb678
 +  GTask *task = G_TASK (res);
 +  g_autoptr (GError) error = NULL;
 +  GisUbuntuReportPage *page = GIS_UBUNTU_REPORT_PAGE (user_data);
-+  GisUbuntuReportPagePrivate *priv = gis_ubuntu_report_page_get_instance_private (page);
 +
-+  gtk_widget_set_visible (GTK_WIDGET (priv->show_report_b), TRUE);
-+  gtk_widget_set_visible (GTK_WIDGET (priv->cancel_report_b), FALSE);
++  gtk_widget_set_visible (GTK_WIDGET (page->show_report_b), TRUE);
++  gtk_widget_set_visible (GTK_WIDGET (page->cancel_report_b), FALSE);
 +
-+  priv->report = g_task_propagate_pointer (task, &error);
++  page->report = g_task_propagate_pointer (task, &error);
 +
 +  if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 +    return;
@@ -1335,7 +1302,7 @@ index 0000000..a1fb678
 +                              "response",
 +                              G_CALLBACK (gtk_window_destroy),
 +                              dialog);
-+    gtk_widget_show (dialog);
++    gtk_window_present (GTK_WINDOW (dialog));
 +    return;
 +  }
 +
@@ -1358,30 +1325,29 @@ index 0000000..a1fb678
 +  gtk_widget_set_margin_start (scroll, 6);
 +  gtk_widget_set_margin_end (scroll, 6);
 +  gtk_box_append (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), scroll);
-+  gtk_text_buffer_set_text (gtk_text_view_get_buffer (GTK_TEXT_VIEW (text_view)), priv->report, -1);
++  gtk_text_buffer_set_text (gtk_text_view_get_buffer (GTK_TEXT_VIEW (text_view)), page->report, -1);
 +  gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scroll), text_view);
 +
 +  g_signal_connect_swapped (dialog,
 +                            "response",
 +                            G_CALLBACK (gtk_window_destroy),
 +                            dialog);
-+  gtk_widget_show (dialog);
++  gtk_window_present (GTK_WINDOW (dialog));
 +}
 +
 +static void
 +show_report (GtkButton *button, GisUbuntuReportPage *page)
 +{
-+  GisUbuntuReportPagePrivate *priv = gis_ubuntu_report_page_get_instance_private (page);
 +  g_autofree char *error = NULL;
 +  g_autoptr(GTask) task = NULL;
 +
-+  gtk_widget_set_visible (GTK_WIDGET (priv->show_report_b), FALSE);
-+  gtk_widget_set_visible (GTK_WIDGET (priv->cancel_report_b), TRUE);
++  gtk_widget_set_visible (GTK_WIDGET (page->show_report_b), FALSE);
++  gtk_widget_set_visible (GTK_WIDGET (page->cancel_report_b), TRUE);
 +
-+  task = g_task_new (page, priv->cancellable, on_show_report_callback, page);
++  task = g_task_new (page, page->cancellable, on_show_report_callback, page);
 +
-+  if (priv->report) {
-+    g_task_return_pointer (task, g_steal_pointer (&priv->report), NULL);
++  if (page->report) {
++    g_task_return_pointer (task, g_steal_pointer (&page->report), NULL);
 +    return;
 +  }
 +
@@ -1412,18 +1378,16 @@ index 0000000..a1fb678
 +                              "response",
 +                              G_CALLBACK (gtk_window_destroy),
 +                              dialog);
-+    gtk_widget_show (dialog);
++    gtk_window_present (GTK_WINDOW (dialog));
 +  }
 +}
 +
 +static void
 +show_legal (GtkButton *button, GisUbuntuReportPage *page)
 +{
-+  GisUbuntuReportPagePrivate *priv = gis_ubuntu_report_page_get_instance_private (page);
-+
 +  gtk_show_uri_full (GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (page))),
 +                     "https://www.ubuntu.com/legal/terms-and-policies/systems-information-notice",
-+                     GDK_CURRENT_TIME, priv->cancellable, on_show_uri_cb, page);
++                     GDK_CURRENT_TIME, page->cancellable, on_show_uri_cb, page);
 +}
 +
 +typedef struct {
@@ -1522,7 +1486,7 @@ index 0000000..a1fb678
 +                            G_CALLBACK (gtk_window_destroy),
 +                            dialog);
 +
-+  gtk_widget_show (g_steal_pointer (&dialog));
++  gtk_window_present (GTK_WINDOW (g_steal_pointer (&dialog)));
 +}
 +
 +static void
@@ -1579,16 +1543,16 @@ index 0000000..a1fb678
 + * thread doesn't manage to do it anyway.
 + */
 +static gboolean
-+gis_ubuntu_report_page_apply (GisPage *page, GCancellable *cancellable)
++gis_ubuntu_report_page_apply (GisPage *gis_page, GCancellable *cancellable)
 +{
-+  GisUbuntuReportPagePrivate *priv = gis_ubuntu_report_page_get_instance_private (GIS_UBUNTU_REPORT_PAGE (page));
++  GisUbuntuReportPage *page = GIS_UBUNTU_REPORT_PAGE (gis_page);
 +  g_autofree char *error = NULL;
 +  g_autoptr(GTask) task = NULL;
 +  SendReportThreadData *data;
 +
 +  data = g_new0 (SendReportThreadData, 1);
-+  data->send_allowed = gtk_check_button_get_active (GTK_CHECK_BUTTON (priv->opt_in_check));
-+  data->report = g_steal_pointer (&priv->report);
++  data->send_allowed = gtk_check_button_get_active (GTK_CHECK_BUTTON (page->opt_in_check));
++  data->report = g_steal_pointer (&page->report);
 +
 +  task = g_task_new (page, cancellable, on_collect_send_report_callback, NULL);
 +  g_task_set_return_on_cancel (task, TRUE);
@@ -1603,9 +1567,9 @@ index 0000000..a1fb678
 +}
 +
 +static void
-+gis_ubuntu_report_page_locale_changed (GisPage *page)
++gis_ubuntu_report_page_locale_changed (GisPage *gis_page)
 +{
-+  GisUbuntuReportPagePrivate *priv = gis_ubuntu_report_page_get_instance_private (GIS_UBUNTU_REPORT_PAGE (page));
++  GisUbuntuReportPage *page = GIS_UBUNTU_REPORT_PAGE (gis_page);
 +  g_autofree gchar *timezone_text = NULL;
 +  g_autofree gchar *description_text = NULL;
 +  g_autoptr(GError) error = NULL;
@@ -1621,7 +1585,7 @@ index 0000000..a1fb678
 +                                        "This includes things like the computer model, "
 +					"what software is installed, "
 +					"and the approximate location you chose (%s)."), g_strstrip (timezone_text));
-+  g_object_set (priv->header, "subtitle", description_text, NULL);
++  g_object_set (page->header, "subtitle", description_text, NULL);
 +}
 +
 +static void
@@ -1631,10 +1595,10 @@ index 0000000..a1fb678
 +  GObjectClass *object_class = G_OBJECT_CLASS (klass);
 +
 +  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass), "/org/gnome/initial-setup/gis-ubuntu-report-page.ui");
-+  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuReportPage, header);
-+  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuReportPage, show_report_b);
-+  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuReportPage, cancel_report_b);
-+  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuReportPage, opt_in_check);
++  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisUbuntuReportPage, header);
++  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisUbuntuReportPage, show_report_b);
++  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisUbuntuReportPage, cancel_report_b);
++  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisUbuntuReportPage, opt_in_check);
 +  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), show_report);
 +  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), show_legal);
 +
@@ -1663,10 +1627,10 @@ index 0000000..a1fb678
 +}
 diff --git a/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.h b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.h
 new file mode 100644
-index 0000000..9ba7500
+index 0000000..846eb9b
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.h
-@@ -0,0 +1,52 @@
+@@ -0,0 +1,33 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2018 Canonical Ltd.
@@ -1693,26 +1657,7 @@ index 0000000..9ba7500
 +G_BEGIN_DECLS
 +
 +#define GIS_TYPE_UBUNTU_REPORT_PAGE            (gis_ubuntu_report_page_get_type ())
-+#define GIS_UBUNTU_REPORT_PAGE(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GIS_TYPE_UBUNTU_REPORT_PAGE, GisUbuntuReportPage))
-+#define GIS_UBUNTU_REPORT_PAGE_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass),  GIS_TYPE_UBUNTU_REPORT_PAGE, GisUbuntuReportPageClass))
-+#define GIS_IS_UBUNTU_REPORT_PAGE(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GIS_TYPE_UBUNTU_REPORT_PAGE))
-+#define GIS_IS_UBUNTU_REPORT_PAGE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass),  GIS_TYPE_UBUNTU_REPORT_PAGE))
-+#define GIS_UBUNTU_REPORT_PAGE_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj),  GIS_TYPE_UBUNTU_REPORT_PAGE, GisUbuntuReportPageClass))
-+
-+typedef struct _GisUbuntuReportPage        GisUbuntuReportPage;
-+typedef struct _GisUbuntuReportPageClass   GisUbuntuReportPageClass;
-+
-+struct _GisUbuntuReportPage
-+{
-+  GisPage parent;
-+};
-+
-+struct _GisUbuntuReportPageClass
-+{
-+  GisPageClass parent_class;
-+};
-+
-+GType gis_ubuntu_report_page_get_type (void);
++G_DECLARE_FINAL_TYPE (GisUbuntuReportPage, gis_ubuntu_report_page, GIS, UBUNTU_REPORT_PAGE, GisPage);
 +
 +GisPage *gis_prepare_ubuntu_report_page (GisDriver *driver);
 +
