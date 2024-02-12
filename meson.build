@@ -1,6 +1,6 @@
 project('gnome-initial-setup',
         ['c'],
-        version: '46.alpha',
+        version: '46.beta',
         license: 'GPL-2.0-or-later',
         meson_version: '>= 0.53.0',
 )
@@ -62,8 +62,6 @@ conf.set('HAVE_IBUS', have_ibus)
 libadwaita_dep = dependency(
   'libadwaita-1',
   version: '>= 1.2.alpha',
-  fallback: ['libadwaita', 'libadwaita_dep'],
-  default_options: ['examples=false', 'introspection=disabled', 'tests=false', 'vapi=false'],
 )
 
 # Needed for the parental controls pages
@@ -72,8 +70,7 @@ libmalcontent_dep = dependency ('malcontent-0',
                                 required: get_option('parental_controls'))
 libmalcontent_ui_dep = dependency ('malcontent-ui-1',
                                    version: '>= 0.11.0',
-                                   required: get_option('parental_controls'),
-                                   fallback: ['malcontent-ui', 'libmalcontent_ui_dep'])
+                                   required: get_option('parental_controls'))
 have_parental_controls = libmalcontent_dep.found() and libmalcontent_ui_dep.found()
 conf.set('HAVE_PARENTAL_CONTROLS', have_parental_controls)
 
