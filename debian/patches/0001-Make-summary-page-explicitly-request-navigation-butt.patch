@@ -95,10 +95,10 @@ index a3122b7..40c5f04 100644
    gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisAssistant, skip);
    gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisAssistant, back);
 diff --git a/gnome-initial-setup/gis-assistant.ui b/gnome-initial-setup/gis-assistant.ui
-index 99d1e6d..cbfb7d4 100644
+index 4b8cc0d..2660870 100644
 --- a/gnome-initial-setup/gis-assistant.ui
 +++ b/gnome-initial-setup/gis-assistant.ui
-@@ -49,6 +49,15 @@
+@@ -50,6 +50,15 @@
          </style>
        </object>
      </child>
@@ -202,7 +202,7 @@ index 9e46b45..742cc71 100644
  void         gis_page_set_needs_accept (GisPage *page, gboolean needs_accept);
  gboolean     gis_page_get_has_forward (GisPage *page);
 diff --git a/gnome-initial-setup/pages/summary/gis-summary-page.c b/gnome-initial-setup/pages/summary/gis-summary-page.c
-index 0aee2da..b3f2371 100644
+index d3bb799..5e90e8a 100644
 --- a/gnome-initial-setup/pages/summary/gis-summary-page.c
 +++ b/gnome-initial-setup/pages/summary/gis-summary-page.c
 @@ -249,6 +249,8 @@ gis_summary_page_constructed (GObject *object)

@@ -72,10 +72,10 @@ index 0000000..12c7bf0
 +</locatingRules>
 \ No newline at end of file
 diff --git a/gnome-initial-setup/gis-driver.c b/gnome-initial-setup/gis-driver.c
-index f00a2f2..980ab31 100644
+index a2c58d3..917adac 100644
 --- a/gnome-initial-setup/gis-driver.c
 +++ b/gnome-initial-setup/gis-driver.c
-@@ -100,6 +100,9 @@ struct _GisDriver {
+@@ -102,6 +102,9 @@ struct _GisDriver {
  
    const gchar *vendor_conf_file_path;
    GKeyFile *vendor_conf_file;
@@ -85,7 +85,7 @@ index f00a2f2..980ab31 100644
  };
  
  G_DEFINE_TYPE (GisDriver, gis_driver, ADW_TYPE_APPLICATION)
-@@ -941,6 +944,33 @@ gis_driver_save_data (GisDriver  *driver,
+@@ -1005,6 +1008,33 @@ gis_driver_save_data (GisDriver  *driver,
    return gis_assistant_save_data (driver->assistant, error);
  }
  
@@ -120,10 +120,10 @@ index f00a2f2..980ab31 100644
  gis_driver_new (GisDriverMode mode)
  {
 diff --git a/gnome-initial-setup/gis-driver.h b/gnome-initial-setup/gis-driver.h
-index 9b935e2..fc5ed02 100644
+index ca06391..19f5a28 100644
 --- a/gnome-initial-setup/gis-driver.h
 +++ b/gnome-initial-setup/gis-driver.h
-@@ -121,6 +121,12 @@ gchar *gis_driver_conf_get_string (GisDriver *driver,
+@@ -125,6 +125,12 @@ gchar *gis_driver_conf_get_string (GisDriver *driver,
                                     const gchar *group,
                                     const gchar *key);
  
@@ -214,10 +214,10 @@ index 7ca2bc2..0cded7c 100644
          break;
  
 diff --git a/gnome-initial-setup/meson.build b/gnome-initial-setup/meson.build
-index beb96ec..8f23f8b 100644
+index 2ae2671..41a5ff7 100644
 --- a/gnome-initial-setup/meson.build
 +++ b/gnome-initial-setup/meson.build
-@@ -62,6 +62,9 @@ dependencies = [
+@@ -53,6 +53,9 @@ dependencies = [
      dependency ('krb5'),
      dependency ('libsecret-1', version: '>= 0.18.8'),
      dependency ('pwquality'),
@@ -1169,10 +1169,10 @@ index 8d327f6..578ce5d 100644
  
  if libmalcontent_dep.found() and libmalcontent_ui_dep.found()
 diff --git a/gnome-initial-setup/pages/privacy/gis-privacy-page.c b/gnome-initial-setup/pages/privacy/gis-privacy-page.c
-index 959fcae..42834e4 100644
+index 323e1aa..7750cf8 100644
 --- a/gnome-initial-setup/pages/privacy/gis-privacy-page.c
 +++ b/gnome-initial-setup/pages/privacy/gis-privacy-page.c
-@@ -243,7 +243,7 @@ gis_privacy_page_apply (GisPage *gis_page,
+@@ -247,7 +247,7 @@ gis_privacy_page_apply (GisPage *gis_page,
  static void
  gis_privacy_page_locale_changed (GisPage *page)
  {
@@ -1182,7 +1182,7 @@ index 959fcae..42834e4 100644
  
  static void
 diff --git a/gnome-initial-setup/pages/summary/gis-summary-page.c b/gnome-initial-setup/pages/summary/gis-summary-page.c
-index b3f2371..6e33010 100644
+index 5e90e8a..d34aad3 100644
 --- a/gnome-initial-setup/pages/summary/gis-summary-page.c
 +++ b/gnome-initial-setup/pages/summary/gis-summary-page.c
 @@ -189,7 +189,7 @@ done_cb (GtkButton *button, GisSummaryPage *page)
