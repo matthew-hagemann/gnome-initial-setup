@@ -1,0 +1,17 @@
+Description: Disable deprecated-declarations GCC warnings.
+ .
+ They generate a lot of noise at this point, thus make actually relevant
+ warnings difficult to detect.
+Author: Nathan Pratta Teodosio <nathan.teodosio@canonical.com>
+Forwarded: not-needed
+
+--- a/meson.build
++++ b/meson.build
+@@ -8,6 +8,7 @@ project('gnome-initial-setup',
+ cc = meson.get_compiler('c')
+ gnome = import('gnome')
+ i18n = import('i18n')
++add_global_arguments('-Wno-deprecated-declarations', language : 'c')
+ 
+ prefix = get_option('prefix')
+ po_dir = join_paths(meson.current_source_dir(), 'po')
