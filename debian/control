@@ -34,7 +34,7 @@ Build-Depends: debhelper-compat (= 13),
                libwebkitgtk-6.0-dev,
                libxml2-utils,
                meson (>= 0.50.0),
-               systemd ( >= 242),
+               systemd-dev ( >= 242),
 Rules-Requires-Root: no
 Standards-Version: 4.6.2
 Vcs-Browser: https://salsa.debian.org/gnome-team/gnome-initial-setup
