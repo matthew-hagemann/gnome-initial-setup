@@ -1,12 +1,13 @@
-gnome-initial-setup (46.0-1) UNRELEASED; urgency=medium
+gnome-initial-setup (46.0-1) unstable; urgency=medium
 
   [ Jeremy Bícha ]
   * New upstream release
+  * Bump minimum GTK4 and geoclue
 
   [ Michael Biebl ]
   * Build-depend on systemd-dev instead of systemd (Closes: #1060502)
 
- -- Jeremy Bícha <jbicha@ubuntu.com>  Thu, 21 Mar 2024 19:31:51 -0400
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Thu, 21 Mar 2024 19:34:40 -0400
 
 gnome-initial-setup (46~beta-1) unstable; urgency=medium
 
