@@ -20,10 +20,10 @@ Subject: Update style to the same than flutter installer
  create mode 100644 gnome-initial-setup/pages/privacy/enable-location-services.svg
 
 diff --git a/gnome-initial-setup/gis-assistant.c b/gnome-initial-setup/gis-assistant.c
-index 40c5f04..c98db87 100644
+index ab2a44b..713aa5f 100644
 --- a/gnome-initial-setup/gis-assistant.c
 +++ b/gnome-initial-setup/gis-assistant.c
-@@ -410,7 +410,7 @@ gis_assistant_locale_changed (GisAssistant *assistant)
+@@ -417,7 +417,7 @@ gis_assistant_locale_changed (GisAssistant *assistant)
    GList *l;
  
    gtk_button_set_label (GTK_BUTTON (assistant->forward), _("_Next"));

@@ -5,28 +5,45 @@ Subject: Add Ubuntu mode with special pages
 ---
  data/its/polkit.its                                |   8 +
  data/its/polkit.loc                                |   6 +
+ gnome-initial-setup/gis-assistant.c                |   9 +-
  gnome-initial-setup/gis-driver.c                   |  30 +
  gnome-initial-setup/gis-driver.h                   |   6 +
- gnome-initial-setup/gnome-initial-setup.c          |  38 +-
+ gnome-initial-setup/gis-page.c                     |  15 +
+ gnome-initial-setup/gis-page.h                     |   2 +
+ gnome-initial-setup/gnome-initial-setup.c          |  40 +-
  gnome-initial-setup/meson.build                    |   3 +
  gnome-initial-setup/pages/apps/app-center.svg      |   3 +
  gnome-initial-setup/pages/apps/apps.gresource.xml  |   9 +
  .../pages/apps/default-snap-icon.svg               |   1 +
- gnome-initial-setup/pages/apps/gis-apps-page.c     | 679 +++++++++++++++++++++
+ gnome-initial-setup/pages/apps/gis-apps-page.c     | 679 +++++++++++++++++
  gnome-initial-setup/pages/apps/gis-apps-page.h     |  33 +
- gnome-initial-setup/pages/apps/gis-apps-page.ui    | 119 ++++
+ gnome-initial-setup/pages/apps/gis-apps-page.ui    | 119 +++
  gnome-initial-setup/pages/apps/meson.build         |  10 +
- gnome-initial-setup/pages/meson.build              |   2 +
+ gnome-initial-setup/pages/meson.build              |   3 +
  .../pages/privacy/gis-privacy-page.c               |   2 +-
  .../pages/summary/gis-summary-page.c               |   2 +-
- .../pages/ubuntu-report/gis-ubuntu-report-page.c   | 456 ++++++++++++++
+ gnome-initial-setup/pages/ubuntu-pro/checkmark.svg |   1 +
+ gnome-initial-setup/pages/ubuntu-pro/fail.svg      |   1 +
+ .../pages/ubuntu-pro/gis-ubuntupro-attach-page.ui  | 210 ++++++
+ .../pages/ubuntu-pro/gis-ubuntupro-offer-page.ui   | 158 ++++
+ .../pages/ubuntu-pro/gis-ubuntupro-page.c          | 820 +++++++++++++++++++++
+ .../pages/ubuntu-pro/gis-ubuntupro-page.h          | 110 +++
+ .../pages/ubuntu-pro/gis-ubuntupro-page.ui         |  34 +
+ .../ubuntu-pro/gis-ubuntupro-services-page.ui      | 137 ++++
+ gnome-initial-setup/pages/ubuntu-pro/meson.build   |  12 +
+ .../pages/ubuntu-pro/ubuntu-pro-dark.svg           |  25 +
+ .../pages/ubuntu-pro/ubuntu-pro.svg                |   1 +
+ .../pages/ubuntu-pro/ubuntupro.gresource.xml       |  14 +
+ gnome-initial-setup/pages/ubuntu-pro/utils.c       | 119 +++
+ gnome-initial-setup/pages/ubuntu-pro/utils.h       |   7 +
+ .../pages/ubuntu-report/gis-ubuntu-report-page.c   | 456 ++++++++++++
  .../pages/ubuntu-report/gis-ubuntu-report-page.h   |  33 +
- .../pages/ubuntu-report/gis-ubuntu-report-page.ui  | 104 ++++
+ .../pages/ubuntu-report/gis-ubuntu-report-page.ui  | 104 +++
  .../pages/ubuntu-report/meson.build                |  10 +
  .../ubuntu-report/ubuntu-report.gresource.xml      |   8 +
  .../pages/ubuntu-report/ubuntu-report.svg          |   1 +
  po/POTFILES.in                                     |   5 +
- 23 files changed, 1564 insertions(+), 4 deletions(-)
+ 40 files changed, 3241 insertions(+), 5 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/app-center.svg
@@ -36,6 +53,20 @@ Subject: Add Ubuntu mode with special pages
  create mode 100644 gnome-initial-setup/pages/apps/gis-apps-page.h
  create mode 100644 gnome-initial-setup/pages/apps/gis-apps-page.ui
  create mode 100644 gnome-initial-setup/pages/apps/meson.build
+ create mode 100644 gnome-initial-setup/pages/ubuntu-pro/checkmark.svg
+ create mode 100644 gnome-initial-setup/pages/ubuntu-pro/fail.svg
+ create mode 100644 gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
+ create mode 100644 gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
+ create mode 100644 gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
+ create mode 100644 gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.h
+ create mode 100644 gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.ui
+ create mode 100644 gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui
+ create mode 100644 gnome-initial-setup/pages/ubuntu-pro/meson.build
+ create mode 100644 gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro-dark.svg
+ create mode 100644 gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro.svg
+ create mode 100644 gnome-initial-setup/pages/ubuntu-pro/ubuntupro.gresource.xml
+ create mode 100644 gnome-initial-setup/pages/ubuntu-pro/utils.c
+ create mode 100644 gnome-initial-setup/pages/ubuntu-pro/utils.h
  create mode 100644 gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
  create mode 100644 gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.h
  create mode 100644 gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui
@@ -43,87 +74,6 @@ Subject: Add Ubuntu mode with special pages
  create mode 100644 gnome-initial-setup/pages/ubuntu-report/ubuntu-report.gresource.xml
  create mode 100644 gnome-initial-setup/pages/ubuntu-report/ubuntu-report.svg
 
---- gnome-initial-setup.orig/gnome-initial-setup/gis-assistant.c	2023-01-19 15:05:24.304699134 +0100
-+++ gnome-initial-setup/gnome-initial-setup/gis-assistant.c	2023-01-19 15:05:24.300699193 +0100
-@@ -175,7 +175,8 @@
- gis_assistant_previous_page (GisAssistant *assistant)
- {
-   g_return_if_fail (assistant->current_page != NULL);
--  switch_to (assistant, find_prev_page (assistant, assistant->current_page));
-+  if (!gis_page_go_back(assistant->current_page))
-+    switch_to (assistant, find_prev_page (assistant, assistant->current_page));
- }
- 
- static void
-@@ -260,6 +261,12 @@
-     {
-       applying = gis_page_get_applying (assistant->current_page);
-       is_first_page = assistant->pages->data == assistant->current_page;
-+      /* Hack to prevent the next button from Ubuntu Pro attach page from
-+       * being sensitive when the page is first mapped. */
-+      if (g_str_equal(
-+          GIS_PAGE_GET_CLASS(assistant->current_page)->page_id, "UbuntuPro"
-+      ))
-+        return;
-     }
-   gtk_widget_set_sensitive (assistant->forward, !applying);
-   gtk_widget_set_sensitive (assistant->done, !applying);
---- gnome-initial-setup.orig/gnome-initial-setup/gis-page.c	2023-01-19 15:05:24.304699134 +0100
-+++ gnome-initial-setup/gnome-initial-setup/gis-page.c	2023-01-19 15:05:24.300699193 +0100
-@@ -202,6 +202,12 @@
-   return FALSE;
- }
- 
-+static gboolean
-+gis_page_real_go_back (GisPage      *page)
-+{
-+  return FALSE;
-+}
-+
- static void
- gis_page_class_init (GisPageClass *klass)
- {
-@@ -214,6 +220,7 @@
-   object_class->set_property = gis_page_set_property;
- 
-   klass->apply = gis_page_real_apply;
-+  klass->go_back = gis_page_real_go_back;
- 
-   obj_props[PROP_DRIVER] =
-     g_param_spec_object ("driver", "", "", GIS_TYPE_DRIVER,
-@@ -386,6 +393,14 @@
-   g_object_notify_by_pspec (G_OBJECT (page), obj_props[PROP_APPLYING]);
- }
- 
-+gboolean
-+gis_page_go_back (GisPage *page)
-+{
-+  GisPageClass *klass;
-+  klass = GIS_PAGE_GET_CLASS (page);
-+  return klass->go_back(page);
-+}
-+
- void
- gis_page_apply_complete (GisPage *page,
-                          gboolean valid)
---- gnome-initial-setup.orig/gnome-initial-setup/gis-page.h	2023-01-19 15:05:24.304699134 +0100
-+++ gnome-initial-setup/gnome-initial-setup/gis-page.h	2023-01-19 15:05:24.300699193 +0100
-@@ -57,6 +57,7 @@
-   void         (*locale_changed) (GisPage *page);
-   gboolean     (*apply) (GisPage *page,
-                          GCancellable *cancellable);
-+  gboolean     (*go_back) (GisPage *page);
-   gboolean     (*save_data) (GisPage  *page,
-                              GError  **error);
-   void         (*shown) (GisPage *page);
-@@ -81,6 +82,7 @@
- void         gis_page_apply_begin (GisPage *page, GisPageApplyCallback callback, gpointer user_data);
- void         gis_page_apply_cancel (GisPage *page);
- void         gis_page_apply_complete (GisPage *page, gboolean valid);
-+gboolean     gis_page_go_back (GisPage *page);
- gboolean     gis_page_get_applying (GisPage *page);
- gboolean     gis_page_save_data (GisPage  *page,
-                                  GError  **error);
 diff --git a/data/its/polkit.its b/data/its/polkit.its
 new file mode 100644
 index 0000000..c48ad3f
@@ -152,11 +102,38 @@ index 0000000..12c7bf0
 +  </locatingRule>
 +</locatingRules>
 \ No newline at end of file
+diff --git a/gnome-initial-setup/gis-assistant.c b/gnome-initial-setup/gis-assistant.c
+index 40c5f04..ab2a44b 100644
+--- a/gnome-initial-setup/gis-assistant.c
++++ b/gnome-initial-setup/gis-assistant.c
+@@ -163,7 +163,8 @@ void
+ gis_assistant_previous_page (GisAssistant *assistant)
+ {
+   g_return_if_fail (assistant->current_page != NULL);
+-  switch_to (assistant, find_prev_page (assistant, assistant->current_page));
++  if (!gis_page_go_back(assistant->current_page))
++    switch_to (assistant, find_prev_page (assistant, assistant->current_page));
+ }
+ 
+ static void
+@@ -246,6 +247,12 @@ update_applying_state (GisAssistant *assistant)
+     {
+       applying = gis_page_get_applying (assistant->current_page);
+       is_first_page = assistant->pages->data == assistant->current_page;
++      /* Hack to prevent the next button from Ubuntu Pro attach page from
++       * being sensitive when the page is first mapped. */
++      if (g_str_equal(
++          GIS_PAGE_GET_CLASS(assistant->current_page)->page_id, "UbuntuPro"
++      ))
++        return;
+     }
+   gtk_widget_set_sensitive (assistant->forward, !applying);
+   gtk_widget_set_sensitive (assistant->done, !applying);
 diff --git a/gnome-initial-setup/gis-driver.c b/gnome-initial-setup/gis-driver.c
-index a2c58d3..917adac 100644
+index d172276..7e40f9d 100644
 --- a/gnome-initial-setup/gis-driver.c
 +++ b/gnome-initial-setup/gis-driver.c
-@@ -102,6 +102,9 @@ struct _GisDriver {
+@@ -105,6 +105,9 @@ struct _GisDriver {
  
    const gchar *vendor_conf_file_path;
    GKeyFile *vendor_conf_file;
@@ -166,7 +143,7 @@ index a2c58d3..917adac 100644
  };
  
  G_DEFINE_TYPE (GisDriver, gis_driver, ADW_TYPE_APPLICATION)
-@@ -1005,6 +1008,33 @@ gis_driver_save_data (GisDriver  *driver,
+@@ -1030,6 +1033,33 @@ gis_driver_save_data (GisDriver  *driver,
    return gis_assistant_save_data (driver->assistant, error);
  }
  
@@ -217,8 +194,68 @@ index ca06391..19f5a28 100644
  GisDriver *gis_driver_new (GisDriverMode mode);
  
  G_END_DECLS
+diff --git a/gnome-initial-setup/gis-page.c b/gnome-initial-setup/gis-page.c
+index d8e2242..125b6aa 100644
+--- a/gnome-initial-setup/gis-page.c
++++ b/gnome-initial-setup/gis-page.c
+@@ -202,6 +202,12 @@ gis_page_real_apply (GisPage      *page,
+   return FALSE;
+ }
+ 
++static gboolean
++gis_page_real_go_back (GisPage      *page)
++{
++  return FALSE;
++}
++
+ static void
+ gis_page_class_init (GisPageClass *klass)
+ {
+@@ -214,6 +220,7 @@ gis_page_class_init (GisPageClass *klass)
+   object_class->set_property = gis_page_set_property;
+ 
+   klass->apply = gis_page_real_apply;
++  klass->go_back = gis_page_real_go_back;
+ 
+   obj_props[PROP_DRIVER] =
+     g_param_spec_object ("driver", "", "", GIS_TYPE_DRIVER,
+@@ -382,6 +389,14 @@ gis_page_apply_begin (GisPage                *page,
+   g_object_notify_by_pspec (G_OBJECT (page), obj_props[PROP_APPLYING]);
+ }
+ 
++gboolean
++gis_page_go_back (GisPage *page)
++{
++  GisPageClass *klass;
++  klass = GIS_PAGE_GET_CLASS (page);
++  return klass->go_back(page);
++}
++
+ void
+ gis_page_apply_complete (GisPage *page,
+                          gboolean valid)
+diff --git a/gnome-initial-setup/gis-page.h b/gnome-initial-setup/gis-page.h
+index 742cc71..adb11e0 100644
+--- a/gnome-initial-setup/gis-page.h
++++ b/gnome-initial-setup/gis-page.h
+@@ -59,6 +59,7 @@ struct _GisPageClass
+   void         (*locale_changed) (GisPage *page);
+   gboolean     (*apply) (GisPage *page,
+                          GCancellable *cancellable);
++  gboolean     (*go_back) (GisPage *page);
+   gboolean     (*save_data) (GisPage  *page,
+                              GError  **error);
+   void         (*shown) (GisPage *page);
+@@ -83,6 +84,7 @@ void         gis_page_locale_changed (GisPage *page);
+ void         gis_page_apply_begin (GisPage *page, GisPageApplyCallback callback, gpointer user_data);
+ void         gis_page_apply_cancel (GisPage *page);
+ void         gis_page_apply_complete (GisPage *page, gboolean valid);
++gboolean     gis_page_go_back (GisPage *page);
+ gboolean     gis_page_get_applying (GisPage *page);
+ gboolean     gis_page_save_data (GisPage  *page,
+                                  GError  **error);
 diff --git a/gnome-initial-setup/gnome-initial-setup.c b/gnome-initial-setup/gnome-initial-setup.c
-index 7ca2bc2..0cded7c 100644
+index 7ca2bc2..85375bf 100644
 --- a/gnome-initial-setup/gnome-initial-setup.c
 +++ b/gnome-initial-setup/gnome-initial-setup.c
 @@ -40,6 +40,9 @@
@@ -231,7 +268,7 @@ index 7ca2bc2..0cded7c 100644
  
  #define VENDOR_PAGES_GROUP "pages"
  #define VENDOR_SKIP_KEY "skip"
-@@ -78,6 +80,16 @@ static PageData page_table[] = {
+@@ -78,6 +81,16 @@ static PageData page_table[] = {
    { NULL },
  };
  
@@ -248,7 +285,7 @@ index 7ca2bc2..0cded7c 100644
  #undef PAGE
  
  static gboolean
-@@ -188,6 +199,25 @@ destroy_page (gpointer data)
+@@ -188,6 +201,25 @@ destroy_page (gpointer data)
      gis_assistant_remove_page (GIS_ASSISTANT (assistant), page);
  }
  
@@ -274,7 +311,7 @@ index 7ca2bc2..0cded7c 100644
  static void
  rebuild_pages_cb (GisDriver *driver)
  {
-@@ -200,7 +230,11 @@ rebuild_pages_cb (GisDriver *driver)
+@@ -200,7 +232,11 @@ rebuild_pages_cb (GisDriver *driver)
  
    assistant = gis_driver_get_assistant (driver);
    current_page = gis_assistant_get_current_page (assistant);
@@ -287,7 +324,7 @@ index 7ca2bc2..0cded7c 100644
  
    g_ptr_array_free (skipped_pages, TRUE);
    skipped_pages = g_ptr_array_new_with_free_func (destroy_page);
-@@ -208,7 +242,7 @@ rebuild_pages_cb (GisDriver *driver)
+@@ -208,7 +244,7 @@ rebuild_pages_cb (GisDriver *driver)
    if (current_page != NULL) {
      destroy_pages_after (assistant, current_page);
  
@@ -297,7 +334,7 @@ index 7ca2bc2..0cded7c 100644
          break;
  
 diff --git a/gnome-initial-setup/meson.build b/gnome-initial-setup/meson.build
-index 2ae2671..41a5ff7 100644
+index 2d0374f..b593a01 100644
 --- a/gnome-initial-setup/meson.build
 +++ b/gnome-initial-setup/meson.build
 @@ -53,6 +53,9 @@ dependencies = [
@@ -1208,7 +1245,7 @@ index 0000000..dec2b38
 +    'gis-apps-page.h',
 +)
 diff --git a/gnome-initial-setup/pages/meson.build b/gnome-initial-setup/pages/meson.build
-index 8d327f6..578ce5d 100644
+index 8d327f6..2ed2a5f 100644
 --- a/gnome-initial-setup/pages/meson.build
 +++ b/gnome-initial-setup/pages/meson.build
 @@ -9,6 +9,9 @@ pages = [
@@ -1247,685 +1284,27 @@ index 5e90e8a..d34aad3 100644
      default:
        break;
      }
-diff --git a/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/checkmark.svg b/gnome-initial-setup/pages/ubuntu-pro/checkmark.svg
 new file mode 100644
-index 0000000..7321984
+index 0000000..a0c8602
 --- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
-@@ -0,0 +1,456 @@
-+/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
-+/*
-+ * Copyright (C) 2018 Canonical Ltd.
-+ *
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation; either version 2 of the
-+ * License, or (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful, but
-+ * WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-+ * General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
-+ */
-+
-+/* Ubuntu report page {{{1 */
-+
-+#define PAGE_ID "ubuntu-report"
-+
-+#include "config.h"
-+#include "gis-ubuntu-report-page.h"
-+#include "gis-page-header.h"
-+#include "ubuntu-report-resources.h"
-+
-+#include <glib/gi18n.h>
-+#include <gio/gio.h>
-+#include <libsysmetrics.h>
-+
-+struct _GisUbuntuReportPage {
-+  GisPage parent;
-+
-+  GtkWidget *opt_in_check;
-+  GtkWidget *header;
-+  GtkWidget *cancel_report_b;
-+  GtkWidget *show_report_b;
-+  GCancellable *cancellable;
-+  gchar *report;
-+};
-+
-+G_DEFINE_TYPE (GisUbuntuReportPage, gis_ubuntu_report_page, GIS_TYPE_PAGE);
-+
-+static void
-+cancel_report (GtkButton *button, GisUbuntuReportPage *page)
-+{
-+  gtk_widget_set_visible (GTK_WIDGET (page->cancel_report_b), FALSE);
-+  gtk_widget_set_visible (GTK_WIDGET (page->show_report_b), TRUE);
-+
-+  g_cancellable_cancel (page->cancellable);
-+  g_clear_object (&page->cancellable);
-+  page->cancellable = g_cancellable_new ();
-+}
-+
-+static void
-+gis_ubuntu_report_page_constructed (GObject *object)
-+{
-+  GisUbuntuReportPage *page = GIS_UBUNTU_REPORT_PAGE (object);
-+  g_autoptr(GtkWidget) image = NULL;
-+
-+  G_OBJECT_CLASS (gis_ubuntu_report_page_parent_class)->constructed (object);
-+
-+  page->cancellable = g_cancellable_new ();
-+  g_signal_connect(page->cancel_report_b, "clicked", G_CALLBACK(cancel_report), page);
-+
-+  image = g_object_ref_sink (gtk_image_new_from_resource (
-+    "/org/gnome/initial-setup/ubuntu-report.svg"));
-+  g_object_set (page->header, "paintable", gtk_image_get_paintable (GTK_IMAGE (image)), NULL);
-+
-+  gis_page_set_complete (GIS_PAGE (page), TRUE);
-+}
-+
-+static void
-+gis_ubuntu_report_page_finalize (GObject *object)
-+{
-+  GisUbuntuReportPage *page = GIS_UBUNTU_REPORT_PAGE (object);
-+
-+  g_cancellable_cancel (page->cancellable);
-+  g_clear_object (&page->cancellable);
-+
-+  g_free (page->report);
-+
-+  G_OBJECT_CLASS (gis_ubuntu_report_page_parent_class)->finalize (object);
-+}
-+
-+static void
-+on_collect_report_thread (GTask        *task,
-+                          gpointer      source_object,
-+                          gpointer      task_data,
-+                          GCancellable *cancellable)
-+{
-+  g_autofree char *report = NULL;
-+  g_autofree char *error_msg = NULL;
-+
-+  error_msg = sysmetrics_collect (&report);
-+  if (error_msg != NULL) {
-+    g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED, "%s", error_msg);
-+    return;
-+  }
-+
-+  g_task_return_pointer (task, g_steal_pointer (&report), g_free);
-+}
-+
-+static void
-+on_show_report_callback (GObject      *source_object,
-+                         GAsyncResult *res,
-+                         gpointer      user_data)
-+{
-+  GtkWidget *dialog, *scroll, *text_view;
-+  GTask *task = G_TASK (res);
-+  g_autoptr (GError) error = NULL;
-+  GisUbuntuReportPage *page = GIS_UBUNTU_REPORT_PAGE (user_data);
-+
-+  gtk_widget_set_visible (GTK_WIDGET (page->show_report_b), TRUE);
-+  gtk_widget_set_visible (GTK_WIDGET (page->cancel_report_b), FALSE);
-+
-+  page->report = g_task_propagate_pointer (task, &error);
-+
-+  if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
-+    return;
-+
-+  if (error != NULL) {
-+    dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (page))),
-+                                     GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-+                                     GTK_MESSAGE_ERROR,
-+                                     GTK_BUTTONS_CLOSE,
-+                                     _("Failed to get report information: %s"),
-+                                     error->message);
-+    g_signal_connect_swapped (dialog,
-+                              "response",
-+                              G_CALLBACK (gtk_window_destroy),
-+                              dialog);
-+    gtk_window_present (GTK_WINDOW (dialog));
-+    return;
-+  }
-+
-+  dialog = gtk_dialog_new_with_buttons (_("Ubuntu Report Contents"),
-+                                        GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (page))),
-+                                        GTK_DIALOG_MODAL |
-+                                        GTK_DIALOG_DESTROY_WITH_PARENT |
-+                                        GTK_DIALOG_USE_HEADER_BAR,
-+                                        NULL, NULL);
-+  gtk_widget_set_size_request (dialog, 800, 600);
-+
-+  scroll = gtk_scrolled_window_new ();
-+
-+  text_view = gtk_text_view_new ();
-+  gtk_text_view_set_monospace (GTK_TEXT_VIEW (text_view), TRUE);
-+  gtk_widget_set_hexpand (scroll, TRUE);
-+  gtk_widget_set_vexpand (scroll, TRUE);
-+  gtk_widget_set_margin_top (scroll, 6);
-+  gtk_widget_set_margin_bottom (scroll, 6);
-+  gtk_widget_set_margin_start (scroll, 6);
-+  gtk_widget_set_margin_end (scroll, 6);
-+  gtk_box_append (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), scroll);
-+  gtk_text_buffer_set_text (gtk_text_view_get_buffer (GTK_TEXT_VIEW (text_view)), page->report, -1);
-+  gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scroll), text_view);
-+
-+  g_signal_connect_swapped (dialog,
-+                            "response",
-+                            G_CALLBACK (gtk_window_destroy),
-+                            dialog);
-+  gtk_window_present (GTK_WINDOW (dialog));
-+}
-+
-+static void
-+show_report (GtkButton *button, GisUbuntuReportPage *page)
-+{
-+  g_autofree char *error = NULL;
-+  g_autoptr(GTask) task = NULL;
-+
-+  gtk_widget_set_visible (GTK_WIDGET (page->show_report_b), FALSE);
-+  gtk_widget_set_visible (GTK_WIDGET (page->cancel_report_b), TRUE);
-+
-+  task = g_task_new (page, page->cancellable, on_show_report_callback, page);
-+
-+  if (page->report) {
-+    g_task_return_pointer (task, g_steal_pointer (&page->report), NULL);
-+    return;
-+  }
-+
-+  g_task_set_return_on_cancel (task, TRUE);
-+  g_task_run_in_thread (task, on_collect_report_thread);
-+}
-+
-+static void
-+on_show_uri_cb (GObject *source_object,
-+                GAsyncResult *result,
-+                gpointer user_data)
-+{
-+  g_autoptr(GError) error = NULL;
-+  GisUbuntuReportPage *page = user_data;
-+
-+  if (!gtk_show_uri_full_finish (GTK_WINDOW (source_object), result, &error)) {
-+    GtkWidget *dialog;
-+
-+    if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
-+      return;
-+
-+    dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (page))),
-+                                     GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-+                                     GTK_MESSAGE_ERROR,
-+                                     GTK_BUTTONS_CLOSE,
-+                                     _("Failed to show privacy policy: %s"), error->message);
-+    g_signal_connect_swapped (dialog,
-+                              "response",
-+                              G_CALLBACK (gtk_window_destroy),
-+                              dialog);
-+    gtk_window_present (GTK_WINDOW (dialog));
-+  }
-+}
-+
-+static void
-+show_legal (GtkButton *button, GisUbuntuReportPage *page)
-+{
-+  gtk_show_uri_full (GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (page))),
-+                     "https://www.ubuntu.com/legal/terms-and-policies/systems-information-notice",
-+                     GDK_CURRENT_TIME, page->cancellable, on_show_uri_cb, page);
-+}
-+
-+typedef struct {
-+  gboolean send_allowed;
-+  gchar *report;
-+  guint timeout_id;
-+} SendReportThreadData;
-+
-+static void
-+send_report_thread_data_free (SendReportThreadData *data)
-+{
-+  g_clear_handle_id (&data->timeout_id, g_source_remove);
-+  g_free (data->report);
-+  g_free (data);
-+}
-+
-+static void
-+on_collect_send_report_thread (GTask *task,
-+                               gpointer source_object,
-+                               gpointer task_data,
-+                               GCancellable *cancellable)
-+{
-+  SendReportThreadData *data = task_data;
-+  g_autofree char *error = NULL;
-+
-+  if (!data->send_allowed) {
-+    error = sysmetrics_send_decline (FALSE, "");
-+
-+    if (g_task_get_completed (task))
-+      return;
-+
-+    if (error != NULL) {
-+      g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
-+                               _("Failed to send report decline: %s"), error);
-+      return;
-+    }
-+
-+    g_task_return_boolean (task, TRUE);
-+    return;
-+  }
-+
-+  if (!data->report) {
-+    error = sysmetrics_collect (&data->report);
-+
-+    if (g_task_get_completed (task))
-+      return;
-+
-+    if (error != NULL) {
-+      g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
-+                               _("Failed to get report information: %s"), error);
-+      return;
-+    }
-+  }
-+
-+  if (g_task_return_error_if_cancelled (task))
-+    return;
-+
-+  g_assert (data->report);
-+  error = sysmetrics_send_report (data->report, FALSE, "");
-+
-+  if (g_task_get_completed (task))
-+    return;
-+
-+  if (error != NULL) {
-+    g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
-+                             _("Failed to send report information: %s"), error);
-+    return;
-+  }
-+
-+  g_task_return_boolean (task, TRUE);
-+}
-+
-+static void
-+on_error_dialog_dismissed (GisUbuntuReportPage *page)
-+{
-+  gis_page_apply_complete (GIS_PAGE (page), TRUE);
-+}
-+
-+static void
-+show_report_error_dialog (GisUbuntuReportPage *page,
-+                          const char          *message)
-+{
-+  GtkWidget *dialog;
-+
-+  dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (page))),
-+                                   GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-+                                   GTK_MESSAGE_ERROR,
-+                                   GTK_BUTTONS_CLOSE,
-+                                   "%s", message);
-+  g_signal_connect_swapped (dialog,
-+                            "response",
-+                            G_CALLBACK (on_error_dialog_dismissed),
-+                            page);
-+  g_signal_connect_swapped (dialog,
-+                            "response",
-+                            G_CALLBACK (gtk_window_destroy),
-+                            dialog);
-+
-+  gtk_window_present (GTK_WINDOW (g_steal_pointer (&dialog)));
-+}
-+
-+static void
-+on_collect_send_report_callback (GObject *source_object,
-+                                 GAsyncResult *res,
-+                                 gpointer user_data)
-+{
-+  GTask *task = G_TASK (res);
-+  GisUbuntuReportPage *page = GIS_UBUNTU_REPORT_PAGE (source_object);
-+  g_autoptr (GError) error = NULL;
-+
-+  gtk_widget_set_sensitive (GTK_WIDGET (page), TRUE);
-+
-+  if (!g_task_propagate_boolean (task, &error)) {
-+    g_warning ("%s", error->message);
-+
-+    if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
-+      /* User cancelled the action, so let's back to selection */
-+      gis_page_apply_complete (GIS_PAGE (page), FALSE);
-+      return;
-+    }
-+
-+    show_report_error_dialog (page, error->message);
-+    return;
-+  }
-+
-+  gis_page_apply_complete (GIS_PAGE (page), TRUE);
-+}
-+
-+static gboolean
-+on_apply_timeout (gpointer data)
-+{
-+  SendReportThreadData *task_data;
-+  GTask *task = G_TASK (data);
-+
-+  task_data = g_task_get_task_data (task);
-+  task_data->timeout_id = 0;
-+
-+  if (g_task_get_completed (task)) {
-+    return FALSE;
-+  }
-+
-+  /* Here we can't just g_task_return_error, because it won't make the error
-+   * being handled until the task thread is terminated. So we just cancel it
-+   * adding some special handling on callback.
-+   */
-+  g_cancellable_cancel (g_task_get_cancellable (task));
-+  return FALSE;
-+}
-+
-+/* Retrieve and send the report (or decline thereof).
-+ * Don't wait on the server to respond though, go to next page immediately.
-+ * Ubuntu Report will take care of sending it via a Systemd service if the
-+ * thread doesn't manage to do it anyway.
-+ */
-+static gboolean
-+gis_ubuntu_report_page_apply (GisPage *gis_page, GCancellable *cancellable)
-+{
-+  GisUbuntuReportPage *page = GIS_UBUNTU_REPORT_PAGE (gis_page);
-+  g_autofree char *error = NULL;
-+  g_autoptr(GTask) task = NULL;
-+  SendReportThreadData *data;
-+
-+  data = g_new0 (SendReportThreadData, 1);
-+  data->send_allowed = gtk_check_button_get_active (GTK_CHECK_BUTTON (page->opt_in_check));
-+  data->report = g_steal_pointer (&page->report);
-+
-+  task = g_task_new (page, cancellable, on_collect_send_report_callback, NULL);
-+  g_task_set_return_on_cancel (task, TRUE);
-+  data->timeout_id = g_timeout_add_seconds (15, on_apply_timeout, task);
-+  g_task_set_task_data (task, g_steal_pointer (&data),
-+                        (GDestroyNotify) send_report_thread_data_free);
-+
-+  gtk_widget_set_sensitive (GTK_WIDGET (page), FALSE);
-+  g_task_run_in_thread (task, on_collect_send_report_thread);
-+
-+  return TRUE;
-+}
-+
-+static void
-+gis_ubuntu_report_page_locale_changed (GisPage *gis_page)
-+{
-+  GisUbuntuReportPage *page = GIS_UBUNTU_REPORT_PAGE (gis_page);
-+  g_autofree gchar *timezone_text = NULL;
-+  g_autofree gchar *description_text = NULL;
-+  g_autoptr(GError) error = NULL;
-+
-+  gis_page_set_title (GIS_PAGE (page), _("Help improve Ubuntu"));
-+
-+  if (!g_file_get_contents ("/etc/timezone", &timezone_text, NULL, &error)) {
-+    g_warning ("Failed to get timezone from /etc/timezone: %s", error->message);
-+    return;
-+  }
-+
-+  description_text = g_strdup_printf (_("Ubuntu can report information that helps developers improve it. "
-+                                        "This includes things like the computer model, "
-+					"what software is installed, "
-+					"and the approximate location you chose (%s)."), g_strstrip (timezone_text));
-+  g_object_set (page->header, "subtitle", description_text, NULL);
-+}
-+
-+static void
-+gis_ubuntu_report_page_class_init (GisUbuntuReportPageClass *klass)
-+{
-+  GisPageClass *page_class = GIS_PAGE_CLASS (klass);
-+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
-+
-+  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass), "/org/gnome/initial-setup/gis-ubuntu-report-page.ui");
-+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisUbuntuReportPage, header);
-+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisUbuntuReportPage, show_report_b);
-+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisUbuntuReportPage, cancel_report_b);
-+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisUbuntuReportPage, opt_in_check);
-+  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), show_report);
-+  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), show_legal);
-+
-+  page_class->page_id = PAGE_ID;
-+  page_class->apply = gis_ubuntu_report_page_apply;
-+  page_class->locale_changed = gis_ubuntu_report_page_locale_changed;
-+  object_class->constructed = gis_ubuntu_report_page_constructed;
-+  object_class->finalize = gis_ubuntu_report_page_finalize;
-+}
-+
-+static void
-+gis_ubuntu_report_page_init (GisUbuntuReportPage *page)
-+{
-+  g_resources_register (ubuntu_report_get_resource ());
-+  g_type_ensure (GIS_TYPE_PAGE_HEADER);
-+
-+  gtk_widget_init_template (GTK_WIDGET (page));
-+}
-+
-+GisPage *
-+gis_prepare_ubuntu_report_page (GisDriver *driver)
-+{
-+  return g_object_new (GIS_TYPE_UBUNTU_REPORT_PAGE,
-+                       "driver", driver,
-+                       NULL);
-+}
-diff --git a/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.h b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.h
-new file mode 100644
-index 0000000..846eb9b
---- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.h
-@@ -0,0 +1,33 @@
-+/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
-+/*
-+ * Copyright (C) 2018 Canonical Ltd.
-+ *
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation; either version 2 of the
-+ * License, or (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful, but
-+ * WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-+ * General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
-+ */
-+
-+#ifndef __GIS_UBUNTU_REPORT_PAGE_H__
-+#define __GIS_UBUNTU_REPORT_PAGE_H__
-+
-+#include "gnome-initial-setup.h"
-+
-+G_BEGIN_DECLS
-+
-+#define GIS_TYPE_UBUNTU_REPORT_PAGE            (gis_ubuntu_report_page_get_type ())
-+G_DECLARE_FINAL_TYPE (GisUbuntuReportPage, gis_ubuntu_report_page, GIS, UBUNTU_REPORT_PAGE, GisPage);
-+
-+GisPage *gis_prepare_ubuntu_report_page (GisDriver *driver);
-+
-+G_END_DECLS
-+
-+#endif /* __GIS_UBUNTU_REPORT_PAGE_H__ */
-diff --git a/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui
-new file mode 100644
-index 0000000..ad0816c
---- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui
-@@ -0,0 +1,104 @@
-+<?xml version="1.0" encoding="UTF-8"?>
-+<interface>
-+  <template class="GisUbuntuReportPage" parent="GisPage">
-+    <child>
-+      <object class="AdwPreferencesPage">
-+
-+        <child>
-+          <object class="AdwPreferencesGroup">
-+            <child>
-+              <object class="GisPageHeader" id="header">
-+                <property name="margin_top">24</property>
-+                <property name="title" translatable="yes">Help improve Ubuntu</property>
-+                <property name="show_icon" bind-source="GisUbuntuReportPage" bind-property="small-screen" bind-flags="invert-boolean|sync-create"/>
-+              </object>
-+            </child>
-+          </object>
-+        </child>
-+
-+        <child>
-+          <object class="AdwPreferencesGroup" id="opt_in_group">
-+            <child>
-+              <object class="AdwActionRow">
-+                <property name="title" translatable="yes">Yes, send system info to Canonical</property>
-+                <property name="use-underline">True</property>
-+                <property name="activatable-widget">opt_in_check</property>
-+                <child type="prefix">
-+                  <object class="GtkCheckButton" id="opt_in_check">
-+                    <property name="active">True</property>
-+                    <property name="valign">center</property>
-+                  </object>
-+                </child>
-+              </object>
-+            </child>
-+            <child>
-+              <object class="AdwActionRow">
-+                <property name="title" translatable="yes">No, don&apos;t send system info</property>
-+                <property name="use-underline">True</property>
-+                <property name="activatable-widget">opt_out_check</property>
-+                <child type="prefix">
-+                  <object class="GtkCheckButton" id="opt_out_check">
-+                    <property name="valign">center</property>
-+                    <property name="group">opt_in_check</property>
-+                  </object>
-+                </child>
-+              </object>
-+            </child>
-+          </object>
-+        </child>
-+
-+        <child>
-+          <object class="AdwPreferencesGroup">
-+            <child>
-+              <object class="GtkBox">
-+                <property name="halign">end</property>
-+                <style>
-+                  <class name="linked" />
-+                </style>
-+                <child>
-+                  <object class="GtkButton" id="show_report_b">
-+                    <property name="visible">True</property>
-+                    <property name="label" translatable="1">Show the First Report</property>
-+                    <signal name="clicked" handler="show_report"/>
-+                  </object>
-+                </child>
-+                <child>
-+                  <object class="GtkButton" id="cancel_report_b">
-+                    <property name="visible">False</property>
-+                    <property name="label" translatable="1">Cancel</property>
-+                  </object>
-+                </child>
-+                <child>
-+                  <object class="GtkButton">
-+                    <property name="label" translatable="1">Legal notice</property>
-+                    <signal name="clicked" handler="show_legal"/>
-+                  </object>
-+                </child>
-+              </object>
-+            </child>
-+          </object>
-+        </child>
-+
-+        <child>
-+          <object class="AdwPreferencesGroup">
-+          <!-- Disabled for now as setting doesn't exist - remove if we decide it's not necessary -->
-+          <property name="visible">False</property>
-+            <child>
-+              <object class="GtkLabel" id="footer_label">
-+                <property name="valign">end</property>
-+                <property name="vexpand">True</property>
-+                <property name="label" translatable="yes">You can change your mind later in Settings → Privacy → Diagnostics.</property>
-+                <property name="justify">center</property>
-+                <property name="wrap">True</property>
-+                <style>
-+                  <class name="dim-label"/>
-+                </style>
-+              </object>
-+            </child>
-+          </object>
-+        </child>
-+
-+      </object>
-+    </child>
-+  </template>
-+</interface>
-diff --git a/gnome-initial-setup/pages/ubuntu-report/meson.build b/gnome-initial-setup/pages/ubuntu-report/meson.build
-new file mode 100644
-index 0000000..a0f949b
---- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-report/meson.build
-@@ -0,0 +1,10 @@
-+sources += gnome.compile_resources(
-+    'ubuntu-report-resources',
-+    files('ubuntu-report.gresource.xml'),
-+    c_name: 'ubuntu_report'
-+)
-+
-+sources += files(
-+    'gis-ubuntu-report-page.c',
-+    'gis-ubuntu-report-page.h',
-+)
-diff --git a/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.gresource.xml b/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.gresource.xml
-new file mode 100644
-index 0000000..6b28415
---- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.gresource.xml
-@@ -0,0 +1,8 @@
-+<?xml version="1.0" encoding="UTF-8"?>
-+<gresources>
-+  <gresource prefix="/org/gnome/initial-setup">
-+    <file preprocess="xml-stripblanks" alias="gis-ubuntu-report-page.ui">gis-ubuntu-report-page.ui</file>
-+    <file alias="ubuntu-report.svg">ubuntu-report.svg</file>
-+  </gresource>
-+</gresources>
-+
-diff --git a/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.svg b/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.svg
-new file mode 100644
-index 0000000..8c1d52c
---- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.svg
-@@ -0,0 +1 @@
-+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="Layer_1" x="0px" y="0px" width="150px" height="150px" viewBox="0 0 400 400" style="enable-background:new 0 0 400 400;" xml:space="preserve"> <style type="text/css"> .st0{fill:#666666; fill-opacity:0.25;} </style> <g> <path class="st0" d="M301.4,372.4C271.7,390,237,400,200,400C89.5,400,0,310.5,0,200C0,89.5,89.5,0,200,0c110.5,0,200,89.5,200,200 c0,36.4-9.7,70.6-26.8,100l0,0L400,400l-100-26.8L301.4,372.4L301.4,372.4z"/> </g> </svg>
-diff --git a/po/POTFILES.in b/po/POTFILES.in
-index 10536d1..7b2c21d 100644
---- a/po/POTFILES.in
-+++ b/po/POTFILES.in
-@@ -43,3 +43,8 @@ gnome-initial-setup/pages/timezone/gis-timezone-page.ui
- gnome-initial-setup/pages/welcome/gis-welcome-page.c
- gnome-initial-setup/pages/welcome/gis-welcome-page.ui
- po/EXTRA_STRINGS.sh
-+gnome-initial-setup/pages/timezone/gis-timezone-page.ui
-+gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
-+gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui
-+gnome-initial-setup/pages/apps/gis-apps-page.c
-+gnome-initial-setup/pages/apps/gis-apps-page.ui
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/checkmark.svg
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/checkmark.svg	2023-01-19 15:05:24.300699193 +0100
++++ b/gnome-initial-setup/pages/ubuntu-pro/checkmark.svg
 @@ -0,0 +1 @@
 +<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><g fill="none" fill-rule="nonzero"><path fill="#0e8420" d="M8 1a7 7 0 110 14A7 7 0 018 1zm2.83 3.502L6.863 9.884 5.174 8.096l-1.09 1.03 2.92 3.096 5.034-6.83-1.208-.89z"/><path fill="#fff" d="M10.83 4.502l1.208.89-5.033 6.83-2.922-3.096 1.091-1.03 1.689 1.789z"/></g></svg>
 \ No newline at end of file
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/fail.svg
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/fail.svg	2023-01-19 15:05:24.300699193 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/fail.svg b/gnome-initial-setup/pages/ubuntu-pro/fail.svg
+new file mode 100644
+index 0000000..e3c9a52
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/fail.svg
 @@ -0,0 +1 @@
 +<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16"><defs><filter id="darkreader-image-filter"><feColorMatrix type="matrix" values="-0.193 -0.490 -1.120 0.000 1.698 -0.965 0.293 -1.105 0.000 1.673 -0.946 -0.489 -0.296 0.000 1.630 0.000 0.000 0.000 1.000 0.000"/></filter></defs><image width="16" height="16" filter="url(#darkreader-image-filter)" xlink:href="data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Ccircle stroke='%23c7162b' stroke-width='1.5' fill='%23c7162b' cx='8' cy='8' r='6.25'/%3E%3Cpath fill='%23FFF' fill-rule='nonzero' d='M10.282 4.638l1.06 1.06L9.05 7.99l2.293 2.292-1.06 1.06L7.99 9.05 5.7 11.343l-1.06-1.06 2.29-2.293L4.64 5.7l1.06-1.06 2.291 2.29z'/%3E%3C/g%3E%3C/svg%3E"/></svg>
 \ No newline at end of file
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui	2023-01-19 15:05:24.300699193 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
+new file mode 100644
+index 0000000..0c82766
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
 @@ -0,0 +1,210 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
@@ -2137,10 +1516,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-at
 +  </child>
 +</template>
 +</interface>
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui	2023-01-19 15:05:24.300699193 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
+new file mode 100644
+index 0000000..94ef395
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
 @@ -0,0 +1,158 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
@@ -2300,10 +1680,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-of
 +    </child>
 +  </template>
 +</interface>
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c	2023-01-19 15:05:24.300699193 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
+new file mode 100644
+index 0000000..d191d0b
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
 @@ -0,0 +1,820 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
@@ -3125,10 +2506,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-pa
 +                       "driver", driver,
 +                       NULL);
 +}
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.h
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.h	2023-01-19 15:05:24.300699193 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.h b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.h
+new file mode 100644
+index 0000000..f90d0c2
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.h
 @@ -0,0 +1,110 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
@@ -3240,10 +2622,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-pa
 +G_END_DECLS
 +
 +#endif /* __GIS_UBUNTUPRO_PAGE_H__ */
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.ui
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.ui	2023-01-19 15:05:24.300699193 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.ui
+new file mode 100644
+index 0000000..d95fc1c
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.ui
 @@ -0,0 +1,34 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
@@ -3281,7 +2664,7 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-pa
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui
 new file mode 100644
-index 00000000..11998629
+index 0000000..1b1ad66
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui
 @@ -0,0 +1,137 @@
@@ -3422,10 +2805,11 @@ index 00000000..11998629
 +  </child>
 +  </template>
 +</interface>
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/meson.build
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/meson.build	2023-01-19 15:05:24.300699193 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/meson.build b/gnome-initial-setup/pages/ubuntu-pro/meson.build
+new file mode 100644
+index 0000000..f7b700a
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/meson.build
 @@ -0,0 +1,12 @@
 +sources += gnome.compile_resources(
 +    'ubuntupro-resources',
@@ -3439,10 +2823,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/meson.build
 +    'utils.c',
 +    'utils.h',
 +)
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro-dark.svg
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro-dark.svg	2023-01-19 15:05:24.300699193 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro-dark.svg b/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro-dark.svg
+new file mode 100644
+index 0000000..e33bf48
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro-dark.svg
 @@ -0,0 +1,25 @@
 +<svg width="132" height="34" viewBox="0 0 132 34" fill="none" xmlns="http://www.w3.org/2000/svg">
 +<g clip-path="url(#clip0_1_7165)">
@@ -3469,17 +2854,19 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro-dark.
 +</clipPath>
 +</defs>
 +</svg>
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro.svg
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro.svg	2023-01-19 15:05:24.300699193 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro.svg b/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro.svg
+new file mode 100644
+index 0000000..d377e41
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro.svg
 @@ -0,0 +1 @@
 +<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1444.23 360.27"><defs><style>.cls-1{fill:#e95420;}.cls-2{fill:#fff;}.cls-3{fill:#111;}</style></defs><rect class="cls-1" width="233.93" height="360.27"/><circle class="cls-2" cx="52.26" cy="238.51" r="24.44"/><circle class="cls-2" cx="154.06" cy="184.91" r="24.44"/><path class="cls-2" d="M107.39,301.42a59.52,59.52,0,0,1-40.6-31A35.22,35.22,0,0,1,45.89,273a80.08,80.08,0,0,0,74.65,49.8,35,35,0,0,1-7.16-20.44A60.26,60.26,0,0,1,107.39,301.42Z"/><circle class="cls-2" cx="148.55" cy="301.55" r="24.44"/><path class="cls-2" d="M182.56,292.58a79.94,79.94,0,0,0,4-93.83,35.16,35.16,0,0,1-13.74,16.09,60,60,0,0,1-2,59.53A35,35,0,0,1,182.56,292.58Z"/><path class="cls-2" d="M50.37,203.46c.62,0,1.24-.05,1.87-.05a35.36,35.36,0,0,1,7.37.78,35,35,0,0,1,11.16,4.5,59.63,59.63,0,0,1,48-25.68,36.52,36.52,0,0,1,.74-5.5,35.3,35.3,0,0,1,6.68-14.32A80.38,80.38,0,0,0,50.37,203.46Z"/><path class="cls-3" d="M347.78,331.73q-16.27,0-27.71-5a47.72,47.72,0,0,1-18.52-13.68,54.81,54.81,0,0,1-10.26-20.41,95.22,95.22,0,0,1-3.19-25.12V164.73h16V265.45a75.46,75.46,0,0,0,3.19,23.23,44.78,44.78,0,0,0,8.84,16.16,34.55,34.55,0,0,0,13.68,9.44,54.06,54.06,0,0,0,35.86,0,34.55,34.55,0,0,0,13.68-9.44,44.78,44.78,0,0,0,8.84-16.16,75.46,75.46,0,0,0,3.19-23.23V164.73h16V267.57a95.22,95.22,0,0,1-3.19,25.12A54.81,54.81,0,0,1,394,313.1a47.76,47.76,0,0,1-18.51,13.68Q364.06,331.73,347.78,331.73Z"/><path class="cls-3" d="M460.55,213.56q4-3.06,12.85-6.49a58,58,0,0,1,20.88-3.42,55.7,55.7,0,0,1,23.47,4.72,48.76,48.76,0,0,1,17.33,13.21,58.28,58.28,0,0,1,10.74,20.17,85.49,85.49,0,0,1,3.65,25.59A76.4,76.4,0,0,1,545.11,294,57.25,57.25,0,0,1,532.84,314,52.66,52.66,0,0,1,514,326.66,65.48,65.48,0,0,1,489.56,331q-16.28,0-26.89-2.12a137.63,137.63,0,0,1-17.45-4.48V148l15.33-2.83Zm0,100.25A68.84,68.84,0,0,0,471,316.05a127.35,127.35,0,0,0,18.28,1.06q19.81,0,31.85-12.86t12-36.91a84.07,84.07,0,0,0-2.13-19.23,44.87,44.87,0,0,0-6.84-15.8,34.25,34.25,0,0,0-12.38-10.73q-7.67-4-19-4a49.31,49.31,0,0,0-10.38,1.06,61.57,61.57,0,0,0-9.19,2.71,51,51,0,0,0-12.74,7.08Z"/><path class="cls-3" d="M673.56,324q-6.84,1.89-18.4,4.24a144.38,144.38,0,0,1-28.3,2.36q-13.68,0-22.88-4a37.07,37.07,0,0,1-14.86-11.32A45.88,45.88,0,0,1,581,297.53a98.64,98.64,0,0,1-2.47-22.88v-68.4h15.33V269.7a108.25,108.25,0,0,0,1.88,21.93q1.89,9,6.14,14.51a23.86,23.86,0,0,0,11,8,47.64,47.64,0,0,0,16.39,2.48,132.49,132.49,0,0,0,18.87-1.18c5.34-.79,8.73-1.5,10.14-2.13V206.25h15.33Z"/><path class="cls-3" d="M710.26,210.49q6.84-1.87,18.4-4.24a144.38,144.38,0,0,1,28.3-2.36q13.92,0,23.24,4a35.73,35.73,0,0,1,14.86,11.44,46.84,46.84,0,0,1,7.9,17.81A103.44,103.44,0,0,1,805.32,260v68.16H790V265A115.58,115.58,0,0,0,788.22,243a36.61,36.61,0,0,0-5.9-14.62,23,23,0,0,0-10.85-8.14q-6.72-2.47-16.87-2.47A128.49,128.49,0,0,0,735.85,219q-7.9,1.17-10.26,2.12V328.19H710.26Z"/><path class="cls-3" d="M855.39,206.25H904v13H855.39v64.87A65.79,65.79,0,0,0,857.16,301a23.36,23.36,0,0,0,5.07,10,16,16,0,0,0,8,4.72,42.53,42.53,0,0,0,10.38,1.18q9.66,0,15.56-2.24a67,67,0,0,0,9.2-4.13l3.78,12.74q-3.31,2.13-11.56,4.83a57.11,57.11,0,0,1-17.93,2.72q-11.32,0-19-3a27.48,27.48,0,0,1-12.26-9,36.72,36.72,0,0,1-6.49-15,104.2,104.2,0,0,1-1.88-21.23V170.4l15.33-2.83Z"/><path class="cls-3" d="M1023.33,324q-6.86,1.89-18.4,4.24a144.49,144.49,0,0,1-28.31,2.36q-13.68,0-22.88-4a37.14,37.14,0,0,1-14.86-11.32,45.87,45.87,0,0,1-8.13-17.69,98.62,98.62,0,0,1-2.48-22.88v-68.4H943.6V269.7a108.17,108.17,0,0,0,1.89,21.93q1.89,9,6.13,14.51a23.91,23.91,0,0,0,11,8A47.64,47.64,0,0,0,979,316.64a132.49,132.49,0,0,0,18.87-1.18q8-1.18,10.14-2.13V206.25h15.34Z"/><path class="cls-3" d="M1156.68,163.32q34.68,0,51.66,13.21t17,37.5q0,13.92-5,23.71a40.35,40.35,0,0,1-14.15,15.8q-9.21,6-22.53,8.73a151.33,151.33,0,0,1-30.07,2.71h-22.17v63.21h-16V167.8a115.14,115.14,0,0,1,19.93-3.42Q1146.77,163.32,1156.68,163.32Zm.71,13.92q-9,0-15.21.59t-10.73,1.06v72.17h20.28a163.68,163.68,0,0,0,23.47-1.53,52.38,52.38,0,0,0,17.93-5.66,28.63,28.63,0,0,0,11.44-11.44q4-7.31,4-18.63,0-10.85-4.37-17.93a32.14,32.14,0,0,0-11.56-11.2,50.62,50.62,0,0,0-16.39-5.78A106.64,106.64,0,0,0,1157.39,177.24Z"/><path class="cls-3" d="M1292.85,203.89a82.18,82.18,0,0,1,14.27,1.18,43.81,43.81,0,0,1,9.32,2.36l-3.07,13.21a34.1,34.1,0,0,0-7.66-2,87.42,87.42,0,0,0-15.22-1.06,71.62,71.62,0,0,0-15.92,1.42,44.62,44.62,0,0,0-7.9,2.35V328.19h-15.33V211.91a113,113,0,0,1,16.27-5.31Q1278,203.9,1292.85,203.89Z"/><path class="cls-3" d="M1438.5,267.34a78.87,78.87,0,0,1-4.13,26.18,58.25,58.25,0,0,1-11.56,20.05,52.56,52.56,0,0,1-17.57,12.85,56.86,56.86,0,0,1-44.81,0,52.6,52.6,0,0,1-17.58-12.85,58.39,58.39,0,0,1-11.55-20.05,85,85,0,0,1,0-52.36A59.72,59.72,0,0,1,1342.85,221a51.86,51.86,0,0,1,17.58-13,56.86,56.86,0,0,1,44.81,0,51.82,51.82,0,0,1,17.57,13,59.57,59.57,0,0,1,11.56,20.17A78.87,78.87,0,0,1,1438.5,267.34Zm-16.28,0q0-22.87-10.61-36.44t-28.78-13.57q-18.16,0-28.77,13.57t-10.62,36.44q0,22.88,10.62,36.32t28.77,13.45q18.17,0,28.78-13.45T1422.22,267.34Z"/></svg>
 \ No newline at end of file
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/ubuntupro.gresource.xml
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/ubuntupro.gresource.xml	2023-01-19 15:05:24.300699193 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/ubuntupro.gresource.xml b/gnome-initial-setup/pages/ubuntu-pro/ubuntupro.gresource.xml
+new file mode 100644
+index 0000000..9257186
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/ubuntupro.gresource.xml
 @@ -0,0 +1,14 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<gresources>
@@ -3495,10 +2882,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/ubuntupro.gresou
 +  </gresource>
 +</gresources>
 +
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/utils.c
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/utils.c	2023-01-19 15:05:28.448637414 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/utils.c b/gnome-initial-setup/pages/ubuntu-pro/utils.c
+new file mode 100644
+index 0000000..0441c91
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/utils.c
 @@ -0,0 +1,119 @@
 +#include <adwaita.h>
 +#include <libsoup/soup.h>
@@ -3619,10 +3007,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/utils.c
 +  g_strlcat(str, append, len);
 +  g_strlcat(str, "\n", len);
 +}
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/utils.h
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/utils.h	2023-01-19 15:05:24.300699193 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/utils.h b/gnome-initial-setup/pages/ubuntu-pro/utils.h
+new file mode 100644
+index 0000000..ceefe72
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/utils.h
 @@ -0,0 +1,7 @@
 +gboolean parse_ua_status(gchar**, gsize*);
 +gboolean get_ubuntu_advantage_attached(gboolean*);
@@ -3631,3 +3020,664 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/utils.h
 +gboolean is_ubuntupro_supported();
 +gboolean is_dark_theme(GtkWidget*);
 +void itemize(gchar*, const gchar*, gsize);
+diff --git a/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
+new file mode 100644
+index 0000000..7321984
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
+@@ -0,0 +1,456 @@
++/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
++/*
++ * Copyright (C) 2018 Canonical Ltd.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of the
++ * License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, see <http://www.gnu.org/licenses/>.
++ */
++
++/* Ubuntu report page {{{1 */
++
++#define PAGE_ID "ubuntu-report"
++
++#include "config.h"
++#include "gis-ubuntu-report-page.h"
++#include "gis-page-header.h"
++#include "ubuntu-report-resources.h"
++
++#include <glib/gi18n.h>
++#include <gio/gio.h>
++#include <libsysmetrics.h>
++
++struct _GisUbuntuReportPage {
++  GisPage parent;
++
++  GtkWidget *opt_in_check;
++  GtkWidget *header;
++  GtkWidget *cancel_report_b;
++  GtkWidget *show_report_b;
++  GCancellable *cancellable;
++  gchar *report;
++};
++
++G_DEFINE_TYPE (GisUbuntuReportPage, gis_ubuntu_report_page, GIS_TYPE_PAGE);
++
++static void
++cancel_report (GtkButton *button, GisUbuntuReportPage *page)
++{
++  gtk_widget_set_visible (GTK_WIDGET (page->cancel_report_b), FALSE);
++  gtk_widget_set_visible (GTK_WIDGET (page->show_report_b), TRUE);
++
++  g_cancellable_cancel (page->cancellable);
++  g_clear_object (&page->cancellable);
++  page->cancellable = g_cancellable_new ();
++}
++
++static void
++gis_ubuntu_report_page_constructed (GObject *object)
++{
++  GisUbuntuReportPage *page = GIS_UBUNTU_REPORT_PAGE (object);
++  g_autoptr(GtkWidget) image = NULL;
++
++  G_OBJECT_CLASS (gis_ubuntu_report_page_parent_class)->constructed (object);
++
++  page->cancellable = g_cancellable_new ();
++  g_signal_connect(page->cancel_report_b, "clicked", G_CALLBACK(cancel_report), page);
++
++  image = g_object_ref_sink (gtk_image_new_from_resource (
++    "/org/gnome/initial-setup/ubuntu-report.svg"));
++  g_object_set (page->header, "paintable", gtk_image_get_paintable (GTK_IMAGE (image)), NULL);
++
++  gis_page_set_complete (GIS_PAGE (page), TRUE);
++}
++
++static void
++gis_ubuntu_report_page_finalize (GObject *object)
++{
++  GisUbuntuReportPage *page = GIS_UBUNTU_REPORT_PAGE (object);
++
++  g_cancellable_cancel (page->cancellable);
++  g_clear_object (&page->cancellable);
++
++  g_free (page->report);
++
++  G_OBJECT_CLASS (gis_ubuntu_report_page_parent_class)->finalize (object);
++}
++
++static void
++on_collect_report_thread (GTask        *task,
++                          gpointer      source_object,
++                          gpointer      task_data,
++                          GCancellable *cancellable)
++{
++  g_autofree char *report = NULL;
++  g_autofree char *error_msg = NULL;
++
++  error_msg = sysmetrics_collect (&report);
++  if (error_msg != NULL) {
++    g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED, "%s", error_msg);
++    return;
++  }
++
++  g_task_return_pointer (task, g_steal_pointer (&report), g_free);
++}
++
++static void
++on_show_report_callback (GObject      *source_object,
++                         GAsyncResult *res,
++                         gpointer      user_data)
++{
++  GtkWidget *dialog, *scroll, *text_view;
++  GTask *task = G_TASK (res);
++  g_autoptr (GError) error = NULL;
++  GisUbuntuReportPage *page = GIS_UBUNTU_REPORT_PAGE (user_data);
++
++  gtk_widget_set_visible (GTK_WIDGET (page->show_report_b), TRUE);
++  gtk_widget_set_visible (GTK_WIDGET (page->cancel_report_b), FALSE);
++
++  page->report = g_task_propagate_pointer (task, &error);
++
++  if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
++    return;
++
++  if (error != NULL) {
++    dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (page))),
++                                     GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
++                                     GTK_MESSAGE_ERROR,
++                                     GTK_BUTTONS_CLOSE,
++                                     _("Failed to get report information: %s"),
++                                     error->message);
++    g_signal_connect_swapped (dialog,
++                              "response",
++                              G_CALLBACK (gtk_window_destroy),
++                              dialog);
++    gtk_window_present (GTK_WINDOW (dialog));
++    return;
++  }
++
++  dialog = gtk_dialog_new_with_buttons (_("Ubuntu Report Contents"),
++                                        GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (page))),
++                                        GTK_DIALOG_MODAL |
++                                        GTK_DIALOG_DESTROY_WITH_PARENT |
++                                        GTK_DIALOG_USE_HEADER_BAR,
++                                        NULL, NULL);
++  gtk_widget_set_size_request (dialog, 800, 600);
++
++  scroll = gtk_scrolled_window_new ();
++
++  text_view = gtk_text_view_new ();
++  gtk_text_view_set_monospace (GTK_TEXT_VIEW (text_view), TRUE);
++  gtk_widget_set_hexpand (scroll, TRUE);
++  gtk_widget_set_vexpand (scroll, TRUE);
++  gtk_widget_set_margin_top (scroll, 6);
++  gtk_widget_set_margin_bottom (scroll, 6);
++  gtk_widget_set_margin_start (scroll, 6);
++  gtk_widget_set_margin_end (scroll, 6);
++  gtk_box_append (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), scroll);
++  gtk_text_buffer_set_text (gtk_text_view_get_buffer (GTK_TEXT_VIEW (text_view)), page->report, -1);
++  gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scroll), text_view);
++
++  g_signal_connect_swapped (dialog,
++                            "response",
++                            G_CALLBACK (gtk_window_destroy),
++                            dialog);
++  gtk_window_present (GTK_WINDOW (dialog));
++}
++
++static void
++show_report (GtkButton *button, GisUbuntuReportPage *page)
++{
++  g_autofree char *error = NULL;
++  g_autoptr(GTask) task = NULL;
++
++  gtk_widget_set_visible (GTK_WIDGET (page->show_report_b), FALSE);
++  gtk_widget_set_visible (GTK_WIDGET (page->cancel_report_b), TRUE);
++
++  task = g_task_new (page, page->cancellable, on_show_report_callback, page);
++
++  if (page->report) {
++    g_task_return_pointer (task, g_steal_pointer (&page->report), NULL);
++    return;
++  }
++
++  g_task_set_return_on_cancel (task, TRUE);
++  g_task_run_in_thread (task, on_collect_report_thread);
++}
++
++static void
++on_show_uri_cb (GObject *source_object,
++                GAsyncResult *result,
++                gpointer user_data)
++{
++  g_autoptr(GError) error = NULL;
++  GisUbuntuReportPage *page = user_data;
++
++  if (!gtk_show_uri_full_finish (GTK_WINDOW (source_object), result, &error)) {
++    GtkWidget *dialog;
++
++    if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
++      return;
++
++    dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (page))),
++                                     GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
++                                     GTK_MESSAGE_ERROR,
++                                     GTK_BUTTONS_CLOSE,
++                                     _("Failed to show privacy policy: %s"), error->message);
++    g_signal_connect_swapped (dialog,
++                              "response",
++                              G_CALLBACK (gtk_window_destroy),
++                              dialog);
++    gtk_window_present (GTK_WINDOW (dialog));
++  }
++}
++
++static void
++show_legal (GtkButton *button, GisUbuntuReportPage *page)
++{
++  gtk_show_uri_full (GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (page))),
++                     "https://www.ubuntu.com/legal/terms-and-policies/systems-information-notice",
++                     GDK_CURRENT_TIME, page->cancellable, on_show_uri_cb, page);
++}
++
++typedef struct {
++  gboolean send_allowed;
++  gchar *report;
++  guint timeout_id;
++} SendReportThreadData;
++
++static void
++send_report_thread_data_free (SendReportThreadData *data)
++{
++  g_clear_handle_id (&data->timeout_id, g_source_remove);
++  g_free (data->report);
++  g_free (data);
++}
++
++static void
++on_collect_send_report_thread (GTask *task,
++                               gpointer source_object,
++                               gpointer task_data,
++                               GCancellable *cancellable)
++{
++  SendReportThreadData *data = task_data;
++  g_autofree char *error = NULL;
++
++  if (!data->send_allowed) {
++    error = sysmetrics_send_decline (FALSE, "");
++
++    if (g_task_get_completed (task))
++      return;
++
++    if (error != NULL) {
++      g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
++                               _("Failed to send report decline: %s"), error);
++      return;
++    }
++
++    g_task_return_boolean (task, TRUE);
++    return;
++  }
++
++  if (!data->report) {
++    error = sysmetrics_collect (&data->report);
++
++    if (g_task_get_completed (task))
++      return;
++
++    if (error != NULL) {
++      g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
++                               _("Failed to get report information: %s"), error);
++      return;
++    }
++  }
++
++  if (g_task_return_error_if_cancelled (task))
++    return;
++
++  g_assert (data->report);
++  error = sysmetrics_send_report (data->report, FALSE, "");
++
++  if (g_task_get_completed (task))
++    return;
++
++  if (error != NULL) {
++    g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
++                             _("Failed to send report information: %s"), error);
++    return;
++  }
++
++  g_task_return_boolean (task, TRUE);
++}
++
++static void
++on_error_dialog_dismissed (GisUbuntuReportPage *page)
++{
++  gis_page_apply_complete (GIS_PAGE (page), TRUE);
++}
++
++static void
++show_report_error_dialog (GisUbuntuReportPage *page,
++                          const char          *message)
++{
++  GtkWidget *dialog;
++
++  dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (page))),
++                                   GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
++                                   GTK_MESSAGE_ERROR,
++                                   GTK_BUTTONS_CLOSE,
++                                   "%s", message);
++  g_signal_connect_swapped (dialog,
++                            "response",
++                            G_CALLBACK (on_error_dialog_dismissed),
++                            page);
++  g_signal_connect_swapped (dialog,
++                            "response",
++                            G_CALLBACK (gtk_window_destroy),
++                            dialog);
++
++  gtk_window_present (GTK_WINDOW (g_steal_pointer (&dialog)));
++}
++
++static void
++on_collect_send_report_callback (GObject *source_object,
++                                 GAsyncResult *res,
++                                 gpointer user_data)
++{
++  GTask *task = G_TASK (res);
++  GisUbuntuReportPage *page = GIS_UBUNTU_REPORT_PAGE (source_object);
++  g_autoptr (GError) error = NULL;
++
++  gtk_widget_set_sensitive (GTK_WIDGET (page), TRUE);
++
++  if (!g_task_propagate_boolean (task, &error)) {
++    g_warning ("%s", error->message);
++
++    if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
++      /* User cancelled the action, so let's back to selection */
++      gis_page_apply_complete (GIS_PAGE (page), FALSE);
++      return;
++    }
++
++    show_report_error_dialog (page, error->message);
++    return;
++  }
++
++  gis_page_apply_complete (GIS_PAGE (page), TRUE);
++}
++
++static gboolean
++on_apply_timeout (gpointer data)
++{
++  SendReportThreadData *task_data;
++  GTask *task = G_TASK (data);
++
++  task_data = g_task_get_task_data (task);
++  task_data->timeout_id = 0;
++
++  if (g_task_get_completed (task)) {
++    return FALSE;
++  }
++
++  /* Here we can't just g_task_return_error, because it won't make the error
++   * being handled until the task thread is terminated. So we just cancel it
++   * adding some special handling on callback.
++   */
++  g_cancellable_cancel (g_task_get_cancellable (task));
++  return FALSE;
++}
++
++/* Retrieve and send the report (or decline thereof).
++ * Don't wait on the server to respond though, go to next page immediately.
++ * Ubuntu Report will take care of sending it via a Systemd service if the
++ * thread doesn't manage to do it anyway.
++ */
++static gboolean
++gis_ubuntu_report_page_apply (GisPage *gis_page, GCancellable *cancellable)
++{
++  GisUbuntuReportPage *page = GIS_UBUNTU_REPORT_PAGE (gis_page);
++  g_autofree char *error = NULL;
++  g_autoptr(GTask) task = NULL;
++  SendReportThreadData *data;
++
++  data = g_new0 (SendReportThreadData, 1);
++  data->send_allowed = gtk_check_button_get_active (GTK_CHECK_BUTTON (page->opt_in_check));
++  data->report = g_steal_pointer (&page->report);
++
++  task = g_task_new (page, cancellable, on_collect_send_report_callback, NULL);
++  g_task_set_return_on_cancel (task, TRUE);
++  data->timeout_id = g_timeout_add_seconds (15, on_apply_timeout, task);
++  g_task_set_task_data (task, g_steal_pointer (&data),
++                        (GDestroyNotify) send_report_thread_data_free);
++
++  gtk_widget_set_sensitive (GTK_WIDGET (page), FALSE);
++  g_task_run_in_thread (task, on_collect_send_report_thread);
++
++  return TRUE;
++}
++
++static void
++gis_ubuntu_report_page_locale_changed (GisPage *gis_page)
++{
++  GisUbuntuReportPage *page = GIS_UBUNTU_REPORT_PAGE (gis_page);
++  g_autofree gchar *timezone_text = NULL;
++  g_autofree gchar *description_text = NULL;
++  g_autoptr(GError) error = NULL;
++
++  gis_page_set_title (GIS_PAGE (page), _("Help improve Ubuntu"));
++
++  if (!g_file_get_contents ("/etc/timezone", &timezone_text, NULL, &error)) {
++    g_warning ("Failed to get timezone from /etc/timezone: %s", error->message);
++    return;
++  }
++
++  description_text = g_strdup_printf (_("Ubuntu can report information that helps developers improve it. "
++                                        "This includes things like the computer model, "
++					"what software is installed, "
++					"and the approximate location you chose (%s)."), g_strstrip (timezone_text));
++  g_object_set (page->header, "subtitle", description_text, NULL);
++}
++
++static void
++gis_ubuntu_report_page_class_init (GisUbuntuReportPageClass *klass)
++{
++  GisPageClass *page_class = GIS_PAGE_CLASS (klass);
++  GObjectClass *object_class = G_OBJECT_CLASS (klass);
++
++  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass), "/org/gnome/initial-setup/gis-ubuntu-report-page.ui");
++  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisUbuntuReportPage, header);
++  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisUbuntuReportPage, show_report_b);
++  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisUbuntuReportPage, cancel_report_b);
++  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisUbuntuReportPage, opt_in_check);
++  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), show_report);
++  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), show_legal);
++
++  page_class->page_id = PAGE_ID;
++  page_class->apply = gis_ubuntu_report_page_apply;
++  page_class->locale_changed = gis_ubuntu_report_page_locale_changed;
++  object_class->constructed = gis_ubuntu_report_page_constructed;
++  object_class->finalize = gis_ubuntu_report_page_finalize;
++}
++
++static void
++gis_ubuntu_report_page_init (GisUbuntuReportPage *page)
++{
++  g_resources_register (ubuntu_report_get_resource ());
++  g_type_ensure (GIS_TYPE_PAGE_HEADER);
++
++  gtk_widget_init_template (GTK_WIDGET (page));
++}
++
++GisPage *
++gis_prepare_ubuntu_report_page (GisDriver *driver)
++{
++  return g_object_new (GIS_TYPE_UBUNTU_REPORT_PAGE,
++                       "driver", driver,
++                       NULL);
++}
+diff --git a/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.h b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.h
+new file mode 100644
+index 0000000..846eb9b
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.h
+@@ -0,0 +1,33 @@
++/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
++/*
++ * Copyright (C) 2018 Canonical Ltd.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of the
++ * License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, see <http://www.gnu.org/licenses/>.
++ */
++
++#ifndef __GIS_UBUNTU_REPORT_PAGE_H__
++#define __GIS_UBUNTU_REPORT_PAGE_H__
++
++#include "gnome-initial-setup.h"
++
++G_BEGIN_DECLS
++
++#define GIS_TYPE_UBUNTU_REPORT_PAGE            (gis_ubuntu_report_page_get_type ())
++G_DECLARE_FINAL_TYPE (GisUbuntuReportPage, gis_ubuntu_report_page, GIS, UBUNTU_REPORT_PAGE, GisPage);
++
++GisPage *gis_prepare_ubuntu_report_page (GisDriver *driver);
++
++G_END_DECLS
++
++#endif /* __GIS_UBUNTU_REPORT_PAGE_H__ */
+diff --git a/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui
+new file mode 100644
+index 0000000..ad0816c
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui
+@@ -0,0 +1,104 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<interface>
++  <template class="GisUbuntuReportPage" parent="GisPage">
++    <child>
++      <object class="AdwPreferencesPage">
++
++        <child>
++          <object class="AdwPreferencesGroup">
++            <child>
++              <object class="GisPageHeader" id="header">
++                <property name="margin_top">24</property>
++                <property name="title" translatable="yes">Help improve Ubuntu</property>
++                <property name="show_icon" bind-source="GisUbuntuReportPage" bind-property="small-screen" bind-flags="invert-boolean|sync-create"/>
++              </object>
++            </child>
++          </object>
++        </child>
++
++        <child>
++          <object class="AdwPreferencesGroup" id="opt_in_group">
++            <child>
++              <object class="AdwActionRow">
++                <property name="title" translatable="yes">Yes, send system info to Canonical</property>
++                <property name="use-underline">True</property>
++                <property name="activatable-widget">opt_in_check</property>
++                <child type="prefix">
++                  <object class="GtkCheckButton" id="opt_in_check">
++                    <property name="active">True</property>
++                    <property name="valign">center</property>
++                  </object>
++                </child>
++              </object>
++            </child>
++            <child>
++              <object class="AdwActionRow">
++                <property name="title" translatable="yes">No, don&apos;t send system info</property>
++                <property name="use-underline">True</property>
++                <property name="activatable-widget">opt_out_check</property>
++                <child type="prefix">
++                  <object class="GtkCheckButton" id="opt_out_check">
++                    <property name="valign">center</property>
++                    <property name="group">opt_in_check</property>
++                  </object>
++                </child>
++              </object>
++            </child>
++          </object>
++        </child>
++
++        <child>
++          <object class="AdwPreferencesGroup">
++            <child>
++              <object class="GtkBox">
++                <property name="halign">end</property>
++                <style>
++                  <class name="linked" />
++                </style>
++                <child>
++                  <object class="GtkButton" id="show_report_b">
++                    <property name="visible">True</property>
++                    <property name="label" translatable="1">Show the First Report</property>
++                    <signal name="clicked" handler="show_report"/>
++                  </object>
++                </child>
++                <child>
++                  <object class="GtkButton" id="cancel_report_b">
++                    <property name="visible">False</property>
++                    <property name="label" translatable="1">Cancel</property>
++                  </object>
++                </child>
++                <child>
++                  <object class="GtkButton">
++                    <property name="label" translatable="1">Legal notice</property>
++                    <signal name="clicked" handler="show_legal"/>
++                  </object>
++                </child>
++              </object>
++            </child>
++          </object>
++        </child>
++
++        <child>
++          <object class="AdwPreferencesGroup">
++          <!-- Disabled for now as setting doesn't exist - remove if we decide it's not necessary -->
++          <property name="visible">False</property>
++            <child>
++              <object class="GtkLabel" id="footer_label">
++                <property name="valign">end</property>
++                <property name="vexpand">True</property>
++                <property name="label" translatable="yes">You can change your mind later in Settings → Privacy → Diagnostics.</property>
++                <property name="justify">center</property>
++                <property name="wrap">True</property>
++                <style>
++                  <class name="dim-label"/>
++                </style>
++              </object>
++            </child>
++          </object>
++        </child>
++
++      </object>
++    </child>
++  </template>
++</interface>
+diff --git a/gnome-initial-setup/pages/ubuntu-report/meson.build b/gnome-initial-setup/pages/ubuntu-report/meson.build
+new file mode 100644
+index 0000000..a0f949b
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-report/meson.build
+@@ -0,0 +1,10 @@
++sources += gnome.compile_resources(
++    'ubuntu-report-resources',
++    files('ubuntu-report.gresource.xml'),
++    c_name: 'ubuntu_report'
++)
++
++sources += files(
++    'gis-ubuntu-report-page.c',
++    'gis-ubuntu-report-page.h',
++)
+diff --git a/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.gresource.xml b/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.gresource.xml
+new file mode 100644
+index 0000000..6b28415
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.gresource.xml
+@@ -0,0 +1,8 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<gresources>
++  <gresource prefix="/org/gnome/initial-setup">
++    <file preprocess="xml-stripblanks" alias="gis-ubuntu-report-page.ui">gis-ubuntu-report-page.ui</file>
++    <file alias="ubuntu-report.svg">ubuntu-report.svg</file>
++  </gresource>
++</gresources>
++
+diff --git a/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.svg b/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.svg
+new file mode 100644
+index 0000000..8c1d52c
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.svg
+@@ -0,0 +1 @@
++<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="Layer_1" x="0px" y="0px" width="150px" height="150px" viewBox="0 0 400 400" style="enable-background:new 0 0 400 400;" xml:space="preserve"> <style type="text/css"> .st0{fill:#666666; fill-opacity:0.25;} </style> <g> <path class="st0" d="M301.4,372.4C271.7,390,237,400,200,400C89.5,400,0,310.5,0,200C0,89.5,89.5,0,200,0c110.5,0,200,89.5,200,200 c0,36.4-9.7,70.6-26.8,100l0,0L400,400l-100-26.8L301.4,372.4L301.4,372.4z"/> </g> </svg>
+diff --git a/po/POTFILES.in b/po/POTFILES.in
+index 10536d1..7b2c21d 100644
+--- a/po/POTFILES.in
++++ b/po/POTFILES.in
+@@ -43,3 +43,8 @@ gnome-initial-setup/pages/timezone/gis-timezone-page.ui
+ gnome-initial-setup/pages/welcome/gis-welcome-page.c
+ gnome-initial-setup/pages/welcome/gis-welcome-page.ui
+ po/EXTRA_STRINGS.sh
++gnome-initial-setup/pages/timezone/gis-timezone-page.ui
++gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
++gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui
++gnome-initial-setup/pages/apps/gis-apps-page.c
++gnome-initial-setup/pages/apps/gis-apps-page.ui
