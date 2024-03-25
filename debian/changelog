@@ -1,4 +1,4 @@
-gnome-initial-setup (46.0-1ubuntu2) UNRELEASED; urgency=medium
+gnome-initial-setup (46.0-1ubuntu2) noble; urgency=medium
 
   * d/p/0001-Add-Ubuntu-mode-with-special-pages.patch:
     - Merge Restore-and-adapt-the-Welcome-page.patch in, the changes are
@@ -8,7 +8,7 @@ gnome-initial-setup (46.0-1ubuntu2) UNRELEASED; urgency=medium
   * d/p/0001-Display-the-ubuntu-welcome-wizard-in-Unity.patch:
     - include the welcome page in unity
 
- -- Sebastien Bacher <seb128@ubuntu.com>  Mon, 25 Mar 2024 12:46:13 +0100
+ -- Sebastien Bacher <seb128@ubuntu.com>  Mon, 25 Mar 2024 13:09:27 +0100
 
 gnome-initial-setup (46.0-1ubuntu1) noble; urgency=medium
 
