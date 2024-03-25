@@ -7,11 +7,11 @@ Subject: Display the ubuntu welcome wizard in Unity
  gnome-initial-setup/gnome-initial-setup.c          | 11 +++++++++++
  2 files changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/data/gnome-initial-setup-first-login.desktop.in.in b/data/gnome-initial-setup-first-login.desktop.in.in
-index f3d0df7..38f86cf 100644
---- a/data/gnome-initial-setup-first-login.desktop.in.in
-+++ b/data/gnome-initial-setup-first-login.desktop.in.in
-@@ -7,7 +7,7 @@ Terminal=false
+Index: gnome-initial-setup/data/gnome-initial-setup-first-login.desktop.in.in
+===================================================================
+--- gnome-initial-setup.orig/data/gnome-initial-setup-first-login.desktop.in.in	2024-03-25 12:50:59.585422137 +0100
++++ gnome-initial-setup/data/gnome-initial-setup-first-login.desktop.in.in	2024-03-25 12:50:59.573422451 +0100
+@@ -7,7 +7,7 @@
  Type=Application
  StartupNotify=true
  Categories=GNOME;GTK;System;
@@ -20,15 +20,16 @@ index f3d0df7..38f86cf 100644
  NoDisplay=true
  AutostartCondition=unless-exists gnome-initial-setup-done
  X-GNOME-HiddenUnderSystemd=@systemd_hidden@
-diff --git a/gnome-initial-setup/gnome-initial-setup.c b/gnome-initial-setup/gnome-initial-setup.c
-index 85375bf..92d9f6c 100644
---- a/gnome-initial-setup/gnome-initial-setup.c
-+++ b/gnome-initial-setup/gnome-initial-setup.c
-@@ -91,6 +91,15 @@ static PageData ubuntu_page_table[] = {
+Index: gnome-initial-setup/gnome-initial-setup/gnome-initial-setup.c
+===================================================================
+--- gnome-initial-setup.orig/gnome-initial-setup/gnome-initial-setup.c	2024-03-25 12:50:59.585422137 +0100
++++ gnome-initial-setup/gnome-initial-setup/gnome-initial-setup.c	2024-03-25 12:51:16.656979475 +0100
+@@ -94,6 +94,16 @@
    { NULL },
  };
  
 +static PageData unity_page_table[] = {
++  PAGE (welcome,        FALSE),
 +  PAGE (ubuntu_report,  FALSE),
 +  PAGE (privacy,        FALSE),
 +  PAGE (account,        TRUE),
@@ -40,7 +41,7 @@ index 85375bf..92d9f6c 100644
  #undef PAGE
  
  static gboolean
-@@ -235,6 +244,8 @@ rebuild_pages_cb (GisDriver *driver)
+@@ -240,6 +250,8 @@
  
    if (is_desktop ("ubuntu"))
      page_data = ubuntu_page_table;
