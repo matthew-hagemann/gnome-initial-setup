@@ -7,3 +7,4 @@ reenable-existing-user-mode.patch
 0008-Ubuntu-location-default.patch
 ubuntu-distributor-logo.patch
 Update-style-to-the-same-than-flutter-installer.patch
+Add-wrapper-for-convd-flutter-ui.patch

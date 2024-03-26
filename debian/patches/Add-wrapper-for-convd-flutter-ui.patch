@@ -1,0 +1,54 @@
+From: Sergio Costas Rodriguez <sergio.costas@canonical.com>
+Date: Thu, 21 Mar 2024 13:02:31 +0100
+Subject: Add wrapper for convd-flutter-ui
+
+This patch adds a simple wrapper that tries to call
+convd/flutter ui. If it doesn't exist, it will call the original
+gnome-initial-setup.
+---
+ data/gnome-initial-setup-wrapper       | 12 ++++++++++++
+ data/gnome-initial-setup.desktop.in.in |  2 +-
+ data/meson.build                       |  1 +
+ 3 files changed, 14 insertions(+), 1 deletion(-)
+ create mode 100755 data/gnome-initial-setup-wrapper
+
+diff --git a/data/gnome-initial-setup-wrapper b/data/gnome-initial-setup-wrapper
+new file mode 100755
+index 0000000..a92d2d0
+--- /dev/null
++++ b/data/gnome-initial-setup-wrapper
+@@ -0,0 +1,12 @@
++#!/bin/bash
++
++CONVD_WRAPPER=/usr/bin/launch-desktop-provision-init.sh
++
++if [ -f "${CONVD_WRAPPER}" ]; then
++# call convd wrapper passing as first parameter the full path to
++# the original gnome-initial-setup
++    exec "${CONVD_WRAPPER}" "$@"
++else
++    # if the wrapper doesn't exist, launch the original gnome-initial-setup
++    exec "$@"
++fi
+diff --git a/data/gnome-initial-setup.desktop.in.in b/data/gnome-initial-setup.desktop.in.in
+index c15fd6e..dfc6f4b 100644
+--- a/data/gnome-initial-setup.desktop.in.in
++++ b/data/gnome-initial-setup.desktop.in.in
+@@ -2,7 +2,7 @@
+ Name=Initial Setup
+ # Translators: Do NOT translate or transliterate this text (this is an icon file name)!
+ Icon=preferences-system
+-Exec=@LIBEXECDIR@/gnome-initial-setup
++Exec=@LIBEXECDIR@/gnome-initial-setup-wrapper @LIBEXECDIR@/gnome-initial-setup
+ Terminal=false
+ Type=Application
+ StartupNotify=true
+diff --git a/data/meson.build b/data/meson.build
+index 6a4ef7d..bc3a802 100644
+--- a/data/meson.build
++++ b/data/meson.build
+@@ -130,3 +130,4 @@ configure_file(
+ 
+ mode_dir = join_paths(data_dir, 'gnome-shell', 'modes')
+ install_data('initial-setup.json', install_dir: mode_dir)
++install_data('gnome-initial-setup-wrapper', install_dir: libexec_dir)
