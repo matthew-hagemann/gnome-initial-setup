@@ -1,3 +1,13 @@
+gnome-initial-setup (46.0-1ubuntu3) noble; urgency=medium
+
+  * d/p/Add-wrapper-for-convd-flutter-ui.patch:
+    - add a wrapper to use the new flutter provisioning if it is available,
+      if not fallback to the normal gnome-initial-setup. Since we are not
+      shipping the new provisioning stack in noble yet the change isn't
+      going to change anything but it makes testing easier.
+
+ -- Sebastien Bacher <seb128@ubuntu.com>  Tue, 26 Mar 2024 15:26:28 +0100
+
 gnome-initial-setup (46.0-1ubuntu2) noble; urgency=medium
 
   * d/p/0001-Add-Ubuntu-mode-with-special-pages.patch:
