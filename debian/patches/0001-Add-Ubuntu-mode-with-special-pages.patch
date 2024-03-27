@@ -3020,7 +3020,7 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-re
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
 +++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c	2024-03-25 12:46:43.940982333 +0100
-@@ -0,0 +1,456 @@
+@@ -0,0 +1,376 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2018 Canonical Ltd.
@@ -3245,13 +3245,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-re
 +typedef struct {
 +  gboolean send_allowed;
 +  gchar *report;
-+  guint timeout_id;
 +} SendReportThreadData;
 +
 +static void
 +send_report_thread_data_free (SendReportThreadData *data)
 +{
-+  g_clear_handle_id (&data->timeout_id, g_source_remove);
 +  g_free (data->report);
 +  g_free (data);
 +}
@@ -3268,9 +3266,6 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-re
 +  if (!data->send_allowed) {
 +    error = sysmetrics_send_decline (FALSE, "");
 +
-+    if (g_task_get_completed (task))
-+      return;
-+
 +    if (error != NULL) {
 +      g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
 +                               _("Failed to send report decline: %s"), error);
@@ -3284,9 +3279,6 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-re
 +  if (!data->report) {
 +    error = sysmetrics_collect (&data->report);
 +
-+    if (g_task_get_completed (task))
-+      return;
-+
 +    if (error != NULL) {
 +      g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
 +                               _("Failed to get report information: %s"), error);
@@ -3294,14 +3286,8 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-re
 +    }
 +  }
 +
-+  if (g_task_return_error_if_cancelled (task))
-+    return;
-+
 +  g_assert (data->report);
 +  error = sysmetrics_send_report (data->report, FALSE, "");
-+
-+  if (g_task_get_completed (task))
-+    return;
 +
 +  if (error != NULL) {
 +    g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
@@ -3313,80 +3299,16 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-re
 +}
 +
 +static void
-+on_error_dialog_dismissed (GisUbuntuReportPage *page)
-+{
-+  gis_page_apply_complete (GIS_PAGE (page), TRUE);
-+}
-+
-+static void
-+show_report_error_dialog (GisUbuntuReportPage *page,
-+                          const char          *message)
-+{
-+  GtkWidget *dialog;
-+
-+  dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (page))),
-+                                   GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-+                                   GTK_MESSAGE_ERROR,
-+                                   GTK_BUTTONS_CLOSE,
-+                                   "%s", message);
-+  g_signal_connect_swapped (dialog,
-+                            "response",
-+                            G_CALLBACK (on_error_dialog_dismissed),
-+                            page);
-+  g_signal_connect_swapped (dialog,
-+                            "response",
-+                            G_CALLBACK (gtk_window_destroy),
-+                            dialog);
-+
-+  gtk_window_present (GTK_WINDOW (g_steal_pointer (&dialog)));
-+}
-+
-+static void
 +on_collect_send_report_callback (GObject *source_object,
 +                                 GAsyncResult *res,
 +                                 gpointer user_data)
 +{
 +  GTask *task = G_TASK (res);
-+  GisUbuntuReportPage *page = GIS_UBUNTU_REPORT_PAGE (source_object);
 +  g_autoptr (GError) error = NULL;
-+
-+  gtk_widget_set_sensitive (GTK_WIDGET (page), TRUE);
 +
 +  if (!g_task_propagate_boolean (task, &error)) {
 +    g_warning ("%s", error->message);
-+
-+    if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
-+      /* User cancelled the action, so let's back to selection */
-+      gis_page_apply_complete (GIS_PAGE (page), FALSE);
-+      return;
-+    }
-+
-+    show_report_error_dialog (page, error->message);
-+    return;
 +  }
-+
-+  gis_page_apply_complete (GIS_PAGE (page), TRUE);
-+}
-+
-+static gboolean
-+on_apply_timeout (gpointer data)
-+{
-+  SendReportThreadData *task_data;
-+  GTask *task = G_TASK (data);
-+
-+  task_data = g_task_get_task_data (task);
-+  task_data->timeout_id = 0;
-+
-+  if (g_task_get_completed (task)) {
-+    return FALSE;
-+  }
-+
-+  /* Here we can't just g_task_return_error, because it won't make the error
-+   * being handled until the task thread is terminated. So we just cancel it
-+   * adding some special handling on callback.
-+   */
-+  g_cancellable_cancel (g_task_get_cancellable (task));
-+  return FALSE;
 +}
 +
 +/* Retrieve and send the report (or decline thereof).
@@ -3406,15 +3328,13 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-re
 +  data->send_allowed = gtk_check_button_get_active (GTK_CHECK_BUTTON (page->opt_in_check));
 +  data->report = g_steal_pointer (&page->report);
 +
-+  task = g_task_new (page, cancellable, on_collect_send_report_callback, NULL);
-+  g_task_set_return_on_cancel (task, TRUE);
-+  data->timeout_id = g_timeout_add_seconds (15, on_apply_timeout, task);
++  task = g_task_new (page, NULL, on_collect_send_report_callback, NULL);
 +  g_task_set_task_data (task, g_steal_pointer (&data),
 +                        (GDestroyNotify) send_report_thread_data_free);
 +
-+  gtk_widget_set_sensitive (GTK_WIDGET (page), FALSE);
 +  g_task_run_in_thread (task, on_collect_send_report_thread);
 +
++  gis_page_apply_complete (GIS_PAGE (page), TRUE);
 +  return TRUE;
 +}
 +
