@@ -1,11 +1,11 @@
-gnome-initial-setup (46.0-1ubuntu5) UNRELEASED; urgency=medium
+gnome-initial-setup (46.0-1ubuntu5) noble; urgency=medium
 
   * d/p/0001-Add-Ubuntu-mode-with-special-pages.patch:
     - Do not wait for the metrics server to respond to the user's
       decision to send or not to send the report; Rather, advance
       to the next page unconditionally (LP:#2050884, LP:#2049670).
 
- -- Nathan Pratta Teodosio <nathan.teodosio@canonical.com>  Wed, 27 Mar 2024 18:37:39 +0100
+ -- Nathan Pratta Teodosio <nathan.teodosio@canonical.com>  Tue, 09 Apr 2024 13:28:51 +0200
 
 gnome-initial-setup (46.0-1ubuntu4) noble; urgency=medium
 
