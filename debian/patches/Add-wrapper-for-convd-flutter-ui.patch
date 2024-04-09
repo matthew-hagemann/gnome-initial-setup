@@ -20,7 +20,7 @@ index 0000000..a92d2d0
 @@ -0,0 +1,12 @@
 +#!/bin/bash
 +
-+CONVD_WRAPPER=/usr/bin/launch-desktop-provision-init.sh
++CONVD_WRAPPER=/usr/libexec/launch-desktop-provision-init
 +
 +if [ -f "${CONVD_WRAPPER}" ]; then
 +# call convd wrapper passing as first parameter the full path to
