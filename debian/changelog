@@ -1,4 +1,4 @@
-gnome-initial-setup (46.0-1ubuntu4) noble; urgency=medium
+gnome-initial-setup (46.0-1ubuntu5) UNRELEASED; urgency=medium
 
   * d/p/0001-Add-Ubuntu-mode-with-special-pages.patch:
     - Do not wait for the metrics server to respond to the user's
@@ -6,6 +6,12 @@ gnome-initial-setup (46.0-1ubuntu4) noble; urgency=medium
       to the next page unconditionally (LP:#2050884, LP:#2049670).
 
  -- Nathan Pratta Teodosio <nathan.teodosio@canonical.com>  Wed, 27 Mar 2024 18:37:39 +0100
+
+gnome-initial-setup (46.0-1ubuntu4) noble; urgency=medium
+
+  * No-change rebuild for CVE-2024-3094
+
+ -- Steve Langasek <steve.langasek@ubuntu.com>  Sun, 31 Mar 2024 06:07:38 +0000
 
 gnome-initial-setup (46.0-1ubuntu3) noble; urgency=medium
 
