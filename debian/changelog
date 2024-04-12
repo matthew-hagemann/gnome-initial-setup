@@ -1,3 +1,11 @@
+gnome-initial-setup (46.0-1ubuntu6) noble; urgency=medium
+
+  [ Sergio Costas ]
+  * debian/patches/Add-wrapper-for-convd-flutter-ui.patch:
+    - update for provd wrapper location change
+
+ -- Sebastien Bacher <seb128@ubuntu.com>  Fri, 12 Apr 2024 08:51:11 +0200
+
 gnome-initial-setup (46.0-1ubuntu5) noble; urgency=medium
 
   * d/p/0001-Add-Ubuntu-mode-with-special-pages.patch:
