@@ -1312,7 +1312,7 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-at
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
 +++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui	2024-03-25 12:46:43.936982467 +0100
-@@ -0,0 +1,210 @@
+@@ -0,0 +1,208 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
 +  <requires lib="gtk" version="4.0"/>
@@ -1350,10 +1350,10 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-at
 +          </object>
 +        </child>
 +        <child>
-+          <object class="GtkBox">
++          <object class="GtkGrid">
 +            <property name="visible">True</property>
 +            <property name="can-focus">False</property>
-+            <property name="spacing">18</property>
++            <property name="column-spacing">18</property>
 +            <property name="margin-start">30</property>
 +            <property name="margin-top">12</property>
 +            <property name="margin-bottom">12</property>
@@ -1363,8 +1363,6 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-at
 +                <property name="can-focus">False</property>
 +                <property name="can-shrink">False</property>
 +                <property name="content-fit">scale-down</property>
-+                <!-- This has no effect?? >( -->
-+                <property name="halign">start</property>
 +              </object>
 +            </child>
 +            <child>
@@ -1527,7 +1525,7 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-of
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
 +++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui	2024-03-25 12:46:43.936982467 +0100
-@@ -0,0 +1,158 @@
+@@ -0,0 +1,157 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
 +  <requires lib="gtk" version="4.0"/>
@@ -1567,20 +1565,19 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-of
 +          </object>
 +        </child>
 +        <child>
-+          <object class="GtkBox">
++          <object class="GtkGrid">
 +          <property name="visible">True</property>
 +          <property name="can-focus">False</property>
-+          <property name="spacing">18</property>
++          <property name="column-spacing">18</property>
 +          <property name="margin-start">30</property>
 +          <property name="margin-top">12</property>
++          <property name="margin-bottom">12</property>
 +            <child>
 +              <object class="GtkPicture" id="ubuntu_pro_logo">
 +                <property name="visible">True</property>
 +                <property name="can-focus">False</property>
 +                <property name="can-shrink">False</property>
 +                <property name="content-fit">scale-down</property>
-+                <!-- This has no effect?? >( -->
-+                <property name="halign">start</property>
 +              </object>
 +            </child>
 +            <child>
