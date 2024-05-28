@@ -36,14 +36,13 @@ index a3122b7..40c5f04 100644
  }
  
  static void
-@@ -173,6 +178,7 @@ set_navigation_button (GisAssistant *assistant,
-                        GtkWidget    *widget)
+@@ -173,4 +178,6 @@ set_navigation_button (GisAssistant *assistant,
+                        gboolean     sensitive)
  {
-   gtk_widget_set_visible (assistant->forward, (widget == assistant->forward));
 +  gtk_widget_set_visible (assistant->done, (widget == assistant->done));
-   gtk_widget_set_visible (assistant->accept, (widget == assistant->accept));
-   gtk_widget_set_visible (assistant->skip, (widget == assistant->skip));
- }
++  gtk_widget_set_sensitive (assistant->done, (widget == assistant->done && sensitive));
+   gtk_widget_set_visible (assistant->forward, (widget == assistant->forward));
+   gtk_widget_set_sensitive (assistant->forward, (widget == assistant->forward && sensitive));
 @@ -191,7 +197,7 @@ update_navigation_buttons (GisAssistant *assistant)
  
    is_last_page = (l->next == NULL);
