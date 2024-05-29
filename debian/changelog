@@ -1,3 +1,24 @@
+gnome-initial-setup (46.2-1ubuntu1) UNRELEASED; urgency=medium
+
+  * Merge with Debian. Remaining changes:
+    + debian/control:
+      - Add Build-Depends: libsnapd-glib-dev and libsysmetrics-dev
+    + Add Ubuntu-specific patches:
+      - 0001-Make-summary-page-explicitly-request-navigation-butt.patch
+      - 0001-Ensure-stamp-file-if-the-user-quit-the-wizard.patch
+      - 0001-Add-Ubuntu-mode-with-special-pages.patch
+      - 0001-Display-the-ubuntu-welcome-wizard-in-Unity.patch
+      - 0002-no-deprecation-warnings.patch
+      - 0008-Ubuntu-location-default.patch
+      - ubuntu-distributor-logo.patch
+      - Restore-and-adapt-the-Welcome-page.patch
+  * Refresh 0001-Make-summary*.patch.
+  * 0001-Add-Ubuntu-mode-with-special-pages.patch: Ubuntu Pro logo would
+    move horizontally depending on the window width, in general not being
+    left-aligned (LP: #2065789).
+
+ -- Nathan Pratta Teodosio <nathan.teodosio@canonical.com>  Wed, 29 May 2024 11:01:30 +0200
+
 gnome-initial-setup (46.2-1) UNRELEASED; urgency=medium
 
   * New upstream release
