@@ -1316,7 +1316,7 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-at
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
 +++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui	2024-03-25 12:46:43.936982467 +0100
-@@ -0,0 +1,195 @@
+@@ -0,0 +1,235 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
 +  <requires lib="gtk" version="4.0"/>
@@ -1391,14 +1391,26 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-at
 +        <child>
 +          <object class="GtkBox">
 +            <property name="visible">True</property>
-+            <property name="margin-start">24</property>
++        <child>
++          <object class="GtkCheckButton">
++            <property name="visible">True</property>
++            <property name="can-focus">False</property>
++            <property name="margin-start"
++                bind-source="magic_radio"
++                bind-property="margin-start"
++                bind-flags="sync-create" />
++            <signal name="map" handler="unmap_button" swapped="no"/>
++            </object>
++            </child>
++        <child>
++          <object class="GtkBox">
++            <property name="visible">True</property>
 +            <child>
 +              <object class="GtkLabel" id="pin_label">
 +                <property name="selectable">True</property>
 +                <property name="visible">True</property>
 +                <property name="margin-top">8</property>
 +                <property name="margin-bottom">8</property>
-+                <property name="margin-start">30</property>
 +                <property name="halign">start</property>
 +                <attributes>
 +                  <attribute name="scale" value="2"/>
@@ -1434,13 +1446,30 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-at
 +            </child>
 +          </object>
 +        </child>
++            </object>
++            </child>
 +        <child>
++          <object class="GtkBox">
++            <property name="visible">True</property>
++        <child>
++          <object class="GtkCheckButton">
++            <property name="visible">True</property>
++            <property name="can-focus">False</property>
++            <property name="margin-start"
++                bind-source="magic_radio"
++                bind-property="margin-start"
++                bind-flags="sync-create" />
++            <signal name="map" handler="unmap_button" swapped="no"/>
++          </object>
++          </child>
++          <child>
 +          <object class="GtkLabel" id="pin_hint">
 +            <property name="visible">True</property>
 +            <property name="margin-top">6</property>
 +            <property name="margin-bottom">8</property>
-+            <property name="margin-start">54</property>
 +            <property name="halign">start</property>
++          </object>
++        </child>
 +          </object>
 +        </child>
 +        <child>
@@ -1455,59 +1484,70 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-at
 +          </object>
 +        </child>
 +        <child>
-+          <object class="GtkLabel">
++          <object class="GtkCheckButton">
 +            <property name="visible">True</property>
-+            <property name="use-markup">True</property>
-+            <property name="margin-start">55</property>
++            <property name="margin-start"
++                bind-source="token_radio"
++                bind-property="margin-start"
++                bind-flags="sync-create" />
++            <property name="can-focus">False</property>
 +            <property name="label" translatable="yes">&lt;small&gt;From your admin, or from ubuntu.com/pro&lt;/small&gt;</property>
 +            <property name="halign">start</property>
++            <signal name="map" handler="unmap_button" swapped="no"/>
 +          </object>
 +        </child>
 +        <child>
 +          <object class="GtkBox">
-+            <property name="visible">True</property>
-+            <property name="margin-start">55</property>
-+            <property name="margin-top">12</property>
-+            <property name="margin-bottom">12</property>
-+            <child>
-+              <object class="GtkEntry" id="token_field">
-+                <property name="visible">True</property>
-+                <property name="sensitive">False</property>
-+                <property name="width-chars">35</property>
-+                <property name="placeholder-text" translatable="yes">Token</property>
-+                <property name="valign">center</property>
-+                <signal name="activate" handler="request_token_attach" swapped="no"/>
-+                <signal name="changed" handler="on_token_typing" swapped="no"/>
-+              </object>
-+            </child>
-+            <child>
-+              <object class="GtkFixed">
-+                <property name="visible">True</property>
-+                <property name="valign">center</property>
-+                <property name="margin-start">6</property>
-+                <property name="margin-end">4</property>
-+                <child>
-+                  <object class="GtkSpinner" id="token_spinner">
-+                    <property name="visible">True</property>
-+                    <property name="valign">center</property>
-+                  </object>
-+                </child>
-+                <child>
-+                  <object class="GtkImage" id="token_status_icon">
-+                    <property name="visible">False</property>
-+                    <property name="valign">center</property>
-+                  </object>
-+                </child>
-+              </object>
-+            </child>
-+            <child>
-+              <object class="GtkLabel" id="token_status">
-+                <property name="visible">True</property>
-+                <property name="valign">center</property>
-+              </object>
-+            </child>
-+          </object>
-+        </child>
++          <child>
++            <object class="GtkCheckButton">
++              <property name="margin-start"
++                  bind-source="token_radio"
++                  bind-property="margin-start"
++                  bind-flags="sync-create" />
++              <property name="can-focus">False</property>
++              <property name="visible">True</property>
++              <signal name="map" handler="unmap_button" swapped="no"/>
++            </object>
++          </child>
++          <child>
++            <object class="GtkBox">
++              <child>
++                <object class="GtkEntry" id="token_field">
++                  <property name="sensitive">False</property>
++                  <property name="width-chars">35</property>
++                  <property name="placeholder-text" translatable="yes">Token</property>
++                  <property name="valign">center</property>
++                  <signal name="activate" handler="request_token_attach" swapped="no"/>
++                  <signal name="changed" handler="on_token_typing" swapped="no"/>
++                </object>
++              </child>
++              <child>
++                <object class="GtkFixed">
++                  <property name="valign">center</property>
++                  <property name="margin-start">6</property>
++                  <property name="margin-end">4</property>
++                  <child>
++                    <object class="GtkSpinner" id="token_spinner">
++                      <property name="valign">center</property>
++                    </object>
++                  </child>
++                  <child>
++                    <object class="GtkImage" id="token_status_icon">
++                      <property name="visible">False</property>
++                      <property name="valign">center</property>
++                    </object>
++                  </child>
++                </object>
++              </child>
++              <child>
++                <object class="GtkLabel" id="token_status">
++                  <property name="valign">center</property>
++                </object>
++              </child>
++            </object>
++          </child>
++            </object>
++          </child>
 +  </object>
 +  </child>
 +</template>
@@ -1739,7 +1779,7 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-pa
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
 +++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c	2024-03-25 12:46:43.936982467 +0100
-@@ -0,0 +1,841 @@
+@@ -0,0 +1,843 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2022 Canonical Ltd.
@@ -1997,8 +2037,10 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-pa
 +  GtkWidget *label = gtk_widget_get_last_child (GTK_WIDGET (button));
 +  if (circle != NULL)
 +    gtk_widget_unmap (GTK_WIDGET (circle));
-+  if (label != NULL)
++  if (label != NULL && GTK_IS_LABEL(label)) {
 +    gtk_label_set_wrap (GTK_LABEL (label), TRUE);
++    gtk_label_set_use_markup (GTK_LABEL (label), TRUE);
++  }
 +}
 +
 +static void
