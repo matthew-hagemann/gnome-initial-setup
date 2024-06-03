@@ -1556,7 +1556,7 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-of
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
 +++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui	2024-03-25 12:46:43.936982467 +0100
-@@ -0,0 +1,218 @@
+@@ -0,0 +1,143 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
 +  <requires lib="gtk" version="4.0"/>
@@ -1606,94 +1606,19 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-of
 +                <property name="content-fit">scale-down</property>
 +              </object>
 +            </child>
-+
-+            <child>
-+              <object class="GtkGrid">
-+                <property name="visible">True</property>
-+                <property name="hexpand">True</property>
 +            <child>
 +              <object class="GtkLabel">
 +                <property name="visible">True</property>
-+                      <property name="halign">start</property>
++                <property name="halign">start</property>
 +                <property name="label" translatable="yes">Upgrade this machine to Ubuntu Pro. Free for up to 5 machines.
-+</property>
-+                <property name="wrap">True</property>
-+                <property name="natural-wrap-mode">1</property>
-+                      <property name="xalign">0</property>
-+                    <layout>
-+                      <property name="column">0</property>
-+                      <property name="row">0</property>
-+                      <property name="column-span">2</property>
-+                    </layout>
-+              </object>
-+            </child>
-+                <child>
-+                  <object class="GtkLabel">
-+                    <property name="visible">True</property>
-+                      <property name="valign">start</property>
-+                    <property name="label">• </property>
-+                    <layout>
-+                      <property name="column">0</property>
-+                      <property name="row">1</property>
-+                    </layout>
-+                  </object>
-+                </child>
-+                <child>
-+                  <object class="GtkLabel">
-+                    <property name="visible">True</property>
-+                    <property name="label" translatable="yes">Get security updates on a wide range of packages until 2034</property>
-+                <property name="wrap">True</property>
-+                <property name="natural-wrap-mode">1</property>
-+                      <property name="xalign">0</property>
-+                      <property name="halign">start</property>
-+                    <layout>
-+                      <property name="column">1</property>
-+                      <property name="row">1</property>
-+                    </layout>
-+                  </object>
-+                </child>
-+                <child>
-+                  <object class="GtkLabel">
-+                    <property name="visible">True</property>
-+                      <property name="valign">start</property>
-+                    <property name="label">• </property>
-+                    <layout>
-+                      <property name="column">0</property>
-+                      <property name="row">2</property>
-+                    </layout>
-+                  </object>
-+                </child>
-+                <child>
-+                  <object class="GtkLabel">
-+                    <property name="visible">True</property>
-+                <property name="wrap">True</property>
-+                <property name="natural-wrap-mode">1</property>
-+                      <property name="xalign">0</property>
-+                      <property name="halign">start</property>
-+                    <property name="label" translatable="yes">Fulfill FedRAMP, FIPS, STIG and HIPAA and other compliance and hardening requirements with certified tooling and crypto-modules
-+</property>
-+                    <layout>
-+                      <property name="column">1</property>
-+                      <property name="row">2</property>
-+                    </layout>
-+                  </object>
-+                </child>
-+                <child>
-+                  <object class="GtkLabel">
-+                <property name="wrap">True</property>
-+                <property name="natural-wrap-mode">1</property>
-+                      <property name="xalign">0</property>
-+                    <property name="visible">True</property>
-+                      <property name="halign">start</property>
++
++• Get security updates on a wide range of packages until 2034
++• Fulfill FedRAMP, FIPS, STIG and HIPAA and other compliance and hardening requirements with certified tooling and crypto-modules
++
++Learn more at &lt;a href="https://ubuntu.com/pro"&gt;ubuntu.com/pro&lt;/a&gt;.</property>
 +                <property name="use-markup">True</property>
-+                    <property name="label" translatable="yes">Learn more at &lt;a href="https://ubuntu.com/pro"&gt;ubuntu.com/pro&lt;/a&gt;.</property>
-+                    <layout>
-+                      <property name="column">0</property>
-+                      <property name="row">3</property>
-+                      <property name="column-span">2</property>
-+                    </layout>
-+                  </object>
-+                </child>
++                <property name="wrap">True</property>
++                <property name="max-width-chars">130</property>
 +              </object>
 +            </child>
 +          </object>
