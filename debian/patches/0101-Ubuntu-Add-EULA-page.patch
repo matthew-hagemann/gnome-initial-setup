@@ -1,0 +1,280 @@
+Index: gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.c
+===================================================================
+--- /dev/null
++++ gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.c
+@@ -0,0 +1,90 @@
++/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
++/*
++ * Copyright (C) 2024 Canonical
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of the
++ * License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, see <http://www.gnu.org/licenses/>.
++ *
++ */
++
++/* eula page */
++
++#define PAGE_ID "eula"
++
++#include "config.h"
++#include "gis-eula-page.h"
++#include "gis-assistant.h"
++
++
++struct _GisEulaPage
++{
++  GisPage parent;
++};
++
++G_DEFINE_TYPE (GisEulaPage, gis_eula_page, GIS_TYPE_PAGE)
++
++static void
++gis_eula_page_constructed (GObject *object)
++{
++  GisEulaPage *page = GIS_EULA_PAGE (object);
++
++  G_OBJECT_CLASS (gis_eula_page_parent_class)->constructed (object);
++
++  gis_page_set_complete (GIS_PAGE (page), TRUE);
++}
++
++static void
++gis_eula_page_finalize (GObject *object)
++{
++  GisEulaPage *page = GIS_EULA_PAGE (object);
++
++  G_OBJECT_CLASS (gis_eula_page_parent_class)->finalize (object);
++}
++
++static void
++gis_eula_page_locale_changed (GisPage *gis_page)
++{
++
++}
++
++static void
++gis_eula_page_class_init (GisEulaPageClass *klass)
++{
++  GisPageClass *page_class = GIS_PAGE_CLASS (klass);
++  GObjectClass *object_class = G_OBJECT_CLASS (klass);
++
++  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass), "/org/gnome/initial-setup/gis-eula-page.ui");
++
++  page_class->page_id = PAGE_ID;
++  page_class->locale_changed = gis_eula_page_locale_changed;
++
++  object_class->constructed = gis_eula_page_constructed;
++  object_class->finalize = gis_eula_page_finalize;
++}
++
++static void
++gis_eula_page_init (GisEulaPage *page)
++{
++    gtk_widget_init_template (GTK_WIDGET (page));
++    
++    gis_add_style_from_resource ("/org/gnome/initial-setup/gis-eula-page.css");
++}
++
++GisPage *
++gis_prepare_eula_page (GisDriver *driver)
++{
++  return g_object_new (GIS_TYPE_EULA_PAGE,
++                       "driver", driver,
++                       NULL);
++}
++
+Index: gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.h
+===================================================================
+--- /dev/null
++++ gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.h
+@@ -0,0 +1,39 @@
++/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
++/*
++ * Copyright (C) 2020 Red Hat
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of the
++ * License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, see <http://www.gnu.org/licenses/>.
++ *
++ * Written by:
++ *     Matthias Clasen <mclasen@redhat.com>
++ */
++
++#pragma once
++
++#include <glib-object.h>
++
++#include "gnome-initial-setup.h"
++
++G_BEGIN_DECLS
++
++#define GIS_EULA_DEFAULT_PAGE_PATH "/root/eula/eula.pdf"
++
++#define GIS_TYPE_EULA_PAGE (gis_eula_page_get_type ())
++G_DECLARE_FINAL_TYPE (GisEulaPage, gis_eula_page, GIS, EULA_PAGE, GisPage)
++
++GType gis_eula_page_get_type (void);
++
++GisPage *gis_prepare_eula_page (GisDriver *driver);
++
++G_END_DECLS
+Index: gnome-initial-setup/gnome-initial-setup/pages/eula/meson.build
+===================================================================
+--- /dev/null
++++ gnome-initial-setup/gnome-initial-setup/pages/eula/meson.build
+@@ -0,0 +1,10 @@
++sources += gnome.compile_resources(
++    'eula-resources',
++    files('eula.gresource.xml'),
++    c_name: 'eula'
++)
++
++sources += files(
++    'gis-eula-page.c',
++    'gis-eula-page.h',
++)
+Index: gnome-initial-setup/gnome-initial-setup/pages/meson.build
+===================================================================
+--- gnome-initial-setup.orig/gnome-initial-setup/pages/meson.build
++++ gnome-initial-setup/gnome-initial-setup/pages/meson.build
+@@ -1,5 +1,6 @@
+ pages = [
+    'account',
++   'eula',
+    'language',
+    'keyboard',
+    'network',
+Index: gnome-initial-setup/gnome-initial-setup/gnome-initial-setup.c
+===================================================================
+--- gnome-initial-setup.orig/gnome-initial-setup/gnome-initial-setup.c
++++ gnome-initial-setup/gnome-initial-setup/gnome-initial-setup.c
+@@ -30,6 +30,7 @@
+ #include <glib/gi18n.h>
+ 
+ #include "pages/welcome/gis-welcome-page.h"
++#include "pages/eula/gis-eula-page.h"
+ #include "pages/language/gis-language-page.h"
+ #include "pages/keyboard/gis-keyboard-page.h"
+ #include "pages/network/gis-network-page.h"
+@@ -67,6 +68,7 @@ typedef struct {
+ 
+ static PageData page_table[] = {
+   PAGE (welcome, FALSE),
++  PAGE (eula,     FALSE),
+   PAGE (language, FALSE),
+   PAGE (keyboard, FALSE),
+   PAGE (network,  FALSE),
+@@ -85,6 +87,7 @@ static PageData page_table[] = {
+ 
+ static PageData ubuntu_page_table[] = {
+   PAGE (welcome,        FALSE),
++  PAGE (eula,           FALSE),
+   PAGE (ubuntu_pro,     FALSE),
+   PAGE (ubuntu_report,  FALSE),
+   PAGE (account,        TRUE),
+@@ -128,6 +131,8 @@ should_skip_page (const gchar  *page_id,
+     }
+   }
+ 
++  /* TODO: filter eula page based on existence of GIS_EULA_DEFAULT_PAGE_PATH */
++
+   return FALSE;
+ }
+ 
+Index: gnome-initial-setup/gnome-initial-setup/pages/eula/eula.gresource.xml
+===================================================================
+--- /dev/null
++++ gnome-initial-setup/gnome-initial-setup/pages/eula/eula.gresource.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<gresources>
++  <gresource prefix="/org/gnome/initial-setup">
++    <file preprocess="xml-stripblanks">gis-eula-page.ui</file>
++    <file>gis-eula-page.css</file>
++  </gresource>
++</gresources>
+Index: gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.css
+===================================================================
+--- /dev/null
++++ gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.css
+@@ -0,0 +1,13 @@
++.welcome-header-box {
++  padding: 30px;
++  background: linear-gradient(to bottom, #e3ecf8, #c4cdd8);
++}
++
++.welcome-status-page {
++  padding: 30px;
++}
++
++:link, :visited {
++  color: #24598f;
++  text-decoration: none;
++}
+\ No newline at end of file
+Index: gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.ui
+===================================================================
+--- /dev/null
++++ gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.ui
+@@ -0,0 +1,41 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<interface>
++  <template class="GisEulaPage" parent="GisPage">
++    <child>
++      <object class="AdwPreferencesPage">
++        <child>
++          <object class="AdwPreferencesGroup">
++            <child>
++              <object class="GisPageHeader" id="header">
++                <property name="margin_top">24</property>
++                <property name="title" translatable="yes">Eula to Ubuntu 24.04 LTS</property>
++                <property name="subtitle" translatable="yes">Complete your setup with additional settings and we'll
++have you up and running in no time</property>
++                <property name="show_icon" bind-source="GisEulaPage" bind-property="small-screen" bind-flags="invert-boolean|sync-create"/>
++              </object>
++            </child>
++          </object>
++        </child>
++
++        <child>
++          <object class="AdwPreferencesGroup">
++            <child>
++              <object class="GtkLabel" id="release_notes">
++                <property name="halign">center</property>
++                <property name="margin-top">36</property>
++                <property name="margin-bottom">36</property>
++                <property name="margin-start">36</property>
++                <property name="margin-end">36</property>
++                <property name="use-underline">True</property>
++                <property name="use-markup">True</property>
++                <property name="visible">True</property>
++                <property name="label"></property>
++              </object>
++            </child>
++          </object>
++        </child>
++
++      </object>
++    </child>
++  </template>
++</interface>
+\ No newline at end of file

@@ -1,3 +1,11 @@
+gnome-initial-setup (46.2-1ubuntu2) UNRELEASED; urgency=medium
+
+  * debian/patches/0100-Ubuntu-always-show-user-gis.patch:
+    - Always show gis in user mode, even if created by user creation mode
+      (LP: #XXXXX)
+
+ -- Matthew Gary Hagemann <matt.hagemann@canonical.com>  Thu, 30 May 2024 15:01:39 +0200
+
 gnome-initial-setup (46.2-1ubuntu1) oracular; urgency=medium
 
   * Merge with Debian. Remaining changes:

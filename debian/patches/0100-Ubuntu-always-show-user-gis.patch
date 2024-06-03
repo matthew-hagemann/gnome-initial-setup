@@ -1,0 +1,18 @@
+From: ....
+Date: Thu, 21 Mar 2024 19:39:28 -0400
+Subject: Always Show User gis on first login.
+  Even if the user was created using gis in user setup mode,
+  we still want to show the first user welcoming experience on Ubuntu.
+Forwarded: not-needed
+Index: gnome-initial-setup/gnome-initial-setup/gnome-initial-setup-copy-worker.c
+===================================================================
+--- gnome-initial-setup.orig/gnome-initial-setup/gnome-initial-setup-copy-worker.c
++++ gnome-initial-setup/gnome-initial-setup/gnome-initial-setup-copy-worker.c
+@@ -88,7 +88,6 @@ main (int    argc,
+ #define FILE(path) \
+   move_file_from_homedir (src, dest, path);
+ 
+-  FILE (".config/gnome-initial-setup-done");
+   FILE (".config/dconf/user");
+   FILE (".config/goa-1.0/accounts.conf");
+   FILE (".config/monitors.xml");

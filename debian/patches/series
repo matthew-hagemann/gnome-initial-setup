@@ -8,3 +8,5 @@ reenable-existing-user-mode.patch
 ubuntu-distributor-logo.patch
 Update-style-to-the-same-than-flutter-installer.patch
 Add-wrapper-for-convd-flutter-ui.patch
+0100-Ubuntu-always-show-user-gis.patch
+0101-Ubuntu-Add-EULA-page.patch
