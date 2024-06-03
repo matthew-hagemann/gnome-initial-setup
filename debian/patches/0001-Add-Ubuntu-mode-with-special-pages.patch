@@ -1529,7 +1529,7 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-of
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
 +++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui	2024-03-25 12:46:43.936982467 +0100
-@@ -0,0 +1,217 @@
+@@ -0,0 +1,220 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
 +  <requires lib="gtk" version="4.0"/>
@@ -1751,7 +1751,7 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-pa
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
 +++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c	2024-03-25 12:46:43.936982467 +0100
-@@ -0,0 +1,843 @@
+@@ -0,0 +1,846 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2022 Canonical Ltd.
@@ -2006,9 +2006,12 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-pa
 + */
 +static void unmap_button (GtkCheckButton *button, gpointer user_data)
 +{
-+  GtkWidget *child = gtk_widget_get_first_child (GTK_WIDGET (button));
-+  if (child != NULL)
-+    gtk_widget_unmap (GTK_WIDGET (child));
++  GtkWidget *circle = gtk_widget_get_first_child (GTK_WIDGET (button));
++  GtkWidget *label = gtk_widget_get_last_child (GTK_WIDGET (button));
++  if (circle != NULL)
++    gtk_widget_unmap (GTK_WIDGET (circle));
++  if (label != NULL)
++    gtk_label_set_wrap (GTK_LABEL (label), TRUE);
 +}
 +
 +static void
