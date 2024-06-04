@@ -274,12 +274,13 @@ Index: gnome-initial-setup/gnome-initial-setup/gnome-initial-setup.c
  static gboolean force_existing_user_mode;
  
  static GPtrArray *skipped_pages;
-@@ -78,6 +83,16 @@
+@@ -78,6 +83,17 @@
    { NULL },
  };
  
 +static PageData ubuntu_page_table[] = {
 +  PAGE (welcome,        FALSE),
++  PAGE (language,       TRUE),
 +  PAGE (ubuntu_pro,     FALSE),
 +  PAGE (ubuntu_report,  FALSE),
 +  PAGE (account,        TRUE),
