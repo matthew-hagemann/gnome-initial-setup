@@ -1399,7 +1399,7 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-at
 +                bind-source="magic_radio"
 +                bind-property="margin-start"
 +                bind-flags="sync-create" />
-+            <signal name="map" handler="unmap_button" swapped="no"/>
++            <signal name="map" handler="on_map_checkbutton" swapped="no"/>
 +            </object>
 +            </child>
 +        <child>
@@ -1459,7 +1459,7 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-at
 +                bind-source="magic_radio"
 +                bind-property="margin-start"
 +                bind-flags="sync-create" />
-+            <signal name="map" handler="unmap_button" swapped="no"/>
++            <signal name="map" handler="on_map_checkbutton" swapped="no"/>
 +          </object>
 +          </child>
 +          <child>
@@ -1493,7 +1493,7 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-at
 +            <property name="can-focus">False</property>
 +            <property name="label" translatable="yes">&lt;small&gt;From your admin, or from ubuntu.com/pro&lt;/small&gt;</property>
 +            <property name="halign">start</property>
-+            <signal name="map" handler="unmap_button" swapped="no"/>
++            <signal name="map" handler="on_map_checkbutton" swapped="no"/>
 +          </object>
 +        </child>
 +        <child>
@@ -1506,7 +1506,7 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-at
 +                  bind-flags="sync-create" />
 +              <property name="can-focus">False</property>
 +              <property name="visible">True</property>
-+              <signal name="map" handler="unmap_button" swapped="no"/>
++              <signal name="map" handler="on_map_checkbutton" swapped="no"/>
 +            </object>
 +          </child>
 +          <child>
@@ -1689,7 +1689,7 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-of
 +                    <property name="visible">True</property>
 +                    <property name="can-focus">False</property>
 +                    <property name="label" translatable="yes">You can always enable Ubuntu Pro later via the Software &amp; Updates application</property>
-+                    <signal name="map" handler="unmap_button" swapped="no"/>
++                    <signal name="map" handler="on_map_checkbutton" swapped="no"/>
 +                  </object>
 +                </child>
 +              </object>
@@ -1956,7 +1956,7 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-pa
 + * in previous GTK releases, such as connecting to size-allocate, were dropped
 + * in GTK4.
 + */
-+void unmap_button (GtkCheckButton *button, gpointer user_data)
++void on_map_checkbutton (GtkCheckButton *button, gpointer user_data)
 +{
 +  GtkWidget *circle = gtk_widget_get_first_child (GTK_WIDGET (button));
 +  GtkWidget *label = gtk_widget_get_last_child (GTK_WIDGET (button));
