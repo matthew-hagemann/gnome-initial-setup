@@ -346,7 +346,7 @@ Index: gnome-initial-setup/gnome-initial-setup/gnome-initial-setup.c
      destroy_pages_after (assistant, current_page);
  
 -    for (page_data = page_table; page_data->page_id != NULL; ++page_data)
-+    for (page_data = ubuntu_page_table; page_data->page_id != NULL; ++page_data) // FIXME conditional
++    for (; page_data->page_id != NULL; ++page_data)
        if (g_str_equal (page_data->page_id, GIS_PAGE_GET_CLASS (current_page)->page_id))
          break;
  
