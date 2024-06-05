@@ -1,3 +1,12 @@
+gnome-initial-setup (46.2-1ubuntu2) oracular; urgency=medium
+
+  * debian/vendor.conf: do not hide language page
+  * debian/patches:
+    - fix segfault when selecting language
+    - code comment on is_desktop for when setting up the first user
+
+ -- Yao Wei (魏銘廷) <yao.wei@canonical.com>  Wed, 05 Jun 2024 14:17:17 +0800
+
 gnome-initial-setup (46.2-1ubuntu1) oracular; urgency=medium
 
   * Merge with Debian. Remaining changes:
