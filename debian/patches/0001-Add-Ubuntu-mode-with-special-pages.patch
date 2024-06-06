@@ -1461,8 +1461,8 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-at
 +                bind-flags="sync-create" />
 +            <signal name="map" handler="on_map_checkbutton" swapped="no"/>
 +          </object>
-+          </child>
-+          <child>
++        </child>
++        <child>
 +          <object class="GtkLabel" id="pin_hint">
 +            <property name="visible">True</property>
 +            <property name="margin-top">6</property>
