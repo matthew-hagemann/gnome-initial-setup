@@ -24,9 +24,9 @@ Subject: Add Ubuntu mode with special pages
  .../pages/summary/gis-summary-page.c               |    2 +-
  gnome-initial-setup/pages/ubuntu-pro/checkmark.svg |    1 +
  gnome-initial-setup/pages/ubuntu-pro/fail.svg      |    1 +
- .../pages/ubuntu-pro/gis-ubuntupro-attach-page.ui  |  248 +++
- .../pages/ubuntu-pro/gis-ubuntupro-offer-page.ui   |  148 ++
- .../pages/ubuntu-pro/gis-ubuntupro-page.c          |  865 +++++++++
+ .../pages/ubuntu-pro/gis-ubuntupro-attach-page.ui  |  240 +++
+ .../pages/ubuntu-pro/gis-ubuntupro-offer-page.ui   |  171 ++
+ .../pages/ubuntu-pro/gis-ubuntupro-page.c          |  868 +++++++++
  .../pages/ubuntu-pro/gis-ubuntupro-page.h          |  110 ++
  .../pages/ubuntu-pro/gis-ubuntupro-page.ui         |   33 +
  .../ubuntu-pro/gis-ubuntupro-services-page.ui      |  134 ++
@@ -44,12 +44,12 @@ Subject: Add Ubuntu mode with special pages
  .../pages/ubuntu-report/ubuntu-report.svg          |    1 +
  .../pages/welcome/gis-welcome-page.c               |   26 +-
  .../pages/welcome/gis-welcome-page.css             |    5 +
- .../pages/welcome/gis-welcome-page.ui              |   58 +-
+ .../pages/welcome/gis-welcome-page.ui              |   56 +-
  .../pages/welcome/initial-setup-welcome.svg        | 1833 --------------------
  .../pages/welcome/ubuntu-mascot.svg                |  196 +++
  .../pages/welcome/welcome.gresource.xml            |    2 +-
  po/POTFILES.in                                     |   10 +
- 46 files changed, 3487 insertions(+), 1879 deletions(-)
+ 46 files changed, 3504 insertions(+), 1878 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/app-center.svg
@@ -1329,10 +1329,10 @@ index 0000000..e3c9a52
 \ No newline at end of file
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
 new file mode 100644
-index 0000000..0dbc68f
+index 0000000..977988b
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
-@@ -0,0 +1,248 @@
+@@ -0,0 +1,240 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
 +  <requires lib="gtk" version="4.0"/>
@@ -1399,7 +1399,7 @@ index 0000000..0dbc68f
 +        <child>
 +          <object class="GtkCheckButton" id="magic_radio">
 +            <property name="label" translatable="yes">Attach machine via your Ubuntu One account</property>
-+            <property name="visible">True</property>
++            <property name="halign">start</property>
 +            <property name="receives-default">False</property>
 +            <property name="margin-top">40</property>
 +            <property name="margin-bottom">6</property>
@@ -1411,16 +1411,16 @@ index 0000000..0dbc68f
 +          <object class="GtkBox">
 +            <property name="visible">True</property>
 +        <child>
-+          <object class="GtkCheckButton">
++          <object class="GtkCheckButton" id="fake_radio">
 +            <property name="visible">True</property>
 +            <property name="can-focus">False</property>
++            <signal name="realize" handler="set_check_button_as_padded_label" />
 +            <property name="margin-start"
 +                bind-source="magic_radio"
 +                bind-property="margin-start"
 +                bind-flags="sync-create" />
-+            <signal name="map" handler="on_map_checkbutton" swapped="no"/>
-+            </object>
-+            </child>
++          </object>
++        </child>
 +        <child>
 +          <object class="GtkBox">
 +            <property name="visible">True</property>
@@ -1474,11 +1474,12 @@ index 0000000..0dbc68f
 +          <object class="GtkCheckButton">
 +            <property name="visible">True</property>
 +            <property name="can-focus">False</property>
++            <property name="group">fake_radio</property>
++            <signal name="realize" handler="set_check_button_as_padded_label" />
 +            <property name="margin-start"
 +                bind-source="magic_radio"
 +                bind-property="margin-start"
 +                bind-flags="sync-create" />
-+            <signal name="map" handler="on_map_checkbutton" swapped="no"/>
 +          </object>
 +        </child>
 +        <child>
@@ -1493,10 +1494,74 @@ index 0000000..0dbc68f
 +        </child>
 +        <child>
 +          <object class="GtkCheckButton" id="token_radio">
-+            <property name="label" translatable="yes"
-+             comments="translators: This is the other way to attach a machine to Ubuntu Pro"
-+             >Or add token manually</property>
-+            <property name="visible">True</property>
++            <property name="halign">start</property>
++            <signal name="realize" handler="set_children_valign_start" />
++             <property name="child">
++              <object class="GtkBox">
++                <property name="orientation">vertical</property>
++                <property name="spacing">2</property>
++                <child>
++                  <object class="GtkLabel">
++                    <property name="halign">start</property>
++                    <property name="label" translatable="yes"
++                      comments="translators: This is the other way to attach a machine to Ubuntu Pro"
++                      >Or add token manually</property>
++                  </object>
++                </child>
++                <child>
++                  <object class="GtkLabel">
++                    <property name="label" translatable="yes"
++                      comments="translators: Subtitle telling who can provide the Ubuntu Pro token"
++                      >From your admin, or from ubuntu.com/pro</property>
++                    <attributes>
++                      <attribute name="scale" value="0.85"/>
++                    </attributes>
++                    <property name="wrap">True</property>
++                    <property name="xalign">0</property>
++                  </object>
++                </child>
++                <child>
++                  <object class="GtkBox">
++                    <property name="halign">start</property>
++                    <child>
++                      <object class="GtkEntry" id="token_field">
++                        <property name="halign">start</property>
++                        <property name="sensitive">False</property>
++                        <property name="width-chars">35</property>
++                        <property name="margin-top">6</property>
++                        <property name="placeholder-text" translatable="yes">Token</property>
++                        <property name="valign">center</property>
++                        <signal name="activate" handler="request_token_attach" swapped="no"/>
++                        <signal name="changed" handler="on_token_typing" swapped="no"/>
++                      </object>
++                    </child>
++                    <child>
++                      <object class="GtkFixed">
++                        <property name="valign">center</property>
++                        <property name="margin-start">6</property>
++                        <property name="margin-end">4</property>
++                        <child>
++                          <object class="GtkSpinner" id="token_spinner">
++                            <property name="valign">center</property>
++                          </object>
++                        </child>
++                        <child>
++                          <object class="GtkImage" id="token_status_icon">
++                            <property name="visible">False</property>
++                            <property name="valign">center</property>
++                          </object>
++                        </child>
++                      </object>
++                    </child>
++                    <child>
++                      <object class="GtkLabel" id="token_status">
++                        <property name="valign">center</property>
++                      </object>
++                    </child>
++                  </object>
++                </child>
++              </object>
++            </property>
 +            <property name="receives-default">False</property>
 +            <property name="margin-start">30</property>
 +            <property name="margin-top">20</property>
@@ -1504,89 +1569,16 @@ index 0000000..0dbc68f
 +            <signal name="toggled" handler="on_radio_toggled" swapped="no"/>
 +          </object>
 +        </child>
-+        <child>
-+          <object class="GtkCheckButton">
-+            <property name="visible">True</property>
-+            <property name="margin-start"
-+                bind-source="token_radio"
-+                bind-property="margin-start"
-+                bind-flags="sync-create" />
-+            <property name="can-focus">False</property>
-+            <property name="halign">fill</property>
-+            <property name="child">
-+              <object class="GtkLabel" id="token_origin">
-+                <property name="label" translatable="yes"
-+                 comments="translators: Subtitle telling who can provide the Ubuntu Pro token"
-+                 >From your admin, or from ubuntu.com/pro</property>
-+                <property name="use-markup">True</property>
-+                <property name="wrap">True</property>
-+              </object>
-+            </property>
-+            <signal name="map" handler="on_map_checkbutton" swapped="no"/>
-+          </object>
-+        </child>
-+        <child>
-+          <object class="GtkBox">
-+          <child>
-+            <object class="GtkCheckButton">
-+              <property name="margin-start"
-+                  bind-source="token_radio"
-+                  bind-property="margin-start"
-+                  bind-flags="sync-create" />
-+              <property name="can-focus">False</property>
-+              <property name="visible">True</property>
-+              <signal name="map" handler="on_map_checkbutton" swapped="no"/>
-+            </object>
-+          </child>
-+          <child>
-+            <object class="GtkBox">
-+              <child>
-+                <object class="GtkEntry" id="token_field">
-+                  <property name="sensitive">False</property>
-+                  <property name="width-chars">35</property>
-+                  <property name="placeholder-text" translatable="yes">Token</property>
-+                  <property name="valign">center</property>
-+                  <signal name="activate" handler="request_token_attach" swapped="no"/>
-+                  <signal name="changed" handler="on_token_typing" swapped="no"/>
-+                </object>
-+              </child>
-+              <child>
-+                <object class="GtkFixed">
-+                  <property name="valign">center</property>
-+                  <property name="margin-start">6</property>
-+                  <property name="margin-end">4</property>
-+                  <child>
-+                    <object class="GtkSpinner" id="token_spinner">
-+                      <property name="valign">center</property>
-+                    </object>
-+                  </child>
-+                  <child>
-+                    <object class="GtkImage" id="token_status_icon">
-+                      <property name="visible">False</property>
-+                      <property name="valign">center</property>
-+                    </object>
-+                  </child>
-+                </object>
-+              </child>
-+              <child>
-+                <object class="GtkLabel" id="token_status">
-+                  <property name="valign">center</property>
-+                </object>
-+              </child>
-+            </object>
-+          </child>
-+            </object>
-+          </child>
 +  </object>
 +  </child>
 +</template>
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
 new file mode 100644
-index 0000000..82c14b5
+index 0000000..e508393
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
-@@ -0,0 +1,148 @@
+@@ -0,0 +1,171 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
 +  <requires lib="gtk" version="4.0"/>
@@ -1663,6 +1655,9 @@ index 0000000..82c14b5
 +            <property name="margin-start">30</property>
 +            <property name="margin-bottom">6</property>
 +            <property name="label" translatable="yes">Enable Ubuntu Pro now, or skip this step.</property>
++            <attributes>
++              <attribute name="weight" value="bold"/>
++            </attributes>
 +            <property name="xalign">0</property>
 +          </object>
 +        </child>
@@ -1673,60 +1668,80 @@ index 0000000..82c14b5
 +            <property name="margin-start">30</property>
 +            <property name="spacing">6</property>
 +            <child>
-+              <object class="GtkBox">
-+                <property name="visible">True</property>
-+                <property name="orientation">horizontal</property>
-+                <child>
-+                  <object class="GtkCheckButton" id="enable_pro_select">
-+                    <property name="label" translatable="yes">Enable Ubuntu Pro</property>
++              <object class="GtkCheckButton" id="enable_pro_select">
++                <property name="halign">start</property>
++                <property name="receives-default">False</property>
++                <property name="margin-top">6</property>
++                <property name="group">skip_pro_select</property>
++                <property name="child">
++                  <object class="GtkBox">
 +                    <property name="visible">True</property>
-+                    <property name="receives-default">False</property>
-+                    <property name="margin-top">6</property>
-+                    <property name="group">skip_pro_select</property>
++                    <property name="orientation">horizontal</property>
++                    <property name="halign">start</property>
++                    <child>
++                      <object class="GtkLabel">
++                      <property name="halign">start</property>
++                        <property name="label" translatable="yes">_Enable Ubuntu Pro</property>
++                        <property name="mnemonic_widget">enable_pro_select</property>
++                        <property name="use_underline">True</property>
++                        <property name="wrap">True</property>
++                        <property name="xalign">0</property>
++                      </object>
++                    </child>
++                    <child>
++                      <object class="GtkImage" id="pro_status_image">
++                        <property name="margin-start">30</property>
++                        <property name="margin-end">6</property>
++                        <property name="margin-top">6</property>
++                        <property name="visible">False</property>
++                        <property name="icon_size">normal</property>
++                        <property name="icon-name">dialog-warning-symbolic</property>
++                      </object>
++                    </child>
++                    <child>
++                      <object class="GtkLabel" id="offline_warning">
++                        <property name="yalign">0.8</property>
++                        <property name="visible">False</property>
++                        <property name="label" translatable="yes">An internet connection is required to enable Ubuntu Pro</property>
++                      </object>
++                    </child>
 +                  </object>
-+                </child>
-+                <child>
-+                  <object class="GtkImage" id="pro_status_image">
-+                    <property name="margin-start">30</property>
-+                    <property name="margin-end">6</property>
-+                    <property name="margin-top">6</property>
-+                    <property name="visible">False</property>
-+                    <property name="icon_size">normal</property>
-+                    <property name="icon-name">dialog-warning-symbolic</property>
-+                  </object>
-+                </child>
-+                <child>
-+                  <object class="GtkLabel" id="offline_warning">
-+                    <property name="yalign">0.8</property>
-+                    <property name="visible">False</property>
-+                    <property name="label" translatable="yes">An internet connection is required to enable Ubuntu Pro</property>
-+                  </object>
-+                </child>
++                </property>
 +              </object>
 +            </child>
 +            <child>
-+              <object class="GtkBox">
-+                <property name="visible">True</property>
-+                <property name="orientation">vertical</property>
-+                <child>
-+                  <object class="GtkCheckButton" id="skip_pro_select">
-+                    <property name="label" translatable="yes">Skip for now</property>
-+                    <property name="visible">True</property>
-+                    <property name="receives-default">False</property>
-+                    <property name="margin-top">12</property>
-+                    <property name="active">True</property>
++              <object class="GtkCheckButton" id="skip_pro_select">
++                <signal name="realize" handler="set_children_valign_start" />
++                <property name="halign">start</property>
++                <property name="receives-default">False</property>
++                <property name="margin-top">12</property>
++                <property name="active">True</property>
++                <property name="child">
++                  <object class="GtkBox">
++                    <property name="orientation">vertical</property>
++                    <property name="spacing">2</property>
++                    <child>
++                      <object class="GtkLabel">
++                        <property name="label" translatable="yes">_Skip for now</property>
++                        <property name="mnemonic_widget">skip_pro_select</property>
++                        <property name="use_underline">True</property>
++                        <property name="wrap">True</property>
++                        <property name="xalign">0</property>
++                      </object>
++                    </child>
++                    <child>
++                      <object class="GtkLabel">
++                        <property name="label" translatable="yes"
++                         ><![CDATA[You can always enable Ubuntu Pro later via the Software & Updates application]]></property>
++                        <attributes>
++                          <attribute name="scale" value="0.85"/>
++                        </attributes>
++                        <property name="wrap">True</property>
++                        <property name="xalign">0</property>
++                      </object>
++                    </child>
 +                  </object>
-+                </child>
-+                <child>
-+                  <!-- Check comment in C source file for the reason of this button -->
-+                  <object class="GtkCheckButton" id="fake_button">
-+                    <property name="visible">True</property>
-+                    <property name="can-focus">False</property>
-+                    <property name="label" translatable="yes"
-+                     comments="translators: Use HTML encoded format for special characters such as '&amp;'"><![CDATA[You can always enable Ubuntu Pro later via the Software &amp; Updates application]]></property>
-+                    <signal name="map" handler="on_map_checkbutton" swapped="no"/>
-+                  </object>
-+                </child>
++                </property>
 +              </object>
 +            </child>
 +          </object>
@@ -1737,10 +1752,10 @@ index 0000000..82c14b5
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
 new file mode 100644
-index 0000000..6e967b0
+index 0000000..4b16275
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
-@@ -0,0 +1,865 @@
+@@ -0,0 +1,868 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2022 Canonical Ltd.
@@ -1808,7 +1823,6 @@ index 0000000..6e967b0
 +  GtkWidget *ubuntu_pro_logo;
 +  GtkWidget *enable_pro_select;
 +  GtkWidget *skip_pro_select;
-+  GtkWidget *fake_button;
 +  GtkWidget *offline_warning;
 +  GtkWidget *pro_status_image;
 +  gint      network_cb;
@@ -1826,7 +1840,6 @@ index 0000000..6e967b0
 +  GtkWidget *pin_hint;
 +  GtkWidget *pin_status;
 +  GtkWidget *pin_status_icon;
-+  GtkWidget *token_origin;
 +  GtkWidget *token_radio;
 +  GtkWidget *magic_radio;
 +  /* This being here is a hack that makes changing the 2nd page's button
@@ -1992,28 +2005,6 @@ index 0000000..6e967b0
 +  gtk_widget_set_visible(GTK_WIDGET(label), status);
 +}
 +
-+/* Why implementing this as a check button and then unmap the button, leaving
-+ * only its label behind, instead of implementing it as a label straight away?
-+ * Because the text has to be aligned with the text of the button above.
-+ * Hard-coding a margin does not cut it, because we do not know the font.
-+ * Soft-coding a margin does not work, because gtk_widget_get_width insists
-+ * on returning 0 no matter what, and of course the solutions that worked
-+ * in previous GTK releases, such as connecting to size-allocate, were dropped
-+ * in GTK4.
-+ */
-+static void
-+on_map_checkbutton (GtkCheckButton *button, gpointer _)
-+{
-+  GtkWidget *c;
-+  for (c = gtk_widget_get_first_child (GTK_WIDGET (button)); c; c = gtk_widget_get_next_sibling (c)) {
-+    if GTK_IS_LABEL (c) {
-+      gtk_label_set_wrap (GTK_LABEL (c), TRUE);
-+      gtk_label_set_use_markup (GTK_LABEL (c), TRUE);
-+    } else
-+      gtk_widget_unmap (c);
-+  }
-+}
-+
 +static void
 +network_status_changed (GNetworkMonitor *monitor,
 +                        gboolean         available,
@@ -2032,6 +2023,30 @@ index 0000000..6e967b0
 +    gtk_widget_hide (GTK_WIDGET (priv->offline_warning));
 +    gtk_widget_hide (GTK_WIDGET (priv->pro_status_image));
 +  }
++}
++
++/* This allows to use start padding for GtkCheckButtons that do not support it
++ * natively.
++ */
++static void
++set_children_valign_start (GtkWidget *widget)
++{
++  for (GtkWidget *c = gtk_widget_get_first_child (widget); c;
++       c = gtk_widget_get_next_sibling (c))
++    gtk_widget_set_valign (c, GTK_ALIGN_START);
++}
++
++/* In order to align the elements correctly we use insensitive check buttons
++ * as items, so that they are padded well with the rest of items.
++ * However we need to hide the check or radio button, so we use CSS for that.
++ */
++static void
++set_check_button_as_padded_label (GtkWidget *widget)
++{
++  g_return_if_fail (GTK_IS_CHECK_BUTTON (widget));
++
++  gtk_widget_set_sensitive (widget, FALSE);
++  gtk_widget_add_css_class (widget, "as-padded-label");
 +}
 +
 +static void
@@ -2057,7 +2072,15 @@ index 0000000..6e967b0
 +{
 +  GisUbuntuProPage *page = GIS_UBUNTUPRO_PAGE (object);
 +  GisUbuntuProPagePrivate *priv = gis_ubuntupro_page_get_instance_private (page);
-+  g_autofree char *origin_label = NULL;
++  g_autoptr(GtkCssProvider) css_provider = NULL;
++
++  css_provider = gtk_css_provider_new ();
++  gtk_css_provider_load_from_string (css_provider,
++    "checkbutton.as-padded-label:disabled > * { color: inherit; }\n"
++    "checkbutton.as-padded-label > radio, check { opacity: 0; }\n");
++  gtk_style_context_add_provider_for_display (gdk_display_get_default (),
++                                              GTK_STYLE_PROVIDER (css_provider),
++                                              GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 +
 +  G_OBJECT_CLASS (gis_ubuntupro_page_parent_class)->constructed (object);
 +
@@ -2074,10 +2097,6 @@ index 0000000..6e967b0
 +  map_scalable_image(CHECK_ICON, GTK_PICTURE(services_priv->checkmark), 30, -1);
 +  // Needed so the picture is shown inside the GtkFixed (god knows why!)
 +  gtk_widget_set_size_request(services_priv->checkmark, 30, 30);
-+
-+  origin_label = g_strdup_printf ("<small>%s</small>",
-+                                  gtk_label_get_label (GTK_LABEL (attach_priv->token_origin)));
-+  gtk_label_set_label (GTK_LABEL (attach_priv->token_origin), origin_label);
 +
 +  GNetworkMonitor *network_monitor = g_network_monitor_get_default ();
 +  offer_priv->network_cb = g_signal_connect (network_monitor, "network-changed",
@@ -2504,12 +2523,11 @@ index 0000000..6e967b0
 +
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProOfferPage, ubuntu_pro_logo);
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProOfferPage, enable_pro_select);
-+  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProOfferPage, fake_button);
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProOfferPage, skip_pro_select);
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProOfferPage, offline_warning);
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProOfferPage, pro_status_image);
 +
-+  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), on_map_checkbutton);
++  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), set_children_valign_start);
 +
 +  object_class->dispose = gis_ubuntupro_offer_page_dispose;
 +}
@@ -2530,14 +2548,14 @@ index 0000000..6e967b0
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProAttachPage, pin_status_icon);
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProAttachPage, pin_hint);
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProAttachPage, token_radio);
-+  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProAttachPage, token_origin);
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProAttachPage, magic_radio);
 +
-+  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), on_map_checkbutton);
 +  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), on_magic_clicked);
 +  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), on_radio_toggled);
 +  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), on_token_typing);
 +  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), request_token_attach);
++  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), set_children_valign_start);
++  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), set_check_button_as_padded_label);
 +}
 +static void
 +gis_ubuntupro_services_page_class_init (GisUbuntuProServicesPageClass *klass)
@@ -3770,10 +3788,10 @@ index 0abdd60..a093641 100644
 +}
 \ No newline at end of file
 diff --git a/gnome-initial-setup/pages/welcome/gis-welcome-page.ui b/gnome-initial-setup/pages/welcome/gis-welcome-page.ui
-index dd62662..08ab785 100644
+index dd62662..92192c4 100644
 --- a/gnome-initial-setup/pages/welcome/gis-welcome-page.ui
 +++ b/gnome-initial-setup/pages/welcome/gis-welcome-page.ui
-@@ -1,53 +1,41 @@
+@@ -1,52 +1,40 @@
 -<?xml version="1.0"?>
 +<?xml version="1.0" encoding="UTF-8"?>
  <interface>
@@ -3848,9 +3866,6 @@ index dd62662..08ab785 100644
        </object>
      </child>
    </template>
--</interface>
-+</interface>
-\ No newline at end of file
 diff --git a/gnome-initial-setup/pages/welcome/initial-setup-welcome.svg b/gnome-initial-setup/pages/welcome/initial-setup-welcome.svg
 deleted file mode 100644
 index 988dcea..0000000
