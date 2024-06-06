@@ -25,8 +25,8 @@ Subject: Add Ubuntu mode with special pages
  gnome-initial-setup/pages/ubuntu-pro/checkmark.svg |    1 +
  gnome-initial-setup/pages/ubuntu-pro/fail.svg      |    1 +
  .../pages/ubuntu-pro/gis-ubuntupro-attach-page.ui  |  235 +++
- .../pages/ubuntu-pro/gis-ubuntupro-offer-page.ui   |  143 ++
- .../pages/ubuntu-pro/gis-ubuntupro-page.c          |  851 +++++++++
+ .../pages/ubuntu-pro/gis-ubuntupro-offer-page.ui   |  144 ++
+ .../pages/ubuntu-pro/gis-ubuntupro-page.c          |  850 +++++++++
  .../pages/ubuntu-pro/gis-ubuntupro-page.h          |  110 ++
  .../pages/ubuntu-pro/gis-ubuntupro-page.ui         |   33 +
  .../ubuntu-pro/gis-ubuntupro-services-page.ui      |  132 ++
@@ -1570,10 +1570,10 @@ index 0000000..6630474
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
 new file mode 100644
-index 0000000..1426df1
+index 0000000..141656a
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
-@@ -0,0 +1,143 @@
+@@ -0,0 +1,144 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
 +  <requires lib="gtk" version="4.0"/>
@@ -1676,6 +1676,7 @@ index 0000000..1426df1
 +                    <property name="margin-top">6</property>
 +                    <property name="visible">False</property>
 +                    <property name="icon_size">normal</property>
++                    <property name="icon-name">dialog-warning-symbolic</property>
 +                  </object>
 +                </child>
 +                <child>
@@ -1719,10 +1720,10 @@ index 0000000..1426df1
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
 new file mode 100644
-index 0000000..ae08050
+index 0000000..a49f0ee
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
-@@ -0,0 +1,851 @@
+@@ -0,0 +1,850 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2022 Canonical Ltd.
@@ -1999,7 +2000,6 @@ index 0000000..ae08050
 +    gtk_widget_show (GTK_WIDGET (priv->offline_warning));
 +    gtk_widget_show (GTK_WIDGET (priv->pro_status_image));
 +    gtk_check_button_set_active (GTK_CHECK_BUTTON (priv->skip_pro_select), TRUE);
-+    gtk_image_set_from_icon_name (GTK_IMAGE(priv->pro_status_image), "dialog-warning");
 +  }
 +  else {
 +    gtk_widget_set_sensitive (priv->enable_pro_select, TRUE);
