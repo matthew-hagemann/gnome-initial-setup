@@ -26,7 +26,7 @@ Subject: Add Ubuntu mode with special pages
  gnome-initial-setup/pages/ubuntu-pro/fail.svg      |    1 +
  .../pages/ubuntu-pro/gis-ubuntupro-attach-page.ui  |  235 +++
  .../pages/ubuntu-pro/gis-ubuntupro-offer-page.ui   |  143 ++
- .../pages/ubuntu-pro/gis-ubuntupro-page.c          |  843 +++++++++
+ .../pages/ubuntu-pro/gis-ubuntupro-page.c          |  850 +++++++++
  .../pages/ubuntu-pro/gis-ubuntupro-page.h          |  110 ++
  .../pages/ubuntu-pro/gis-ubuntupro-page.ui         |   33 +
  .../ubuntu-pro/gis-ubuntupro-services-page.ui      |  132 ++
@@ -49,7 +49,7 @@ Subject: Add Ubuntu mode with special pages
  .../pages/welcome/ubuntu-mascot.svg                |  196 +++
  .../pages/welcome/welcome.gresource.xml            |    2 +-
  po/POTFILES.in                                     |    5 +
- 46 files changed, 3440 insertions(+), 1879 deletions(-)
+ 46 files changed, 3447 insertions(+), 1879 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/app-center.svg
@@ -1719,10 +1719,10 @@ index 0000000..b028c20
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
 new file mode 100644
-index 0000000..bd90285
+index 0000000..6573357
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
-@@ -0,0 +1,843 @@
+@@ -0,0 +1,850 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2022 Canonical Ltd.
@@ -1974,7 +1974,8 @@ index 0000000..bd90285
 + * in previous GTK releases, such as connecting to size-allocate, were dropped
 + * in GTK4.
 + */
-+void on_map_checkbutton (GtkCheckButton *button, gpointer _)
++static void
++on_map_checkbutton (GtkCheckButton *button, gpointer _)
 +{
 +  GtkWidget *c;
 +  for (c = gtk_widget_get_first_child (GTK_WIDGET (button)); c; c = gtk_widget_get_next_sibling (c)) {
@@ -2328,7 +2329,7 @@ index 0000000..bd90285
 +  }
 +}
 +
-+void
++static void
 +on_token_typing (GtkButton *button, GisUbuntuProAttachPage *page)
 +{
 +  GisUbuntuProAttachPagePrivate *priv = gis_ubuntupro_attach_page_get_instance_private (page);
@@ -2339,7 +2340,7 @@ index 0000000..bd90285
 +  );
 +}
 +
-+void
++static void
 +request_token_attach (GtkButton *button, GisUbuntuProAttachPage *page)
 +{
 +  GisUbuntuProAttachPagePrivate *priv = gis_ubuntupro_attach_page_get_instance_private (page);
@@ -2348,7 +2349,7 @@ index 0000000..bd90285
 +  ua_attach(token, priv);
 +}
 +
-+void
++static void
 +on_magic_clicked (GtkButton *button, GisUbuntuProAttachPage *page)
 +{
 +  GisUbuntuProAttachPagePrivate *priv = gis_ubuntupro_attach_page_get_instance_private (page);
@@ -2357,7 +2358,7 @@ index 0000000..bd90285
 +  request_magic_attach(page);
 +}
 +
-+void
++static void
 +on_radio_toggled (GtkButton *button, GisUbuntuProAttachPage *page)
 +{
 +  GisUbuntuProAttachPagePrivate *priv = gis_ubuntupro_attach_page_get_instance_private (page);
@@ -2452,10 +2453,8 @@ index 0000000..bd90285
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProPage, attach_page);
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProPage, services_page);
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProPage, stack);
-+  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), request_token_attach);
 +  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), request_magic_attach);
 +  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), on_radio_toggled);
-+  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), on_magic_clicked);
 +
 +  page_class->page_id = PAGE_ID;
 +  page_class->locale_changed = gis_ubuntupro_page_locale_changed;
@@ -2478,6 +2477,8 @@ index 0000000..bd90285
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProOfferPage, offline_warning);
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProOfferPage, pro_status_image);
 +
++  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), on_map_checkbutton);
++
 +  object_class->dispose = gis_ubuntupro_offer_page_dispose;
 +}
 +
@@ -2498,6 +2499,12 @@ index 0000000..bd90285
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProAttachPage, pin_hint);
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProAttachPage, token_radio);
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProAttachPage, magic_radio);
++
++  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), on_map_checkbutton);
++  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), on_magic_clicked);
++  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), on_radio_toggled);
++  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), on_token_typing);
++  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), request_token_attach);
 +}
 +static void
 +gis_ubuntupro_services_page_class_init (GisUbuntuProServicesPageClass *klass)
