@@ -14,7 +14,7 @@ gnome-initial-setup.
 
 diff --git a/data/gnome-initial-setup-wrapper b/data/gnome-initial-setup-wrapper
 new file mode 100755
-index 0000000..a92d2d0
+index 0000000..0e276f5
 --- /dev/null
 +++ b/data/gnome-initial-setup-wrapper
 @@ -0,0 +1,12 @@
@@ -44,7 +44,7 @@ index c15fd6e..dfc6f4b 100644
  Type=Application
  StartupNotify=true
 diff --git a/data/meson.build b/data/meson.build
-index 6a4ef7d..bc3a802 100644
+index dfa064c..239a44b 100644
 --- a/data/meson.build
 +++ b/data/meson.build
 @@ -130,3 +130,4 @@ configure_file(

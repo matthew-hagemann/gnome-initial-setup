@@ -3,47 +3,53 @@ Date: Tue, 20 Mar 2018 11:51:30 +1300
 Subject: Add Ubuntu mode with special pages
 
 ---
- data/its/polkit.its                                |   8 +
- data/its/polkit.loc                                |   6 +
- gnome-initial-setup/gis-assistant.c                |   9 +-
- gnome-initial-setup/gis-driver.c                   |  30 +
- gnome-initial-setup/gis-driver.h                   |   6 +
- gnome-initial-setup/gis-page.c                     |  15 +
- gnome-initial-setup/gis-page.h                     |   2 +
- gnome-initial-setup/gnome-initial-setup.c          |  40 +-
- gnome-initial-setup/meson.build                    |   3 +
- gnome-initial-setup/pages/apps/app-center.svg      |   3 +
- gnome-initial-setup/pages/apps/apps.gresource.xml  |   9 +
- .../pages/apps/default-snap-icon.svg               |   1 +
- gnome-initial-setup/pages/apps/gis-apps-page.c     | 679 +++++++++++++++++
- gnome-initial-setup/pages/apps/gis-apps-page.h     |  33 +
- gnome-initial-setup/pages/apps/gis-apps-page.ui    | 119 +++
- gnome-initial-setup/pages/apps/meson.build         |  10 +
- gnome-initial-setup/pages/meson.build              |   3 +
- .../pages/privacy/gis-privacy-page.c               |   2 +-
- .../pages/summary/gis-summary-page.c               |   2 +-
- gnome-initial-setup/pages/ubuntu-pro/checkmark.svg |   1 +
- gnome-initial-setup/pages/ubuntu-pro/fail.svg      |   1 +
- .../pages/ubuntu-pro/gis-ubuntupro-attach-page.ui  | 210 ++++++
- .../pages/ubuntu-pro/gis-ubuntupro-offer-page.ui   | 158 ++++
- .../pages/ubuntu-pro/gis-ubuntupro-page.c          | 820 +++++++++++++++++++++
- .../pages/ubuntu-pro/gis-ubuntupro-page.h          | 110 +++
- .../pages/ubuntu-pro/gis-ubuntupro-page.ui         |  34 +
- .../ubuntu-pro/gis-ubuntupro-services-page.ui      | 137 ++++
- gnome-initial-setup/pages/ubuntu-pro/meson.build   |  12 +
- .../pages/ubuntu-pro/ubuntu-pro-dark.svg           |  25 +
- .../pages/ubuntu-pro/ubuntu-pro.svg                |   1 +
- .../pages/ubuntu-pro/ubuntupro.gresource.xml       |  14 +
- gnome-initial-setup/pages/ubuntu-pro/utils.c       | 119 +++
- gnome-initial-setup/pages/ubuntu-pro/utils.h       |   7 +
- .../pages/ubuntu-report/gis-ubuntu-report-page.c   | 456 ++++++++++++
- .../pages/ubuntu-report/gis-ubuntu-report-page.h   |  33 +
- .../pages/ubuntu-report/gis-ubuntu-report-page.ui  | 104 +++
- .../pages/ubuntu-report/meson.build                |  10 +
- .../ubuntu-report/ubuntu-report.gresource.xml      |   8 +
- .../pages/ubuntu-report/ubuntu-report.svg          |   1 +
- po/POTFILES.in                                     |   5 +
- 40 files changed, 3241 insertions(+), 5 deletions(-)
+ data/its/polkit.its                                |    8 +
+ data/its/polkit.loc                                |    6 +
+ gnome-initial-setup/gis-assistant.c                |    9 +-
+ gnome-initial-setup/gis-driver.c                   |   30 +
+ gnome-initial-setup/gis-driver.h                   |    6 +
+ gnome-initial-setup/gis-page.c                     |   15 +
+ gnome-initial-setup/gis-page.h                     |    2 +
+ gnome-initial-setup/gnome-initial-setup.c          |   46 +-
+ gnome-initial-setup/meson.build                    |    3 +
+ gnome-initial-setup/pages/apps/app-center.svg      |    3 +
+ gnome-initial-setup/pages/apps/apps.gresource.xml  |    9 +
+ .../pages/apps/default-snap-icon.svg               |    1 +
+ gnome-initial-setup/pages/apps/gis-apps-page.c     |  679 ++++++++
+ gnome-initial-setup/pages/apps/gis-apps-page.h     |   33 +
+ gnome-initial-setup/pages/apps/gis-apps-page.ui    |  119 ++
+ gnome-initial-setup/pages/apps/meson.build         |   10 +
+ gnome-initial-setup/pages/meson.build              |    3 +
+ .../pages/privacy/gis-privacy-page.c               |    2 +-
+ .../pages/summary/gis-summary-page.c               |    2 +-
+ gnome-initial-setup/pages/ubuntu-pro/checkmark.svg |    1 +
+ gnome-initial-setup/pages/ubuntu-pro/fail.svg      |    1 +
+ .../pages/ubuntu-pro/gis-ubuntupro-attach-page.ui  |  235 +++
+ .../pages/ubuntu-pro/gis-ubuntupro-offer-page.ui   |  143 ++
+ .../pages/ubuntu-pro/gis-ubuntupro-page.c          |  843 +++++++++
+ .../pages/ubuntu-pro/gis-ubuntupro-page.h          |  110 ++
+ .../pages/ubuntu-pro/gis-ubuntupro-page.ui         |   33 +
+ .../ubuntu-pro/gis-ubuntupro-services-page.ui      |  132 ++
+ gnome-initial-setup/pages/ubuntu-pro/meson.build   |   12 +
+ .../pages/ubuntu-pro/ubuntu-pro-dark.svg           |   25 +
+ .../pages/ubuntu-pro/ubuntu-pro.svg                |    1 +
+ .../pages/ubuntu-pro/ubuntupro.gresource.xml       |   14 +
+ gnome-initial-setup/pages/ubuntu-pro/utils.c       |  119 ++
+ gnome-initial-setup/pages/ubuntu-pro/utils.h       |    7 +
+ .../pages/ubuntu-report/gis-ubuntu-report-page.c   |  376 ++++
+ .../pages/ubuntu-report/gis-ubuntu-report-page.h   |   33 +
+ .../pages/ubuntu-report/gis-ubuntu-report-page.ui  |  104 ++
+ .../pages/ubuntu-report/meson.build                |   10 +
+ .../ubuntu-report/ubuntu-report.gresource.xml      |    8 +
+ .../pages/ubuntu-report/ubuntu-report.svg          |    1 +
+ .../pages/welcome/gis-welcome-page.c               |   26 +-
+ .../pages/welcome/gis-welcome-page.css             |    5 +
+ .../pages/welcome/gis-welcome-page.ui              |   58 +-
+ .../pages/welcome/initial-setup-welcome.svg        | 1833 --------------------
+ .../pages/welcome/ubuntu-mascot.svg                |  196 +++
+ .../pages/welcome/welcome.gresource.xml            |    2 +-
+ po/POTFILES.in                                     |    5 +
+ 46 files changed, 3440 insertions(+), 1879 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/app-center.svg
@@ -73,11 +79,14 @@ Subject: Add Ubuntu mode with special pages
  create mode 100644 gnome-initial-setup/pages/ubuntu-report/meson.build
  create mode 100644 gnome-initial-setup/pages/ubuntu-report/ubuntu-report.gresource.xml
  create mode 100644 gnome-initial-setup/pages/ubuntu-report/ubuntu-report.svg
+ delete mode 100644 gnome-initial-setup/pages/welcome/initial-setup-welcome.svg
+ create mode 100644 gnome-initial-setup/pages/welcome/ubuntu-mascot.svg
 
-Index: gnome-initial-setup/data/its/polkit.its
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/data/its/polkit.its	2024-03-25 12:46:43.932982601 +0100
+diff --git a/data/its/polkit.its b/data/its/polkit.its
+new file mode 100644
+index 0000000..c48ad3f
+--- /dev/null
++++ b/data/its/polkit.its
 @@ -0,0 +1,8 @@
 +<?xml version="1.0"?>
 +<its:rules xmlns:its="http://www.w3.org/2005/11/its"
@@ -88,10 +97,11 @@ Index: gnome-initial-setup/data/its/polkit.its
 +                     translate="yes"/>
 +</its:rules>
 \ No newline at end of file
-Index: gnome-initial-setup/data/its/polkit.loc
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/data/its/polkit.loc	2024-03-25 12:46:43.932982601 +0100
+diff --git a/data/its/polkit.loc b/data/its/polkit.loc
+new file mode 100644
+index 0000000..12c7bf0
+--- /dev/null
++++ b/data/its/polkit.loc
 @@ -0,0 +1,6 @@
 +<?xml version="1.0"?>
 +<locatingRules>
@@ -100,11 +110,11 @@ Index: gnome-initial-setup/data/its/polkit.loc
 +  </locatingRule>
 +</locatingRules>
 \ No newline at end of file
-Index: gnome-initial-setup/gnome-initial-setup/gis-assistant.c
-===================================================================
---- gnome-initial-setup.orig/gnome-initial-setup/gis-assistant.c	2024-03-25 12:46:43.944982197 +0100
-+++ gnome-initial-setup/gnome-initial-setup/gis-assistant.c	2024-03-25 12:46:43.932982601 +0100
-@@ -163,7 +163,8 @@
+diff --git a/gnome-initial-setup/gis-assistant.c b/gnome-initial-setup/gis-assistant.c
+index 68bf434..a69ea66 100644
+--- a/gnome-initial-setup/gis-assistant.c
++++ b/gnome-initial-setup/gis-assistant.c
+@@ -163,7 +163,8 @@ void
  gis_assistant_previous_page (GisAssistant *assistant)
  {
    g_return_if_fail (assistant->current_page != NULL);
@@ -114,7 +124,7 @@ Index: gnome-initial-setup/gnome-initial-setup/gis-assistant.c
  }
  
  static void
-@@ -246,6 +247,12 @@
+@@ -245,6 +246,12 @@ update_applying_state (GisAssistant *assistant)
      {
        applying = gis_page_get_applying (assistant->current_page);
        is_first_page = assistant->pages->data == assistant->current_page;
@@ -127,11 +137,11 @@ Index: gnome-initial-setup/gnome-initial-setup/gis-assistant.c
      }
    gtk_widget_set_sensitive (assistant->forward, !applying);
    gtk_widget_set_sensitive (assistant->done, !applying);
-Index: gnome-initial-setup/gnome-initial-setup/gis-driver.c
-===================================================================
---- gnome-initial-setup.orig/gnome-initial-setup/gis-driver.c	2024-03-25 12:46:43.944982197 +0100
-+++ gnome-initial-setup/gnome-initial-setup/gis-driver.c	2024-03-25 12:46:43.932982601 +0100
-@@ -105,6 +105,9 @@
+diff --git a/gnome-initial-setup/gis-driver.c b/gnome-initial-setup/gis-driver.c
+index d172276..7e40f9d 100644
+--- a/gnome-initial-setup/gis-driver.c
++++ b/gnome-initial-setup/gis-driver.c
+@@ -105,6 +105,9 @@ struct _GisDriver {
  
    const gchar *vendor_conf_file_path;
    GKeyFile *vendor_conf_file;
@@ -141,7 +151,7 @@ Index: gnome-initial-setup/gnome-initial-setup/gis-driver.c
  };
  
  G_DEFINE_TYPE (GisDriver, gis_driver, ADW_TYPE_APPLICATION)
-@@ -1030,6 +1033,33 @@
+@@ -1030,6 +1033,33 @@ gis_driver_save_data (GisDriver  *driver,
    return gis_assistant_save_data (driver->assistant, error);
  }
  
@@ -175,11 +185,11 @@ Index: gnome-initial-setup/gnome-initial-setup/gis-driver.c
  GisDriver *
  gis_driver_new (GisDriverMode mode)
  {
-Index: gnome-initial-setup/gnome-initial-setup/gis-driver.h
-===================================================================
---- gnome-initial-setup.orig/gnome-initial-setup/gis-driver.h	2024-03-25 12:46:43.944982197 +0100
-+++ gnome-initial-setup/gnome-initial-setup/gis-driver.h	2024-03-25 12:46:43.932982601 +0100
-@@ -125,6 +125,12 @@
+diff --git a/gnome-initial-setup/gis-driver.h b/gnome-initial-setup/gis-driver.h
+index ca06391..19f5a28 100644
+--- a/gnome-initial-setup/gis-driver.h
++++ b/gnome-initial-setup/gis-driver.h
+@@ -125,6 +125,12 @@ gchar *gis_driver_conf_get_string (GisDriver *driver,
                                     const gchar *group,
                                     const gchar *key);
  
@@ -192,11 +202,11 @@ Index: gnome-initial-setup/gnome-initial-setup/gis-driver.h
  GisDriver *gis_driver_new (GisDriverMode mode);
  
  G_END_DECLS
-Index: gnome-initial-setup/gnome-initial-setup/gis-page.c
-===================================================================
---- gnome-initial-setup.orig/gnome-initial-setup/gis-page.c	2024-03-25 12:46:43.944982197 +0100
-+++ gnome-initial-setup/gnome-initial-setup/gis-page.c	2024-03-25 12:46:43.932982601 +0100
-@@ -202,6 +202,12 @@
+diff --git a/gnome-initial-setup/gis-page.c b/gnome-initial-setup/gis-page.c
+index d8e2242..125b6aa 100644
+--- a/gnome-initial-setup/gis-page.c
++++ b/gnome-initial-setup/gis-page.c
+@@ -202,6 +202,12 @@ gis_page_real_apply (GisPage      *page,
    return FALSE;
  }
  
@@ -209,7 +219,7 @@ Index: gnome-initial-setup/gnome-initial-setup/gis-page.c
  static void
  gis_page_class_init (GisPageClass *klass)
  {
-@@ -214,6 +220,7 @@
+@@ -214,6 +220,7 @@ gis_page_class_init (GisPageClass *klass)
    object_class->set_property = gis_page_set_property;
  
    klass->apply = gis_page_real_apply;
@@ -217,7 +227,7 @@ Index: gnome-initial-setup/gnome-initial-setup/gis-page.c
  
    obj_props[PROP_DRIVER] =
      g_param_spec_object ("driver", "", "", GIS_TYPE_DRIVER,
-@@ -382,6 +389,14 @@
+@@ -382,6 +389,14 @@ gis_page_apply_begin (GisPage                *page,
    g_object_notify_by_pspec (G_OBJECT (page), obj_props[PROP_APPLYING]);
  }
  
@@ -232,11 +242,11 @@ Index: gnome-initial-setup/gnome-initial-setup/gis-page.c
  void
  gis_page_apply_complete (GisPage *page,
                           gboolean valid)
-Index: gnome-initial-setup/gnome-initial-setup/gis-page.h
-===================================================================
---- gnome-initial-setup.orig/gnome-initial-setup/gis-page.h	2024-03-25 12:46:43.944982197 +0100
-+++ gnome-initial-setup/gnome-initial-setup/gis-page.h	2024-03-25 12:46:43.932982601 +0100
-@@ -59,6 +59,7 @@
+diff --git a/gnome-initial-setup/gis-page.h b/gnome-initial-setup/gis-page.h
+index 742cc71..adb11e0 100644
+--- a/gnome-initial-setup/gis-page.h
++++ b/gnome-initial-setup/gis-page.h
+@@ -59,6 +59,7 @@ struct _GisPageClass
    void         (*locale_changed) (GisPage *page);
    gboolean     (*apply) (GisPage *page,
                           GCancellable *cancellable);
@@ -244,7 +254,7 @@ Index: gnome-initial-setup/gnome-initial-setup/gis-page.h
    gboolean     (*save_data) (GisPage  *page,
                               GError  **error);
    void         (*shown) (GisPage *page);
-@@ -83,6 +84,7 @@
+@@ -83,6 +84,7 @@ void         gis_page_locale_changed (GisPage *page);
  void         gis_page_apply_begin (GisPage *page, GisPageApplyCallback callback, gpointer user_data);
  void         gis_page_apply_cancel (GisPage *page);
  void         gis_page_apply_complete (GisPage *page, gboolean valid);
@@ -252,10 +262,10 @@ Index: gnome-initial-setup/gnome-initial-setup/gis-page.h
  gboolean     gis_page_get_applying (GisPage *page);
  gboolean     gis_page_save_data (GisPage  *page,
                                   GError  **error);
-Index: gnome-initial-setup/gnome-initial-setup/gnome-initial-setup.c
-===================================================================
---- gnome-initial-setup.orig/gnome-initial-setup/gnome-initial-setup.c	2024-03-25 12:46:43.944982197 +0100
-+++ gnome-initial-setup/gnome-initial-setup/gnome-initial-setup.c	2024-03-25 12:51:58.023932967 +0100
+diff --git a/gnome-initial-setup/gnome-initial-setup.c b/gnome-initial-setup/gnome-initial-setup.c
+index 7ca2bc2..591f83e 100644
+--- a/gnome-initial-setup/gnome-initial-setup.c
++++ b/gnome-initial-setup/gnome-initial-setup.c
 @@ -40,12 +40,17 @@
  #include "pages/parental-controls/gis-parental-controls-page.h"
  #include "pages/password/gis-password-page.h"
@@ -274,7 +284,7 @@ Index: gnome-initial-setup/gnome-initial-setup/gnome-initial-setup.c
  static gboolean force_existing_user_mode;
  
  static GPtrArray *skipped_pages;
-@@ -78,6 +83,16 @@
+@@ -78,6 +83,16 @@ static PageData page_table[] = {
    { NULL },
  };
  
@@ -291,7 +301,7 @@ Index: gnome-initial-setup/gnome-initial-setup/gnome-initial-setup.c
  #undef PAGE
  
  static gboolean
-@@ -89,7 +104,9 @@
+@@ -89,7 +104,9 @@ should_skip_page (const gchar  *page_id,
    /* special case welcome. We only want to show it if language
     * is skipped
     */
@@ -302,17 +312,13 @@ Index: gnome-initial-setup/gnome-initial-setup/gnome-initial-setup.c
      return !should_skip_page ("language", skip_pages);
  
    /* check through our skip pages list for pages we don't want */
-@@ -188,6 +205,29 @@
+@@ -188,6 +205,25 @@ destroy_page (gpointer data)
      gis_assistant_remove_page (GIS_ASSISTANT (assistant), page);
  }
  
 +static gboolean
 +is_desktop (const gchar *name)
 +{
-+  /* note that, for first user account creation inside gnome-initial-setup user,
-+   * XDG_CURRENT_DESKTOP is set to "GNOME-Greeter:GNOME"
-+   */
-+
 +  const gchar *xdg_current_desktop;
 +  g_auto(GStrv) tokens = NULL;
 +  int i;
@@ -332,7 +338,7 @@ Index: gnome-initial-setup/gnome-initial-setup/gnome-initial-setup.c
  static void
  rebuild_pages_cb (GisDriver *driver)
  {
-@@ -200,7 +240,11 @@
+@@ -200,7 +236,11 @@ rebuild_pages_cb (GisDriver *driver)
  
    assistant = gis_driver_get_assistant (driver);
    current_page = gis_assistant_get_current_page (assistant);
@@ -345,20 +351,20 @@ Index: gnome-initial-setup/gnome-initial-setup/gnome-initial-setup.c
  
    g_ptr_array_free (skipped_pages, TRUE);
    skipped_pages = g_ptr_array_new_with_free_func (destroy_page);
-@@ -208,7 +252,7 @@
+@@ -208,7 +248,7 @@ rebuild_pages_cb (GisDriver *driver)
    if (current_page != NULL) {
      destroy_pages_after (assistant, current_page);
  
 -    for (page_data = page_table; page_data->page_id != NULL; ++page_data)
-+    for (; page_data->page_id != NULL; ++page_data)
++    for (page_data = ubuntu_page_table; page_data->page_id != NULL; ++page_data) // FIXME conditional
        if (g_str_equal (page_data->page_id, GIS_PAGE_GET_CLASS (current_page)->page_id))
          break;
  
-Index: gnome-initial-setup/gnome-initial-setup/meson.build
-===================================================================
---- gnome-initial-setup.orig/gnome-initial-setup/meson.build	2024-03-25 12:46:43.944982197 +0100
-+++ gnome-initial-setup/gnome-initial-setup/meson.build	2024-03-25 12:46:43.932982601 +0100
-@@ -53,6 +53,9 @@
+diff --git a/gnome-initial-setup/meson.build b/gnome-initial-setup/meson.build
+index 2d0374f..b593a01 100644
+--- a/gnome-initial-setup/meson.build
++++ b/gnome-initial-setup/meson.build
+@@ -53,6 +53,9 @@ dependencies = [
      dependency ('krb5'),
      dependency ('libsecret-1', version: '>= 0.18.8'),
      dependency ('pwquality'),
@@ -368,18 +374,20 @@ Index: gnome-initial-setup/gnome-initial-setup/meson.build
      ibus_dep,
      libmalcontent_dep,
      libmalcontent_ui_dep,
-Index: gnome-initial-setup/gnome-initial-setup/pages/apps/app-center.svg
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/apps/app-center.svg	2024-03-25 12:46:43.932982601 +0100
+diff --git a/gnome-initial-setup/pages/apps/app-center.svg b/gnome-initial-setup/pages/apps/app-center.svg
+new file mode 100644
+index 0000000..a3cff0c
+--- /dev/null
++++ b/gnome-initial-setup/pages/apps/app-center.svg
 @@ -0,0 +1,3 @@
 +<svg width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
 +<path fill-rule="evenodd" clip-rule="evenodd" d="M45 0C34.8677 0 26.5401 7.86664 25.0049 18H13.5C6.05995 18 0 24.0599 0 31.5V76.5C0 83.94 6.05995 90 13.5 90H76.5C83.94 90 90 83.94 90 76.5V31.5C90 24.0599 83.94 18 76.5 18H64.9951C63.4599 7.86664 55.1323 0 45 0ZM45 4.5C52.5861 4.5 58.9764 10.2351 60.4336 18H29.5664C31.0236 10.2351 37.4139 4.5 45 4.5ZM40.3242 27H49.5967C51.4149 30.8441 53.1822 34.7414 54.8965 38.6895C56.6107 42.6375 58.3238 46.7887 60.0381 51.1523C60.9962 53.5194 61.9645 55.978 62.9385 58.5H65.25C68.9895 58.5 72 61.5105 72 65.25C72 68.0715 70.2816 70.4787 67.834 71.4902C68.9533 74.5273 70.0905 77.6666 71.2617 81H60.6621C59.9348 78.8701 59.1825 76.7674 58.4033 74.6895C58.0711 73.8036 57.7415 72.9048 57.4189 72H32.124C31.7984 72.9267 31.4663 73.8518 31.1309 74.7686L28.9512 81H18.7383C19.9105 77.6636 21.0371 74.521 22.1396 71.4814C19.7057 70.4638 18 68.0616 18 65.25C18 61.5105 21.0105 58.5 24.75 58.5H26.9648C27.9257 55.9778 28.8737 53.5195 29.8037 51.1523C31.5699 46.7887 33.3101 42.6375 35.0244 38.6895C36.7387 34.7414 38.506 30.8441 40.3242 27ZM44.7627 37.4414C43.5679 40.1946 42.1991 43.548 40.6406 47.4961C39.3433 50.896 37.9757 54.599 36.5625 58.5H52.9717C51.5509 54.5895 50.1575 50.864 48.8145 47.417C47.256 43.417 45.9055 40.0907 44.7627 37.4414ZM24.75 63C23.5035 63 22.5 64.0035 22.5 65.25C22.5 66.4965 23.5035 67.5 24.75 67.5H65.25C66.4965 67.5 67.5 66.4965 67.5 65.25C67.5 64.0035 66.4965 63 65.25 63H24.75Z" fill="#E95420"/>
 +</svg>
-Index: gnome-initial-setup/gnome-initial-setup/pages/apps/apps.gresource.xml
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/apps/apps.gresource.xml	2024-03-25 12:46:43.932982601 +0100
+diff --git a/gnome-initial-setup/pages/apps/apps.gresource.xml b/gnome-initial-setup/pages/apps/apps.gresource.xml
+new file mode 100644
+index 0000000..6313a06
+--- /dev/null
++++ b/gnome-initial-setup/pages/apps/apps.gresource.xml
 @@ -0,0 +1,9 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<gresources>
@@ -390,17 +398,19 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/apps/apps.gresource.xml
 +  </gresource>
 +</gresources>
 +
-Index: gnome-initial-setup/gnome-initial-setup/pages/apps/default-snap-icon.svg
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/apps/default-snap-icon.svg	2024-03-25 12:46:43.932982601 +0100
+diff --git a/gnome-initial-setup/pages/apps/default-snap-icon.svg b/gnome-initial-setup/pages/apps/default-snap-icon.svg
+new file mode 100644
+index 0000000..0d8dd94
+--- /dev/null
++++ b/gnome-initial-setup/pages/apps/default-snap-icon.svg
 @@ -0,0 +1 @@
 +<svg width="96" height="96" xmlns="http://www.w3.org/2000/svg"><circle fill="#F7F7F7" cx="48" cy="48" r="48"/><path d="M55.71 53.294V32.766l14.248 6.28L55.71 53.293zM28.901 80.102L46.049 47.74l7.728 7.486-24.875 24.876zM19 19l35.502 12.8v22.702L19 19zm58.204 12.8L83 43.634 56.675 31.8h20.529z" fill="#CDCDCD"/></svg>
 \ No newline at end of file
-Index: gnome-initial-setup/gnome-initial-setup/pages/apps/gis-apps-page.c
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/apps/gis-apps-page.c	2024-03-25 12:46:43.932982601 +0100
+diff --git a/gnome-initial-setup/pages/apps/gis-apps-page.c b/gnome-initial-setup/pages/apps/gis-apps-page.c
+new file mode 100644
+index 0000000..719ed77
+--- /dev/null
++++ b/gnome-initial-setup/pages/apps/gis-apps-page.c
 @@ -0,0 +1,679 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
@@ -1081,10 +1091,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/apps/gis-apps-page.c
 +                       "driver", driver,
 +                       NULL);
 +}
-Index: gnome-initial-setup/gnome-initial-setup/pages/apps/gis-apps-page.h
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/apps/gis-apps-page.h	2024-03-25 12:46:43.932982601 +0100
+diff --git a/gnome-initial-setup/pages/apps/gis-apps-page.h b/gnome-initial-setup/pages/apps/gis-apps-page.h
+new file mode 100644
+index 0000000..e451214
+--- /dev/null
++++ b/gnome-initial-setup/pages/apps/gis-apps-page.h
 @@ -0,0 +1,33 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
@@ -1119,10 +1130,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/apps/gis-apps-page.h
 +G_END_DECLS
 +
 +#endif /* __GIS_APPS_PAGE_H__ */
-Index: gnome-initial-setup/gnome-initial-setup/pages/apps/gis-apps-page.ui
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/apps/gis-apps-page.ui	2024-03-25 12:46:43.932982601 +0100
+diff --git a/gnome-initial-setup/pages/apps/gis-apps-page.ui b/gnome-initial-setup/pages/apps/gis-apps-page.ui
+new file mode 100644
+index 0000000..103f2f9
+--- /dev/null
++++ b/gnome-initial-setup/pages/apps/gis-apps-page.ui
 @@ -0,0 +1,119 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
@@ -1243,10 +1255,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/apps/gis-apps-page.ui
 +
 +  </template>
 +</interface>
-Index: gnome-initial-setup/gnome-initial-setup/pages/apps/meson.build
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/apps/meson.build	2024-03-25 12:46:43.932982601 +0100
+diff --git a/gnome-initial-setup/pages/apps/meson.build b/gnome-initial-setup/pages/apps/meson.build
+new file mode 100644
+index 0000000..dec2b38
+--- /dev/null
++++ b/gnome-initial-setup/pages/apps/meson.build
 @@ -0,0 +1,10 @@
 +sources += gnome.compile_resources(
 +    'apps-resources',
@@ -1258,11 +1271,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/apps/meson.build
 +    'gis-apps-page.c',
 +    'gis-apps-page.h',
 +)
-Index: gnome-initial-setup/gnome-initial-setup/pages/meson.build
-===================================================================
---- gnome-initial-setup.orig/gnome-initial-setup/pages/meson.build	2024-03-25 12:46:43.944982197 +0100
-+++ gnome-initial-setup/gnome-initial-setup/pages/meson.build	2024-03-25 12:46:43.936982467 +0100
-@@ -9,6 +9,9 @@
+diff --git a/gnome-initial-setup/pages/meson.build b/gnome-initial-setup/pages/meson.build
+index 8d327f6..2ed2a5f 100644
+--- a/gnome-initial-setup/pages/meson.build
++++ b/gnome-initial-setup/pages/meson.build
+@@ -9,6 +9,9 @@ pages = [
     'software',
     'summary',
     'welcome',
@@ -1272,11 +1285,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/meson.build
  ]
  
  if libmalcontent_dep.found() and libmalcontent_ui_dep.found()
-Index: gnome-initial-setup/gnome-initial-setup/pages/privacy/gis-privacy-page.c
-===================================================================
---- gnome-initial-setup.orig/gnome-initial-setup/pages/privacy/gis-privacy-page.c	2024-03-25 12:46:43.944982197 +0100
-+++ gnome-initial-setup/gnome-initial-setup/pages/privacy/gis-privacy-page.c	2024-03-25 12:46:43.936982467 +0100
-@@ -247,7 +247,7 @@
+diff --git a/gnome-initial-setup/pages/privacy/gis-privacy-page.c b/gnome-initial-setup/pages/privacy/gis-privacy-page.c
+index 323e1aa..7750cf8 100644
+--- a/gnome-initial-setup/pages/privacy/gis-privacy-page.c
++++ b/gnome-initial-setup/pages/privacy/gis-privacy-page.c
+@@ -247,7 +247,7 @@ gis_privacy_page_apply (GisPage *gis_page,
  static void
  gis_privacy_page_locale_changed (GisPage *page)
  {
@@ -1285,11 +1298,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/privacy/gis-privacy-page.c
  }
  
  static void
-Index: gnome-initial-setup/gnome-initial-setup/pages/summary/gis-summary-page.c
-===================================================================
---- gnome-initial-setup.orig/gnome-initial-setup/pages/summary/gis-summary-page.c	2024-03-25 12:46:43.944982197 +0100
-+++ gnome-initial-setup/gnome-initial-setup/pages/summary/gis-summary-page.c	2024-03-25 12:46:43.936982467 +0100
-@@ -189,7 +189,7 @@
+diff --git a/gnome-initial-setup/pages/summary/gis-summary-page.c b/gnome-initial-setup/pages/summary/gis-summary-page.c
+index 5e90e8a..d34aad3 100644
+--- a/gnome-initial-setup/pages/summary/gis-summary-page.c
++++ b/gnome-initial-setup/pages/summary/gis-summary-page.c
+@@ -189,7 +189,7 @@ done_cb (GtkButton *button, GisSummaryPage *page)
        log_user_in (page);
        break;
      case GIS_DRIVER_MODE_EXISTING_USER:
@@ -1298,24 +1311,27 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/summary/gis-summary-page.c
      default:
        break;
      }
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/checkmark.svg
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/checkmark.svg	2024-03-25 12:46:43.936982467 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/checkmark.svg b/gnome-initial-setup/pages/ubuntu-pro/checkmark.svg
+new file mode 100644
+index 0000000..a0c8602
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/checkmark.svg
 @@ -0,0 +1 @@
 +<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><g fill="none" fill-rule="nonzero"><path fill="#0e8420" d="M8 1a7 7 0 110 14A7 7 0 018 1zm2.83 3.502L6.863 9.884 5.174 8.096l-1.09 1.03 2.92 3.096 5.034-6.83-1.208-.89z"/><path fill="#fff" d="M10.83 4.502l1.208.89-5.033 6.83-2.922-3.096 1.091-1.03 1.689 1.789z"/></g></svg>
 \ No newline at end of file
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/fail.svg
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/fail.svg	2024-03-25 12:46:43.936982467 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/fail.svg b/gnome-initial-setup/pages/ubuntu-pro/fail.svg
+new file mode 100644
+index 0000000..e3c9a52
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/fail.svg
 @@ -0,0 +1 @@
 +<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16"><defs><filter id="darkreader-image-filter"><feColorMatrix type="matrix" values="-0.193 -0.490 -1.120 0.000 1.698 -0.965 0.293 -1.105 0.000 1.673 -0.946 -0.489 -0.296 0.000 1.630 0.000 0.000 0.000 1.000 0.000"/></filter></defs><image width="16" height="16" filter="url(#darkreader-image-filter)" xlink:href="data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Ccircle stroke='%23c7162b' stroke-width='1.5' fill='%23c7162b' cx='8' cy='8' r='6.25'/%3E%3Cpath fill='%23FFF' fill-rule='nonzero' d='M10.282 4.638l1.06 1.06L9.05 7.99l2.293 2.292-1.06 1.06L7.99 9.05 5.7 11.343l-1.06-1.06 2.29-2.293L4.64 5.7l1.06-1.06 2.291 2.29z'/%3E%3C/g%3E%3C/svg%3E"/></svg>
 \ No newline at end of file
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui	2024-03-25 12:46:43.936982467 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
+new file mode 100644
+index 0000000..6630474
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
 @@ -0,0 +1,235 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
@@ -1552,10 +1568,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-at
 +  </child>
 +</template>
 +</interface>
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui	2024-03-25 12:46:43.936982467 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
+new file mode 100644
+index 0000000..b028c20
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
 @@ -0,0 +1,143 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
@@ -1700,10 +1717,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-of
 +    </child>
 +  </template>
 +</interface>
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c	2024-03-25 12:46:43.936982467 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
+new file mode 100644
+index 0000000..bd90285
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
 @@ -0,0 +1,843 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
@@ -2548,10 +2566,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-pa
 +                       "driver", driver,
 +                       NULL);
 +}
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.h
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.h	2024-03-25 12:46:43.936982467 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.h b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.h
+new file mode 100644
+index 0000000..f90d0c2
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.h
 @@ -0,0 +1,110 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
@@ -2663,10 +2682,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-pa
 +G_END_DECLS
 +
 +#endif /* __GIS_UBUNTUPRO_PAGE_H__ */
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.ui
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.ui	2024-03-25 12:46:43.936982467 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.ui
+new file mode 100644
+index 0000000..b992eca
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.ui
 @@ -0,0 +1,33 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
@@ -2701,10 +2721,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-pa
 +    </child>
 +  </template>
 +</interface>
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui	2024-03-25 12:46:43.936982467 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui
+new file mode 100644
+index 0000000..197a528
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui
 @@ -0,0 +1,132 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
@@ -2838,10 +2859,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-se
 +  </child>
 +  </template>
 +</interface>
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/meson.build
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/meson.build	2024-03-25 12:46:43.936982467 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/meson.build b/gnome-initial-setup/pages/ubuntu-pro/meson.build
+new file mode 100644
+index 0000000..f7b700a
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/meson.build
 @@ -0,0 +1,12 @@
 +sources += gnome.compile_resources(
 +    'ubuntupro-resources',
@@ -2855,10 +2877,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/meson.build
 +    'utils.c',
 +    'utils.h',
 +)
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro-dark.svg
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro-dark.svg	2024-03-25 12:46:43.936982467 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro-dark.svg b/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro-dark.svg
+new file mode 100644
+index 0000000..e33bf48
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro-dark.svg
 @@ -0,0 +1,25 @@
 +<svg width="132" height="34" viewBox="0 0 132 34" fill="none" xmlns="http://www.w3.org/2000/svg">
 +<g clip-path="url(#clip0_1_7165)">
@@ -2885,17 +2908,19 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro-dark.
 +</clipPath>
 +</defs>
 +</svg>
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro.svg
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro.svg	2024-03-25 12:46:43.936982467 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro.svg b/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro.svg
+new file mode 100644
+index 0000000..d377e41
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro.svg
 @@ -0,0 +1 @@
 +<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1444.23 360.27"><defs><style>.cls-1{fill:#e95420;}.cls-2{fill:#fff;}.cls-3{fill:#111;}</style></defs><rect class="cls-1" width="233.93" height="360.27"/><circle class="cls-2" cx="52.26" cy="238.51" r="24.44"/><circle class="cls-2" cx="154.06" cy="184.91" r="24.44"/><path class="cls-2" d="M107.39,301.42a59.52,59.52,0,0,1-40.6-31A35.22,35.22,0,0,1,45.89,273a80.08,80.08,0,0,0,74.65,49.8,35,35,0,0,1-7.16-20.44A60.26,60.26,0,0,1,107.39,301.42Z"/><circle class="cls-2" cx="148.55" cy="301.55" r="24.44"/><path class="cls-2" d="M182.56,292.58a79.94,79.94,0,0,0,4-93.83,35.16,35.16,0,0,1-13.74,16.09,60,60,0,0,1-2,59.53A35,35,0,0,1,182.56,292.58Z"/><path class="cls-2" d="M50.37,203.46c.62,0,1.24-.05,1.87-.05a35.36,35.36,0,0,1,7.37.78,35,35,0,0,1,11.16,4.5,59.63,59.63,0,0,1,48-25.68,36.52,36.52,0,0,1,.74-5.5,35.3,35.3,0,0,1,6.68-14.32A80.38,80.38,0,0,0,50.37,203.46Z"/><path class="cls-3" d="M347.78,331.73q-16.27,0-27.71-5a47.72,47.72,0,0,1-18.52-13.68,54.81,54.81,0,0,1-10.26-20.41,95.22,95.22,0,0,1-3.19-25.12V164.73h16V265.45a75.46,75.46,0,0,0,3.19,23.23,44.78,44.78,0,0,0,8.84,16.16,34.55,34.55,0,0,0,13.68,9.44,54.06,54.06,0,0,0,35.86,0,34.55,34.55,0,0,0,13.68-9.44,44.78,44.78,0,0,0,8.84-16.16,75.46,75.46,0,0,0,3.19-23.23V164.73h16V267.57a95.22,95.22,0,0,1-3.19,25.12A54.81,54.81,0,0,1,394,313.1a47.76,47.76,0,0,1-18.51,13.68Q364.06,331.73,347.78,331.73Z"/><path class="cls-3" d="M460.55,213.56q4-3.06,12.85-6.49a58,58,0,0,1,20.88-3.42,55.7,55.7,0,0,1,23.47,4.72,48.76,48.76,0,0,1,17.33,13.21,58.28,58.28,0,0,1,10.74,20.17,85.49,85.49,0,0,1,3.65,25.59A76.4,76.4,0,0,1,545.11,294,57.25,57.25,0,0,1,532.84,314,52.66,52.66,0,0,1,514,326.66,65.48,65.48,0,0,1,489.56,331q-16.28,0-26.89-2.12a137.63,137.63,0,0,1-17.45-4.48V148l15.33-2.83Zm0,100.25A68.84,68.84,0,0,0,471,316.05a127.35,127.35,0,0,0,18.28,1.06q19.81,0,31.85-12.86t12-36.91a84.07,84.07,0,0,0-2.13-19.23,44.87,44.87,0,0,0-6.84-15.8,34.25,34.25,0,0,0-12.38-10.73q-7.67-4-19-4a49.31,49.31,0,0,0-10.38,1.06,61.57,61.57,0,0,0-9.19,2.71,51,51,0,0,0-12.74,7.08Z"/><path class="cls-3" d="M673.56,324q-6.84,1.89-18.4,4.24a144.38,144.38,0,0,1-28.3,2.36q-13.68,0-22.88-4a37.07,37.07,0,0,1-14.86-11.32A45.88,45.88,0,0,1,581,297.53a98.64,98.64,0,0,1-2.47-22.88v-68.4h15.33V269.7a108.25,108.25,0,0,0,1.88,21.93q1.89,9,6.14,14.51a23.86,23.86,0,0,0,11,8,47.64,47.64,0,0,0,16.39,2.48,132.49,132.49,0,0,0,18.87-1.18c5.34-.79,8.73-1.5,10.14-2.13V206.25h15.33Z"/><path class="cls-3" d="M710.26,210.49q6.84-1.87,18.4-4.24a144.38,144.38,0,0,1,28.3-2.36q13.92,0,23.24,4a35.73,35.73,0,0,1,14.86,11.44,46.84,46.84,0,0,1,7.9,17.81A103.44,103.44,0,0,1,805.32,260v68.16H790V265A115.58,115.58,0,0,0,788.22,243a36.61,36.61,0,0,0-5.9-14.62,23,23,0,0,0-10.85-8.14q-6.72-2.47-16.87-2.47A128.49,128.49,0,0,0,735.85,219q-7.9,1.17-10.26,2.12V328.19H710.26Z"/><path class="cls-3" d="M855.39,206.25H904v13H855.39v64.87A65.79,65.79,0,0,0,857.16,301a23.36,23.36,0,0,0,5.07,10,16,16,0,0,0,8,4.72,42.53,42.53,0,0,0,10.38,1.18q9.66,0,15.56-2.24a67,67,0,0,0,9.2-4.13l3.78,12.74q-3.31,2.13-11.56,4.83a57.11,57.11,0,0,1-17.93,2.72q-11.32,0-19-3a27.48,27.48,0,0,1-12.26-9,36.72,36.72,0,0,1-6.49-15,104.2,104.2,0,0,1-1.88-21.23V170.4l15.33-2.83Z"/><path class="cls-3" d="M1023.33,324q-6.86,1.89-18.4,4.24a144.49,144.49,0,0,1-28.31,2.36q-13.68,0-22.88-4a37.14,37.14,0,0,1-14.86-11.32,45.87,45.87,0,0,1-8.13-17.69,98.62,98.62,0,0,1-2.48-22.88v-68.4H943.6V269.7a108.17,108.17,0,0,0,1.89,21.93q1.89,9,6.13,14.51a23.91,23.91,0,0,0,11,8A47.64,47.64,0,0,0,979,316.64a132.49,132.49,0,0,0,18.87-1.18q8-1.18,10.14-2.13V206.25h15.34Z"/><path class="cls-3" d="M1156.68,163.32q34.68,0,51.66,13.21t17,37.5q0,13.92-5,23.71a40.35,40.35,0,0,1-14.15,15.8q-9.21,6-22.53,8.73a151.33,151.33,0,0,1-30.07,2.71h-22.17v63.21h-16V167.8a115.14,115.14,0,0,1,19.93-3.42Q1146.77,163.32,1156.68,163.32Zm.71,13.92q-9,0-15.21.59t-10.73,1.06v72.17h20.28a163.68,163.68,0,0,0,23.47-1.53,52.38,52.38,0,0,0,17.93-5.66,28.63,28.63,0,0,0,11.44-11.44q4-7.31,4-18.63,0-10.85-4.37-17.93a32.14,32.14,0,0,0-11.56-11.2,50.62,50.62,0,0,0-16.39-5.78A106.64,106.64,0,0,0,1157.39,177.24Z"/><path class="cls-3" d="M1292.85,203.89a82.18,82.18,0,0,1,14.27,1.18,43.81,43.81,0,0,1,9.32,2.36l-3.07,13.21a34.1,34.1,0,0,0-7.66-2,87.42,87.42,0,0,0-15.22-1.06,71.62,71.62,0,0,0-15.92,1.42,44.62,44.62,0,0,0-7.9,2.35V328.19h-15.33V211.91a113,113,0,0,1,16.27-5.31Q1278,203.9,1292.85,203.89Z"/><path class="cls-3" d="M1438.5,267.34a78.87,78.87,0,0,1-4.13,26.18,58.25,58.25,0,0,1-11.56,20.05,52.56,52.56,0,0,1-17.57,12.85,56.86,56.86,0,0,1-44.81,0,52.6,52.6,0,0,1-17.58-12.85,58.39,58.39,0,0,1-11.55-20.05,85,85,0,0,1,0-52.36A59.72,59.72,0,0,1,1342.85,221a51.86,51.86,0,0,1,17.58-13,56.86,56.86,0,0,1,44.81,0,51.82,51.82,0,0,1,17.57,13,59.57,59.57,0,0,1,11.56,20.17A78.87,78.87,0,0,1,1438.5,267.34Zm-16.28,0q0-22.87-10.61-36.44t-28.78-13.57q-18.16,0-28.77,13.57t-10.62,36.44q0,22.88,10.62,36.32t28.77,13.45q18.17,0,28.78-13.45T1422.22,267.34Z"/></svg>
 \ No newline at end of file
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/ubuntupro.gresource.xml
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/ubuntupro.gresource.xml	2024-03-25 12:46:43.936982467 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/ubuntupro.gresource.xml b/gnome-initial-setup/pages/ubuntu-pro/ubuntupro.gresource.xml
+new file mode 100644
+index 0000000..9257186
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/ubuntupro.gresource.xml
 @@ -0,0 +1,14 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<gresources>
@@ -2911,10 +2936,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/ubuntupro.gresou
 +  </gresource>
 +</gresources>
 +
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/utils.c
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/utils.c	2024-03-25 12:46:43.936982467 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/utils.c b/gnome-initial-setup/pages/ubuntu-pro/utils.c
+new file mode 100644
+index 0000000..0441c91
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/utils.c
 @@ -0,0 +1,119 @@
 +#include <adwaita.h>
 +#include <libsoup/soup.h>
@@ -3035,10 +3061,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/utils.c
 +  g_strlcat(str, append, len);
 +  g_strlcat(str, "\n", len);
 +}
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/utils.h
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/utils.h	2024-03-25 12:46:43.936982467 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-pro/utils.h b/gnome-initial-setup/pages/ubuntu-pro/utils.h
+new file mode 100644
+index 0000000..ceefe72
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-pro/utils.h
 @@ -0,0 +1,7 @@
 +gboolean parse_ua_status(gchar**, gsize*);
 +gboolean get_ubuntu_advantage_attached(gboolean*);
@@ -3047,10 +3074,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/utils.h
 +gboolean is_ubuntupro_supported();
 +gboolean is_dark_theme(GtkWidget*);
 +void itemize(gchar*, const gchar*, gsize);
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c	2024-03-25 12:46:43.940982333 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
+new file mode 100644
+index 0000000..a62da80
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
 @@ -0,0 +1,376 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
@@ -3428,10 +3456,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-re
 +                       "driver", driver,
 +                       NULL);
 +}
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.h
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.h	2024-03-25 12:46:43.940982333 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.h b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.h
+new file mode 100644
+index 0000000..846eb9b
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.h
 @@ -0,0 +1,33 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
@@ -3466,10 +3495,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-re
 +G_END_DECLS
 +
 +#endif /* __GIS_UBUNTU_REPORT_PAGE_H__ */
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui	2024-03-25 12:46:43.940982333 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui
+new file mode 100644
+index 0000000..ad0816c
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui
 @@ -0,0 +1,104 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
@@ -3575,10 +3605,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-re
 +    </child>
 +  </template>
 +</interface>
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/meson.build
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/meson.build	2024-03-25 12:46:43.940982333 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-report/meson.build b/gnome-initial-setup/pages/ubuntu-report/meson.build
+new file mode 100644
+index 0000000..a0f949b
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-report/meson.build
 @@ -0,0 +1,10 @@
 +sources += gnome.compile_resources(
 +    'ubuntu-report-resources',
@@ -3590,10 +3621,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/meson.build
 +    'gis-ubuntu-report-page.c',
 +    'gis-ubuntu-report-page.h',
 +)
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.gresource.xml
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.gresource.xml	2024-03-25 12:46:43.940982333 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.gresource.xml b/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.gresource.xml
+new file mode 100644
+index 0000000..6b28415
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.gresource.xml
 @@ -0,0 +1,8 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<gresources>
@@ -3603,30 +3635,18 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/ubuntu-report
 +  </gresource>
 +</gresources>
 +
-Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.svg
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.svg	2024-03-25 12:46:43.940982333 +0100
+diff --git a/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.svg b/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.svg
+new file mode 100644
+index 0000000..8c1d52c
+--- /dev/null
++++ b/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.svg
 @@ -0,0 +1 @@
 +<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="Layer_1" x="0px" y="0px" width="150px" height="150px" viewBox="0 0 400 400" style="enable-background:new 0 0 400 400;" xml:space="preserve"> <style type="text/css"> .st0{fill:#666666; fill-opacity:0.25;} </style> <g> <path class="st0" d="M301.4,372.4C271.7,390,237,400,200,400C89.5,400,0,310.5,0,200C0,89.5,89.5,0,200,0c110.5,0,200,89.5,200,200 c0,36.4-9.7,70.6-26.8,100l0,0L400,400l-100-26.8L301.4,372.4L301.4,372.4z"/> </g> </svg>
-Index: gnome-initial-setup/po/POTFILES.in
-===================================================================
---- gnome-initial-setup.orig/po/POTFILES.in	2024-03-25 12:46:43.944982197 +0100
-+++ gnome-initial-setup/po/POTFILES.in	2024-03-25 12:46:43.940982333 +0100
-@@ -43,3 +43,8 @@
- gnome-initial-setup/pages/welcome/gis-welcome-page.c
- gnome-initial-setup/pages/welcome/gis-welcome-page.ui
- po/EXTRA_STRINGS.sh
-+gnome-initial-setup/pages/timezone/gis-timezone-page.ui
-+gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
-+gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui
-+gnome-initial-setup/pages/apps/gis-apps-page.c
-+gnome-initial-setup/pages/apps/gis-apps-page.ui
-Index: gnome-initial-setup/gnome-initial-setup/pages/welcome/gis-welcome-page.c
-===================================================================
---- gnome-initial-setup.orig/gnome-initial-setup/pages/welcome/gis-welcome-page.c	2024-03-21 10:58:12.761476309 +0100
-+++ gnome-initial-setup/gnome-initial-setup/pages/welcome/gis-welcome-page.c	2024-03-25 12:49:16.472244795 +0100
-@@ -36,7 +36,8 @@
+diff --git a/gnome-initial-setup/pages/welcome/gis-welcome-page.c b/gnome-initial-setup/pages/welcome/gis-welcome-page.c
+index 1cad96e..f826660 100644
+--- a/gnome-initial-setup/pages/welcome/gis-welcome-page.c
++++ b/gnome-initial-setup/pages/welcome/gis-welcome-page.c
+@@ -36,7 +36,8 @@ struct _GisWelcomePage
  
  typedef struct
  {
@@ -3636,7 +3656,7 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/welcome/gis-welcome-page.c
  } GisWelcomePagePrivate;
  
  G_DEFINE_TYPE_WITH_PRIVATE (GisWelcomePage, gis_welcome_page, GIS_TYPE_PAGE)
-@@ -47,9 +48,11 @@
+@@ -47,9 +48,11 @@ update_welcome_title (GisWelcomePage *page)
    GisWelcomePagePrivate *priv = gis_welcome_page_get_instance_private (page);
    g_autofree char *name = g_get_os_info (G_OS_INFO_KEY_PRETTY_NAME);
    g_autofree char *text = NULL;
@@ -3649,7 +3669,7 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/welcome/gis-welcome-page.c
  
    /* Translators: This is meant to be a warm, engaging welcome message,
     * like greeting somebody at the door. If the exclamation mark is not
-@@ -61,18 +64,32 @@
+@@ -61,18 +64,32 @@ update_welcome_title (GisWelcomePage *page)
     */
    text = g_strdup_printf (_("Welcome to %s !"), name);
  
@@ -3683,7 +3703,7 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/welcome/gis-welcome-page.c
    gis_page_set_complete (GIS_PAGE (page), TRUE);
  }
  
-@@ -94,7 +111,8 @@
+@@ -94,7 +111,8 @@ gis_welcome_page_class_init (GisWelcomePageClass *klass)
  
    gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass), "/org/gnome/initial-setup/gis-welcome-page.ui");
  
@@ -3693,10 +3713,10 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/welcome/gis-welcome-page.c
    gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), start_setup);
  
    page_class->page_id = PAGE_ID;
-Index: gnome-initial-setup/gnome-initial-setup/pages/welcome/gis-welcome-page.css
-===================================================================
---- gnome-initial-setup.orig/gnome-initial-setup/pages/welcome/gis-welcome-page.css	2024-03-21 10:58:12.761476309 +0100
-+++ gnome-initial-setup/gnome-initial-setup/pages/welcome/gis-welcome-page.css	2024-03-25 12:49:16.472244795 +0100
+diff --git a/gnome-initial-setup/pages/welcome/gis-welcome-page.css b/gnome-initial-setup/pages/welcome/gis-welcome-page.css
+index 0abdd60..a093641 100644
+--- a/gnome-initial-setup/pages/welcome/gis-welcome-page.css
++++ b/gnome-initial-setup/pages/welcome/gis-welcome-page.css
 @@ -6,3 +6,8 @@
  .welcome-status-page {
    padding: 30px;
@@ -3707,10 +3727,10 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/welcome/gis-welcome-page.cs
 +  text-decoration: none;
 +}
 \ No newline at end of file
-Index: gnome-initial-setup/gnome-initial-setup/pages/welcome/gis-welcome-page.ui
-===================================================================
---- gnome-initial-setup.orig/gnome-initial-setup/pages/welcome/gis-welcome-page.ui	2024-03-21 10:58:12.761476309 +0100
-+++ gnome-initial-setup/gnome-initial-setup/pages/welcome/gis-welcome-page.ui	2024-03-25 12:49:16.472244795 +0100
+diff --git a/gnome-initial-setup/pages/welcome/gis-welcome-page.ui b/gnome-initial-setup/pages/welcome/gis-welcome-page.ui
+index dd62662..08ab785 100644
+--- a/gnome-initial-setup/pages/welcome/gis-welcome-page.ui
++++ b/gnome-initial-setup/pages/welcome/gis-welcome-page.ui
 @@ -1,53 +1,41 @@
 -<?xml version="1.0"?>
 +<?xml version="1.0" encoding="UTF-8"?>
@@ -3789,10 +3809,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/welcome/gis-welcome-page.ui
 -</interface>
 +</interface>
 \ No newline at end of file
-Index: gnome-initial-setup/gnome-initial-setup/pages/welcome/initial-setup-welcome.svg
-===================================================================
---- gnome-initial-setup.orig/gnome-initial-setup/pages/welcome/initial-setup-welcome.svg	2024-03-21 10:58:12.761476309 +0100
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/gnome-initial-setup/pages/welcome/initial-setup-welcome.svg b/gnome-initial-setup/pages/welcome/initial-setup-welcome.svg
+deleted file mode 100644
+index 988dcea..0000000
+--- a/gnome-initial-setup/pages/welcome/initial-setup-welcome.svg
++++ /dev/null
 @@ -1,1833 +0,0 @@
 -<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 -<svg
@@ -5627,10 +5648,11 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/welcome/initial-setup-welco
 -     x="1872"
 -     y="411.02975" />
 -</svg>
-Index: gnome-initial-setup/gnome-initial-setup/pages/welcome/ubuntu-mascot.svg
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ gnome-initial-setup/gnome-initial-setup/pages/welcome/ubuntu-mascot.svg	2024-03-25 12:49:16.476244679 +0100
+diff --git a/gnome-initial-setup/pages/welcome/ubuntu-mascot.svg b/gnome-initial-setup/pages/welcome/ubuntu-mascot.svg
+new file mode 100644
+index 0000000..77b1420
+--- /dev/null
++++ b/gnome-initial-setup/pages/welcome/ubuntu-mascot.svg
 @@ -0,0 +1,196 @@
 +<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 +<svg
@@ -5828,10 +5850,10 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/welcome/ubuntu-mascot.svg
 +       id="path78" />
 +  </g>
 +</svg>
-Index: gnome-initial-setup/gnome-initial-setup/pages/welcome/welcome.gresource.xml
-===================================================================
---- gnome-initial-setup.orig/gnome-initial-setup/pages/welcome/welcome.gresource.xml	2024-03-21 10:58:12.761476309 +0100
-+++ gnome-initial-setup/gnome-initial-setup/pages/welcome/welcome.gresource.xml	2024-03-25 12:49:16.476244679 +0100
+diff --git a/gnome-initial-setup/pages/welcome/welcome.gresource.xml b/gnome-initial-setup/pages/welcome/welcome.gresource.xml
+index 67a960f..41b35a5 100644
+--- a/gnome-initial-setup/pages/welcome/welcome.gresource.xml
++++ b/gnome-initial-setup/pages/welcome/welcome.gresource.xml
 @@ -2,7 +2,7 @@
  <gresources>
    <gresource prefix="/org/gnome/initial-setup">
@@ -5841,3 +5863,16 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/welcome/welcome.gresource.x
      <file>gis-welcome-page.css</file>
    </gresource>
  </gresources>
+diff --git a/po/POTFILES.in b/po/POTFILES.in
+index 10536d1..7b2c21d 100644
+--- a/po/POTFILES.in
++++ b/po/POTFILES.in
+@@ -43,3 +43,8 @@ gnome-initial-setup/pages/timezone/gis-timezone-page.ui
+ gnome-initial-setup/pages/welcome/gis-welcome-page.c
+ gnome-initial-setup/pages/welcome/gis-welcome-page.ui
+ po/EXTRA_STRINGS.sh
++gnome-initial-setup/pages/timezone/gis-timezone-page.ui
++gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
++gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui
++gnome-initial-setup/pages/apps/gis-apps-page.c
++gnome-initial-setup/pages/apps/gis-apps-page.ui

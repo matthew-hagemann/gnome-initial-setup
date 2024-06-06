@@ -4,14 +4,14 @@ Subject: Display the ubuntu welcome wizard in Unity
 
 ---
  data/gnome-initial-setup-first-login.desktop.in.in |  2 +-
- gnome-initial-setup/gnome-initial-setup.c          | 11 +++++++++++
- 2 files changed, 12 insertions(+), 1 deletion(-)
+ gnome-initial-setup/gnome-initial-setup.c          | 12 ++++++++++++
+ 2 files changed, 13 insertions(+), 1 deletion(-)
 
-Index: gnome-initial-setup/data/gnome-initial-setup-first-login.desktop.in.in
-===================================================================
---- gnome-initial-setup.orig/data/gnome-initial-setup-first-login.desktop.in.in	2024-03-25 12:50:59.585422137 +0100
-+++ gnome-initial-setup/data/gnome-initial-setup-first-login.desktop.in.in	2024-03-25 12:50:59.573422451 +0100
-@@ -7,7 +7,7 @@
+diff --git a/data/gnome-initial-setup-first-login.desktop.in.in b/data/gnome-initial-setup-first-login.desktop.in.in
+index f3d0df7..38f86cf 100644
+--- a/data/gnome-initial-setup-first-login.desktop.in.in
++++ b/data/gnome-initial-setup-first-login.desktop.in.in
+@@ -7,7 +7,7 @@ Terminal=false
  Type=Application
  StartupNotify=true
  Categories=GNOME;GTK;System;
@@ -20,11 +20,11 @@ Index: gnome-initial-setup/data/gnome-initial-setup-first-login.desktop.in.in
  NoDisplay=true
  AutostartCondition=unless-exists gnome-initial-setup-done
  X-GNOME-HiddenUnderSystemd=@systemd_hidden@
-Index: gnome-initial-setup/gnome-initial-setup/gnome-initial-setup.c
-===================================================================
---- gnome-initial-setup.orig/gnome-initial-setup/gnome-initial-setup.c	2024-03-25 12:50:59.585422137 +0100
-+++ gnome-initial-setup/gnome-initial-setup/gnome-initial-setup.c	2024-03-25 12:51:16.656979475 +0100
-@@ -94,6 +94,16 @@
+diff --git a/gnome-initial-setup/gnome-initial-setup.c b/gnome-initial-setup/gnome-initial-setup.c
+index 591f83e..670dd42 100644
+--- a/gnome-initial-setup/gnome-initial-setup.c
++++ b/gnome-initial-setup/gnome-initial-setup.c
+@@ -93,6 +93,16 @@ static PageData ubuntu_page_table[] = {
    { NULL },
  };
  
@@ -41,7 +41,7 @@ Index: gnome-initial-setup/gnome-initial-setup/gnome-initial-setup.c
  #undef PAGE
  
  static gboolean
-@@ -240,6 +250,8 @@
+@@ -239,6 +249,8 @@ rebuild_pages_cb (GisDriver *driver)
  
    if (is_desktop ("ubuntu"))
      page_data = ubuntu_page_table;
