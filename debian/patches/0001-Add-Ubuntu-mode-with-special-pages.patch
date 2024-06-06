@@ -302,13 +302,17 @@ Index: gnome-initial-setup/gnome-initial-setup/gnome-initial-setup.c
      return !should_skip_page ("language", skip_pages);
  
    /* check through our skip pages list for pages we don't want */
-@@ -188,6 +205,25 @@
+@@ -188,6 +205,29 @@
      gis_assistant_remove_page (GIS_ASSISTANT (assistant), page);
  }
  
 +static gboolean
 +is_desktop (const gchar *name)
 +{
++  /* note that, for first user account creation inside gnome-initial-setup user,
++   * XDG_CURRENT_DESKTOP is set to "GNOME-Greeter:GNOME"
++   */
++
 +  const gchar *xdg_current_desktop;
 +  g_auto(GStrv) tokens = NULL;
 +  int i;
@@ -328,7 +332,7 @@ Index: gnome-initial-setup/gnome-initial-setup/gnome-initial-setup.c
  static void
  rebuild_pages_cb (GisDriver *driver)
  {
-@@ -200,7 +236,11 @@
+@@ -200,7 +240,11 @@
  
    assistant = gis_driver_get_assistant (driver);
    current_page = gis_assistant_get_current_page (assistant);
@@ -341,7 +345,7 @@ Index: gnome-initial-setup/gnome-initial-setup/gnome-initial-setup.c
  
    g_ptr_array_free (skipped_pages, TRUE);
    skipped_pages = g_ptr_array_new_with_free_func (destroy_page);
-@@ -208,7 +248,7 @@
+@@ -208,7 +252,7 @@
    if (current_page != NULL) {
      destroy_pages_after (assistant, current_page);
  
