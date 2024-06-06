@@ -2,7 +2,7 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.c
 ===================================================================
 --- /dev/null
 +++ gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.c
-@@ -0,0 +1,247 @@
+@@ -0,0 +1,254 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2024 Canonical
@@ -64,83 +64,83 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.c
 +}
 +
 +static gboolean
-+gis_eula_load_pdf (GisEulaPage *page, gchar *locale)
++gis_eula_load_pdf (GisEulaPage *page, gchar *current_locale)
 +{
-+  // TODO MATT get dirname of GIS_EULA_DEFAULT_PAGE_PATH, add locale, check if file exists
-+  // fallbacks to parent.
-+  // TODO MATT: fallback to _
-+
 +  // Get the current locale and trim the charset if present
-+  gchar *current_locale = setlocale(LC_ALL, NULL);
 +  gchar *locale_trimmed = g_strdup(current_locale);
 +  gchar *dot = strchr(locale_trimmed, '.');
 +  if (dot != NULL) {
-+      *dot = '\0';  // Remove the charset part
++      *dot = '\0';
 +  }
++  g_message("Current locale_trimmed: %s", locale_trimmed);
 +
-+  // Build the locale-specific EULA filename
-+  gchar *locale_pdf_name = g_strdup_printf("EULA_%s.pdf", locale_trimmed);
-+  // GIS_EULA_DEFAULT_PAGE_DIR.
-+  // 1. you remove the suffix of GIS_EULA_DEFAULT_PAGE_PATH. (.pdf)
-+  // this is eula_base_name
-+  // (you strip after the _ of LANG)
-+  // GFile *file
-+  // for lang := range []{"en_US", "en", ""} {
-+  //      uri = eula_base_name + lang + ".pdf"
-+  /*
-+          GFile *file = g_file_new_for_path(uri);
-+          if (g_file_query_exists(file, NULL)) {
-+            break
-+          }
-+      }
-+      if file == NULL {
-+            g_warning("No EULA file found");
-+            // skip the page.
-+      }
-+  */
-+  // }
-+  gchar *locale_pdf_path = g_build_filename(GIS_EULA_DEFAULT_PAGE_DIR, locale_pdf_name, NULL);
++
++  // Prepare locale variants dynamically    
++  gchar *lang_and_variant = g_strdup_printf("_%s", locale_trimmed);
++  gchar *lang_trimmed = g_strndup(locale_trimmed, 2);
++  gchar *lang = g_strdup_printf("_%s", lang_trimmed);
++  g_free(lang_trimmed);
 +  g_free(locale_trimmed);
-+  g_free(locale_pdf_name);
 +
-+  // Check if locale-specific EULA exists
++  g_message("Current lang: %s", lang);
++  g_message("Current lang_and_var: %s", lang_and_variant);
++
++
++  const gchar *locales[] = {lang_and_variant, lang, ""};
 +  gchar *uri;
-+  if (g_file_test(locale_pdf_path, G_FILE_TEST_EXISTS)) {
-+      uri = g_strdup(locale_pdf_path);
-+  } else {
-+      uri = g_build_filename(GIS_EULA_DEFAULT_PAGE_DIR, "EULA.pdf", NULL);
++  GFile *file = NULL;
++
++  // Trim the file extension from the EULA path
++  gchar *base_eula_path = g_strdup(GIS_EULA_DEFAULT_PAGE_PATH);
++  gchar *dot_eula = strchr(base_eula_path, '.');
++  if (dot_eula != NULL) {
++      *dot_eula = '\0';
 +  }
 +
-+  // Create a file object from URI
-+  GFile *file = g_file_new_for_path(uri);
-+  if (!g_file_query_exists(file, NULL)) {
-+      g_warning("File does not exist: %s", uri);
++  // Iterate through the array of locale strings to attempt loading the PDF
++  for (gint i = 0; i < G_N_ELEMENTS(locales); i++) {
++      uri = g_strdup_printf("%s%s.pdf", base_eula_path, locales[i]);
++      file = g_file_new_for_path(uri);
++
++      PopplerDocument *document = NULL;
++      GError *error = NULL;
++      document = poppler_document_new_from_gfile(file, NULL, NULL, &error);
++      if (document) {
++          page->document = document;
++          g_free(uri);
++          g_object_unref(file);
++          g_message("Document successfully loaded!");
++          break;  // Successful loading of the document
++      }
++
++      // Cleanup on failure to load
++      if (error) {
++          g_warning("Could not find locate PDF %s, reverting to fallback", uri);
++          g_error_free(error);
++          error = NULL;
++      }
++
 +      g_object_unref(file);
-+      g_free(locale_pdf_path);
++      file = NULL;
 +      g_free(uri);
-+      return FALSE;
++      uri = NULL;
 +  }
 +
-+  // Load the PDF document
-+  GError *error = NULL;
-+  page->document = poppler_document_new_from_gfile(file, NULL, NULL, &error);
-+  if (!page->document) {
-+      g_warning("Error opening PDF document %s: %s", uri, error->message);
-+      g_error_free(error);
-+      g_object_unref(file);
-+      g_free(locale_pdf_path);
-+      g_free(uri);
-+      return FALSE;
++  g_free(base_eula_path);
++  g_free(lang_and_variant);
++  g_free(lang);
++
++  // If document is loaded, process it
++  if (page->document) {
++      g_message("We are now processing the doc");
++      // Get the total number of pages in the document
++      page->total_pages = poppler_document_get_n_pages(page->document);
++      return TRUE;
 +  }
 +
-+  // Get the total number of pages in the document
-+  page->total_pages = poppler_document_get_n_pages(page->document);
-+
-+  g_object_unref(file);
-+  g_free(locale_pdf_path);
-+  g_free(uri);
-+
-+  return TRUE;
++  // If no document is loaded, return FALSE
++  g_warning("Failed to load any EULA document.");
++  return FALSE;
 +}
 +
 +double pdf_get_total_height (GisEulaPage *page, double width, double *scale)
@@ -199,9 +199,18 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.c
 +static void
 +gis_eula_page_locale_changed (GisPage *page)
 +{
-+  gis_page_set_title (GIS_PAGE(page), _("EULA"));
-+  // TODO MATT: based on locale, call gis_eula_load_pdf
-+  // + recall redraw?
++  // GisEulaPage *eula_page = GIS_EULA_PAGE(page);
++  // gchar *current_locale = setlocale(LC_ALL, NULL);
++
++  // // Attempt to reload the PDF with the new locale
++  // g_message("Current locale for new locale: %s", current_locale);
++  // if (!gis_eula_load_pdf(eula_page, current_locale)) {
++  //   g_warning("Failed to reload PDF after locale change");
++  //   return;
++  // }
++
++  //gtk_widget_queue_draw(GTK_WIDGET(eula_page->drawing_area));
++  //g_message("PDF reloaded successfully for new locale");
 +}
 +
 +static void
@@ -226,15 +235,13 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.c
 +    gis_page_set_needs_accept (GIS_PAGE(page), TRUE);
 +
 +    // Attempt to load the PDF; handle failure
-+    if (!gis_eula_load_pdf(page, "C")) { 
-+        GtkWidget *label = gtk_label_new(_("Failed to load the EULA document. Please check your installation or contact support."));
-+        gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
-+        gtk_widget_show(label);
-+
-+        gtk_box_append(GTK_BOX(page), label);  // Add the label directly to the 'page'
-+        
++    gchar *current_locale = setlocale(LC_ALL, NULL);
++    g_message("Current locale: %s", current_locale);
++    if (!gis_eula_load_pdf(page, current_locale)) { 
++        g_warning("Failed to load pdf");
 +        return;
 +    }
++    g_free(current_locale);
 +
 +    // UI setup if PDF loaded successfully
 +    gtk_widget_init_template(GTK_WIDGET(page));
@@ -342,19 +349,22 @@ Index: gnome-initial-setup/gnome-initial-setup/gnome-initial-setup.c
    PAGE (network,  FALSE),
    PAGE (privacy,  FALSE),
    PAGE (timezone, TRUE),
-@@ -126,6 +128,15 @@ should_skip_page (const gchar  *page_id,
+@@ -126,6 +128,18 @@ should_skip_page (const gchar  *page_id,
      }
    }
  
-+  /* Check for the existence of the EULA file, skip the eula
-+  * page if it is absent.
-+  */
++  /* check for the existence of the EULA file, skip the eula
++   * page if it is absent.
++   */
 +  if (strcmp(page_id, "eula") == 0) {
++    g_message("checking EULA");
 +    if (!g_file_test(GIS_EULA_DEFAULT_PAGE_PATH, G_FILE_TEST_EXISTS)) {
++      g_message("skipping the eula");  
 +      return TRUE;
 +    }
 +  }
 +
++  printf("not skipping eula");
    return FALSE;
  }
  
