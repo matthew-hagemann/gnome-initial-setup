@@ -24,12 +24,12 @@ Subject: Add Ubuntu mode with special pages
  .../pages/summary/gis-summary-page.c               |    2 +-
  gnome-initial-setup/pages/ubuntu-pro/checkmark.svg |    1 +
  gnome-initial-setup/pages/ubuntu-pro/fail.svg      |    1 +
- .../pages/ubuntu-pro/gis-ubuntupro-attach-page.ui  |  235 +++
- .../pages/ubuntu-pro/gis-ubuntupro-offer-page.ui   |  144 ++
- .../pages/ubuntu-pro/gis-ubuntupro-page.c          |  850 +++++++++
+ .../pages/ubuntu-pro/gis-ubuntupro-attach-page.ui  |  248 +++
+ .../pages/ubuntu-pro/gis-ubuntupro-offer-page.ui   |  148 ++
+ .../pages/ubuntu-pro/gis-ubuntupro-page.c          |  865 +++++++++
  .../pages/ubuntu-pro/gis-ubuntupro-page.h          |  110 ++
  .../pages/ubuntu-pro/gis-ubuntupro-page.ui         |   33 +
- .../ubuntu-pro/gis-ubuntupro-services-page.ui      |  132 ++
+ .../ubuntu-pro/gis-ubuntupro-services-page.ui      |  134 ++
  gnome-initial-setup/pages/ubuntu-pro/meson.build   |   12 +
  .../pages/ubuntu-pro/ubuntu-pro-dark.svg           |   25 +
  .../pages/ubuntu-pro/ubuntu-pro.svg                |    1 +
@@ -48,8 +48,8 @@ Subject: Add Ubuntu mode with special pages
  .../pages/welcome/initial-setup-welcome.svg        | 1833 --------------------
  .../pages/welcome/ubuntu-mascot.svg                |  196 +++
  .../pages/welcome/welcome.gresource.xml            |    2 +-
- po/POTFILES.in                                     |    5 +
- 46 files changed, 3448 insertions(+), 1879 deletions(-)
+ po/POTFILES.in                                     |   10 +
+ 46 files changed, 3487 insertions(+), 1879 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/app-center.svg
@@ -1329,10 +1329,10 @@ index 0000000..e3c9a52
 \ No newline at end of file
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
 new file mode 100644
-index 0000000..6630474
+index 0000000..0dbc68f
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
-@@ -0,0 +1,235 @@
+@@ -0,0 +1,248 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
 +  <requires lib="gtk" version="4.0"/>
@@ -1350,8 +1350,10 @@ index 0000000..6630474
 +            <property name="halign">start</property>
 +            <property name="margin-top">3</property>
 +            <property name="margin-bottom">0</property>
-+            <property name="label" translatable="yes">&lt;b&gt;Enable Ubuntu Pro&lt;/b&gt;</property>
-+            <property name="use-markup">True</property>
++            <property name="label" translatable="yes">Enable Ubuntu Pro</property>
++            <attributes>
++              <attribute name="weight" value="bold"/>
++            </attributes>
 +            <property name="wrap">True</property>
 +            <property name="xalign">0</property>
 +            <attributes>
@@ -1383,9 +1385,10 @@ index 0000000..6630474
 +            <child>
 +              <object class="GtkLabel">
 +                <property name="visible">True</property>
-+                <property name="label" translatable="yes">Upgrade this machine to Ubuntu Pro for security updates on a much wider range of packages, until 2034. Fulfill FedRAMP, FIPS, STIG and HIPAA and other compliance and hardening requirements with certified tooling and crypto-modules. Free for up to 5 machines.
++                <property name="label" translatable="yes"
++                ><![CDATA[Upgrade this machine to Ubuntu Pro for security updates on a much wider range of packages, until 2034. Fulfill FedRAMP, FIPS, STIG and HIPAA and other compliance and hardening requirements with certified tooling and crypto-modules. Free for up to 5 machines.
 +
-+More information on &lt;a href="https://ubuntu.com/pro"&gt;ubuntu.com/pro&lt;/a&gt;.</property>
++More information on <a href="https://ubuntu.com/pro">ubuntu.com/pro</a>.]]></property>
 +                <property name="use-markup">True</property>
 +                <property name="wrap">True</property>
 +                <property name="max-width-chars">130</property>
@@ -1490,7 +1493,9 @@ index 0000000..6630474
 +        </child>
 +        <child>
 +          <object class="GtkCheckButton" id="token_radio">
-+            <property name="label" translatable="yes">Or add token manually</property>
++            <property name="label" translatable="yes"
++             comments="translators: This is the other way to attach a machine to Ubuntu Pro"
++             >Or add token manually</property>
 +            <property name="visible">True</property>
 +            <property name="receives-default">False</property>
 +            <property name="margin-start">30</property>
@@ -1507,8 +1512,16 @@ index 0000000..6630474
 +                bind-property="margin-start"
 +                bind-flags="sync-create" />
 +            <property name="can-focus">False</property>
-+            <property name="label" translatable="yes">&lt;small&gt;From your admin, or from ubuntu.com/pro&lt;/small&gt;</property>
-+            <property name="halign">start</property>
++            <property name="halign">fill</property>
++            <property name="child">
++              <object class="GtkLabel" id="token_origin">
++                <property name="label" translatable="yes"
++                 comments="translators: Subtitle telling who can provide the Ubuntu Pro token"
++                 >From your admin, or from ubuntu.com/pro</property>
++                <property name="use-markup">True</property>
++                <property name="wrap">True</property>
++              </object>
++            </property>
 +            <signal name="map" handler="on_map_checkbutton" swapped="no"/>
 +          </object>
 +        </child>
@@ -1570,10 +1583,10 @@ index 0000000..6630474
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
 new file mode 100644
-index 0000000..141656a
+index 0000000..82c14b5
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
-@@ -0,0 +1,144 @@
+@@ -0,0 +1,148 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
 +  <requires lib="gtk" version="4.0"/>
@@ -1593,8 +1606,10 @@ index 0000000..141656a
 +            <property name="halign">start</property>
 +            <property name="margin-top">3</property>
 +            <property name="margin-bottom">0</property>
-+            <property name="label" translatable="yes">&lt;b&gt;Enable Ubuntu Pro&lt;/b&gt;</property>
-+            <property name="use-markup">True</property>
++            <property name="label" translatable="yes">Enable Ubuntu Pro</property>
++            <attributes>
++              <attribute name="weight" value="bold"/>
++            </attributes>
 +            <property name="wrap">True</property>
 +            <property name="xalign">0</property>
 +            <attributes>
@@ -1627,12 +1642,13 @@ index 0000000..141656a
 +              <object class="GtkLabel">
 +                <property name="visible">True</property>
 +                <property name="halign">fill</property>
-+                <property name="label" translatable="yes">Upgrade this machine to Ubuntu Pro. Free for up to 5 machines.
++                <property name="label" translatable="yes"
++                 comments="translators: Use HTML encoded format for special characters such as '&amp;'"><![CDATA[Upgrade this machine to Ubuntu Pro. Free for up to 5 machines.
 +
 +• Get security updates on a wide range of packages until 2034
 +• Fulfill FedRAMP, FIPS, STIG and HIPAA and other compliance and hardening requirements with certified tooling and crypto-modules
 +
-+Learn more at &lt;a href="https://ubuntu.com/pro"&gt;ubuntu.com/pro&lt;/a&gt;.</property>
++Learn more at <a href="https://ubuntu.com/pro">ubuntu.com/pro</a>.]]></property>
 +                <property name="use-markup">True</property>
 +                <property name="wrap">True</property>
 +                <property name="max-width-chars">130</property>
@@ -1706,7 +1722,8 @@ index 0000000..141656a
 +                  <object class="GtkCheckButton" id="fake_button">
 +                    <property name="visible">True</property>
 +                    <property name="can-focus">False</property>
-+                    <property name="label" translatable="yes">You can always enable Ubuntu Pro later via the Software &amp; Updates application</property>
++                    <property name="label" translatable="yes"
++                     comments="translators: Use HTML encoded format for special characters such as '&amp;'"><![CDATA[You can always enable Ubuntu Pro later via the Software &amp; Updates application]]></property>
 +                    <signal name="map" handler="on_map_checkbutton" swapped="no"/>
 +                  </object>
 +                </child>
@@ -1720,10 +1737,10 @@ index 0000000..141656a
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
 new file mode 100644
-index 0000000..a49f0ee
+index 0000000..6e967b0
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
-@@ -0,0 +1,850 @@
+@@ -0,0 +1,865 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2022 Canonical Ltd.
@@ -1809,6 +1826,7 @@ index 0000000..a49f0ee
 +  GtkWidget *pin_hint;
 +  GtkWidget *pin_status;
 +  GtkWidget *pin_status_icon;
++  GtkWidget *token_origin;
 +  GtkWidget *token_radio;
 +  GtkWidget *magic_radio;
 +  /* This being here is a hack that makes changing the 2nd page's button
@@ -1896,7 +1914,7 @@ index 0000000..a49f0ee
 +update_gui(GisUbuntuProAttachPagePrivate *priv, status_t status)
 +{
 +  GtkWidget *label, *icon, *spinner;
-+  gchar *hint = _("Enter this code on <a href=\"https://ubuntu.com/pro/attach\">ubuntu.com/pro/attach</a>");
++  g_autofree gchar *hint = NULL;
 +  gboolean ready_to_attach;
 +
 +  if (priv->active_radio == MAGIC) {
@@ -1950,13 +1968,21 @@ index 0000000..a49f0ee
 +    gtk_image_set_from_resource(GTK_IMAGE(icon), FAIL_ICON);
 +    break;
 +  case EXPIRED:
-+    hint = "Click the button to generate a new code.";
++    hint = g_strdup ("Click the button to generate a new code.");
 +    gtk_label_set_markup(GTK_LABEL(label), _("Code expired"));
 +    gtk_image_set_from_resource(GTK_IMAGE(icon), FAIL_ICON);
 +    break;
 +  default:
 +    break;
 +  }
++
++  if (!hint)
++    {
++      // TRANSLATORS: the placeholder is a link to ubuntu.com/pro/attach.
++      // Use HTML encoded format for special characters such as '&'.
++      hint = g_strdup_printf (_("Enter this code on %s"),
++                              "<a href=\"https://ubuntu.com/pro/attach\">ubuntu.com/pro/attach</a>");
++    }
 +  gtk_label_set_markup(GTK_LABEL(priv->pin_hint), hint);
 +  gtk_widget_set_visible(GTK_WIDGET(priv->token_status_icon), FALSE);
 +  gtk_widget_set_visible(GTK_WIDGET(priv->token_status), FALSE);
@@ -2031,6 +2057,7 @@ index 0000000..a49f0ee
 +{
 +  GisUbuntuProPage *page = GIS_UBUNTUPRO_PAGE (object);
 +  GisUbuntuProPagePrivate *priv = gis_ubuntupro_page_get_instance_private (page);
++  g_autofree char *origin_label = NULL;
 +
 +  G_OBJECT_CLASS (gis_ubuntupro_page_parent_class)->constructed (object);
 +
@@ -2047,6 +2074,10 @@ index 0000000..a49f0ee
 +  map_scalable_image(CHECK_ICON, GTK_PICTURE(services_priv->checkmark), 30, -1);
 +  // Needed so the picture is shown inside the GtkFixed (god knows why!)
 +  gtk_widget_set_size_request(services_priv->checkmark, 30, 30);
++
++  origin_label = g_strdup_printf ("<small>%s</small>",
++                                  gtk_label_get_label (GTK_LABEL (attach_priv->token_origin)));
++  gtk_label_set_label (GTK_LABEL (attach_priv->token_origin), origin_label);
 +
 +  GNetworkMonitor *network_monitor = g_network_monitor_get_default ();
 +  offer_priv->network_cb = g_signal_connect (network_monitor, "network-changed",
@@ -2499,6 +2530,7 @@ index 0000000..a49f0ee
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProAttachPage, pin_status_icon);
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProAttachPage, pin_hint);
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProAttachPage, token_radio);
++  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProAttachPage, token_origin);
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProAttachPage, magic_radio);
 +
 +  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), on_map_checkbutton);
@@ -2731,10 +2763,10 @@ index 0000000..b992eca
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui
 new file mode 100644
-index 0000000..197a528
+index 0000000..2ef0940
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui
-@@ -0,0 +1,132 @@
+@@ -0,0 +1,134 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
 +  <requires lib="gtk" version="4.0"/>
@@ -2752,8 +2784,10 @@ index 0000000..197a528
 +        <property name="halign">start</property>
 +        <property name="margin-top">3</property>
 +        <property name="margin-bottom">0</property>
-+        <property name="label" translatable="yes">&lt;b&gt;Ubuntu Pro Services&lt;/b&gt;</property>
-+        <property name="use-markup">True</property>
++        <property name="label" translatable="yes">Ubuntu Pro Services</property>
++        <attributes>
++          <attribute name="weight" value="bold"/>
++        </attributes>
 +        <property name="wrap">True</property>
 +        <property name="xalign">0</property>
 +        <attributes>
@@ -5872,15 +5906,20 @@ index 67a960f..41b35a5 100644
    </gresource>
  </gresources>
 diff --git a/po/POTFILES.in b/po/POTFILES.in
-index 10536d1..7b2c21d 100644
+index 10536d1..2159715 100644
 --- a/po/POTFILES.in
 +++ b/po/POTFILES.in
-@@ -43,3 +43,8 @@ gnome-initial-setup/pages/timezone/gis-timezone-page.ui
+@@ -43,3 +43,13 @@ gnome-initial-setup/pages/timezone/gis-timezone-page.ui
  gnome-initial-setup/pages/welcome/gis-welcome-page.c
  gnome-initial-setup/pages/welcome/gis-welcome-page.ui
  po/EXTRA_STRINGS.sh
 +gnome-initial-setup/pages/timezone/gis-timezone-page.ui
 +gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
 +gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui
++gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
++gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
++gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.ui
++gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui
++gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
 +gnome-initial-setup/pages/apps/gis-apps-page.c
 +gnome-initial-setup/pages/apps/gis-apps-page.ui
