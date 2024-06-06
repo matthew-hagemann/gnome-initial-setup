@@ -1956,15 +1956,15 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-pa
 + * in previous GTK releases, such as connecting to size-allocate, were dropped
 + * in GTK4.
 + */
-+void on_map_checkbutton (GtkCheckButton *button, gpointer user_data)
++void on_map_checkbutton (GtkCheckButton *button, gpointer _)
 +{
-+  GtkWidget *circle = gtk_widget_get_first_child (GTK_WIDGET (button));
-+  GtkWidget *label = gtk_widget_get_last_child (GTK_WIDGET (button));
-+  if (circle != NULL)
-+    gtk_widget_unmap (GTK_WIDGET (circle));
-+  if (label != NULL && GTK_IS_LABEL(label)) {
-+    gtk_label_set_wrap (GTK_LABEL (label), TRUE);
-+    gtk_label_set_use_markup (GTK_LABEL (label), TRUE);
++  GtkWidget *c;
++  for (c = gtk_widget_get_first_child (GTK_WIDGET (button)); c; c = gtk_widget_get_next_sibling (c)) {
++    if GTK_IS_LABEL (c) {
++      gtk_label_set_wrap (GTK_LABEL (c), TRUE);
++      gtk_label_set_use_markup (GTK_LABEL (c), TRUE);
++    } else
++      gtk_widget_unmap (c);
 +  }
 +}
 +
