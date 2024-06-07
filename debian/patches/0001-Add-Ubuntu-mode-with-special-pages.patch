@@ -24,12 +24,12 @@ Subject: Add Ubuntu mode with special pages
  .../pages/summary/gis-summary-page.c               |    2 +-
  gnome-initial-setup/pages/ubuntu-pro/checkmark.svg |    1 +
  gnome-initial-setup/pages/ubuntu-pro/fail.svg      |    1 +
- .../pages/ubuntu-pro/gis-ubuntupro-attach-page.ui  |  240 +++
- .../pages/ubuntu-pro/gis-ubuntupro-offer-page.ui   |  171 ++
- .../pages/ubuntu-pro/gis-ubuntupro-page.c          |  868 +++++++++
+ .../pages/ubuntu-pro/gis-ubuntupro-attach-page.ui  |  253 +++
+ .../pages/ubuntu-pro/gis-ubuntupro-offer-page.ui   |  244 +++
+ .../pages/ubuntu-pro/gis-ubuntupro-page.c          |  893 ++++++++++
  .../pages/ubuntu-pro/gis-ubuntupro-page.h          |  110 ++
  .../pages/ubuntu-pro/gis-ubuntupro-page.ui         |   33 +
- .../ubuntu-pro/gis-ubuntupro-services-page.ui      |  134 ++
+ .../ubuntu-pro/gis-ubuntupro-services-page.ui      |  141 ++
  gnome-initial-setup/pages/ubuntu-pro/meson.build   |   12 +
  .../pages/ubuntu-pro/ubuntu-pro-dark.svg           |   25 +
  .../pages/ubuntu-pro/ubuntu-pro.svg                |    1 +
@@ -47,9 +47,9 @@ Subject: Add Ubuntu mode with special pages
  .../pages/welcome/gis-welcome-page.ui              |   56 +-
  .../pages/welcome/initial-setup-welcome.svg        | 1833 --------------------
  .../pages/welcome/ubuntu-mascot.svg                |  196 +++
- .../pages/welcome/welcome.gresource.xml            |    2 +-
+ .../pages/welcome/welcome.gresource.xml            |    2 +->
  po/POTFILES.in                                     |   10 +
- 46 files changed, 3504 insertions(+), 1878 deletions(-)
+ 46 files changed, 3622 insertions(+), 1878 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/app-center.svg
@@ -1329,10 +1329,10 @@ index 0000000..e3c9a52
 \ No newline at end of file
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
 new file mode 100644
-index 0000000..977988b
+index 0000000..6ecfcd6
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
-@@ -0,0 +1,240 @@
+@@ -0,0 +1,253 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
 +  <requires lib="gtk" version="4.0"/>
@@ -1371,7 +1371,7 @@ index 0000000..977988b
 +        <child>
 +          <object class="GtkGrid">
 +            <property name="visible">True</property>
-+            <property name="column-spacing">38</property>
++            <property name="column-spacing">56</property>
 +            <property name="margin-start">30</property>
 +            <property name="margin-top">12</property>
 +            <property name="margin-bottom">12</property>
@@ -1384,7 +1384,7 @@ index 0000000..977988b
 +            </child>
 +            <child>
 +              <object class="GtkLabel">
-+                <property name="visible">True</property>
++                <property name="xalign">0</property>
 +                <property name="label" translatable="yes"
 +                ><![CDATA[Upgrade this machine to Ubuntu Pro for security updates on a much wider range of packages, until 2034. Fulfill FedRAMP, FIPS, STIG and HIPAA and other compliance and hardening requirements with certified tooling and crypto-modules. Free for up to 5 machines.
 +
@@ -1398,12 +1398,21 @@ index 0000000..977988b
 +        </child>
 +        <child>
 +          <object class="GtkCheckButton" id="magic_radio">
-+            <property name="label" translatable="yes">Attach machine via your Ubuntu One account</property>
 +            <property name="halign">start</property>
 +            <property name="receives-default">False</property>
 +            <property name="margin-top">40</property>
 +            <property name="margin-bottom">6</property>
 +            <property name="margin-start">30</property>
++             <child>
++              <object class="GtkLabel">
++                <property name="halign">start</property>
++                  <property name="label" translatable="yes">_Attach machine via your Ubuntu One account</property>
++                  <property name="mnemonic_widget">magic_radio</property>
++                  <property name="use_underline">True</property>
++                  <property name="wrap">True</property>
++                  <property name="xalign">0</property>
++                </object>
++              </child>
 +            <signal name="activate" handler="on_magic_clicked" swapped="no"/>
 +          </object>
 +        </child>
@@ -1503,9 +1512,13 @@ index 0000000..977988b
 +                <child>
 +                  <object class="GtkLabel">
 +                    <property name="halign">start</property>
++                    <property name="mnemonic_widget">token_radio</property>
++                    <property name="use_underline">True</property>
++                    <property name="wrap">True</property>
++                    <property name="xalign">0</property>
 +                    <property name="label" translatable="yes"
 +                      comments="translators: This is the other way to attach a machine to Ubuntu Pro"
-+                      >Or add token manually</property>
++                      >Or add _token manually</property>
 +                  </object>
 +                </child>
 +                <child>
@@ -1575,10 +1588,10 @@ index 0000000..977988b
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
 new file mode 100644
-index 0000000..e508393
+index 0000000..0b2e517
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
-@@ -0,0 +1,171 @@
+@@ -0,0 +1,244 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
 +  <requires lib="gtk" version="4.0"/>
@@ -1617,12 +1630,11 @@ index 0000000..e508393
 +          </object>
 +        </child>
 +        <child>
-+          <object class="GtkGrid">
-+          <property name="visible">True</property>
-+          <property name="column-spacing">38</property>
-+          <property name="margin-start">30</property>
-+          <property name="margin-top">12</property>
-+          <property name="margin-bottom">12</property>
++          <object class="GtkBox">
++            <property name="spacing">56</property>
++            <property name="margin-start">30</property>
++            <property name="margin-top">12</property>
++            <property name="margin-bottom">12</property>
 +            <child>
 +              <object class="GtkPicture" id="ubuntu_pro_logo">
 +                <property name="visible">True</property>
@@ -1631,19 +1643,93 @@ index 0000000..e508393
 +              </object>
 +            </child>
 +            <child>
-+              <object class="GtkLabel">
-+                <property name="visible">True</property>
++              <object class="GtkGrid">
 +                <property name="halign">fill</property>
-+                <property name="label" translatable="yes"
-+                 comments="translators: Use HTML encoded format for special characters such as '&amp;'"><![CDATA[Upgrade this machine to Ubuntu Pro. Free for up to 5 machines.
-+
-+• Get security updates on a wide range of packages until 2034
-+• Fulfill FedRAMP, FIPS, STIG and HIPAA and other compliance and hardening requirements with certified tooling and crypto-modules
-+
-+Learn more at <a href="https://ubuntu.com/pro">ubuntu.com/pro</a>.]]></property>
-+                <property name="use-markup">True</property>
-+                <property name="wrap">True</property>
-+                <property name="max-width-chars">130</property>
++                <property name="column-spacing">8</property>
++                <property name="margin-start">8</property>
++                <property name="row-spacing">6</property>
++                <child>
++                  <object class="GtkLabel">
++                    <property name="wrap">True</property>
++                    <property name="halign">start</property>
++                    <property name="valign">start</property>
++                    <property name="xalign">0</property>
++                    <property name="margin-bottom">12</property>
++                    <property name="label" translatable="yes"
++                      >Upgrade this machine to Ubuntu Pro. Free for up to 5 machines.</property>
++                    <layout>
++                      <property name="column">0</property>
++                      <property name="row">0</property>
++                      <property name="column-span">2</property>
++                    </layout>
++                  </object>
++                </child>
++                <child>
++                  <object class="GtkLabel">
++                    <property name="label">•</property>
++                    <property name="valign">start</property>
++                    <layout>
++                      <property name="column">0</property>
++                      <property name="row">1</property>
++                    </layout>
++                  </object>
++                </child>
++                <child>
++                  <object class="GtkLabel">
++                    <property name="wrap">True</property>
++                    <property name="halign">start</property>
++                    <property name="valign">start</property>
++                    <property name="xalign">0</property>
++                    <property name="label" translatable="yes"
++                      >Get security updates on a wide range of packages until 2034</property>
++                    <layout>
++                      <property name="column">1</property>
++                      <property name="row">1</property>
++                    </layout>
++                  </object>
++                </child>
++                <child>
++                  <object class="GtkLabel">
++                    <property name="label">•</property>
++                    <property name="valign">start</property>
++                    <layout>
++                      <property name="column">0</property>
++                      <property name="row">2</property>
++                    </layout>
++                  </object>
++                </child>
++                <child>
++                  <object class="GtkLabel">
++                    <property name="wrap">True</property>
++                    <property name="halign">start</property>
++                    <property name="valign">start</property>
++                    <property name="xalign">0</property>
++                    <property name="label" translatable="yes"
++                      >Fulfill FedRAMP, FIPS, STIG and HIPAA and other compliance and hardening requirements with certified tooling and crypto-modules.</property>
++                    <layout>
++                      <property name="column">1</property>
++                      <property name="row">2</property>
++                    </layout>
++                  </object>
++                </child>
++                <child>
++                  <object class="GtkLabel">
++                    <property name="wrap">True</property>
++                    <property name="halign">start</property>
++                    <property name="valign">start</property>
++                    <property name="xalign">0</property>
++                    <property name="use-markup">True</property>
++                    <property name="margin-top">12</property>
++                    <property name="label" translatable="yes"
++                    comments="translators: Use HTML encoded format for special characters such as '&amp;'"
++                      ><![CDATA[Learn more at <a href="https://ubuntu.com/pro">ubuntu.com/pro</a>.]]></property>
++                    <layout>
++                      <property name="column">0</property>
++                      <property name="row">3</property>
++                      <property name="column-span">2</property>
++                    </layout>
++                  </object>
++                </child>
 +              </object>
 +            </child>
 +          </object>
@@ -1752,10 +1838,10 @@ index 0000000..e508393
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
 new file mode 100644
-index 0000000..4b16275
+index 0000000..c34d9cc
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
-@@ -0,0 +1,868 @@
+@@ -0,0 +1,893 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2022 Canonical Ltd.
@@ -2215,6 +2301,17 @@ index 0000000..4b16275
 +}
 +
 +static void
++grid_remove_all (GtkGrid *grid)
++{
++  for (GtkWidget *c = gtk_widget_get_first_child (GTK_WIDGET (grid)); c;)
++    {
++      GtkWidget *next = gtk_widget_get_next_sibling (c);
++      gtk_grid_remove (grid, c);
++      c = next;
++    }
++}
++
++static void
 +display_ua_services(GisUbuntuProServicesPagePrivate *priv)
 +{
 +    g_autoptr(JsonParser) parser = json_parser_new();
@@ -2252,6 +2349,9 @@ index 0000000..4b16275
 +    services_array = json_object_get_array_member(root, "services");
 +    n_services = json_array_get_length(services_array);
 +
++    grid_remove_all (GTK_GRID (priv->enabled_services));
++    grid_remove_all (GTK_GRID (priv->available_services));
++
 +    /* Get services description, status and availability */
 +    for (i = 0; i < n_services; i++) {
 +        services = json_array_get_object_element(services_array, i);
@@ -2260,28 +2360,39 @@ index 0000000..4b16275
 +            json_object_has_member(services, "status") &&
 +            json_object_has_member(services, "available")
 +        ) {
++            GtkGrid *target_grid = NULL;
 +            description = json_object_get_string_member(services, "description");
 +            status = json_object_get_string_member(services, "status");
 +            available = json_object_get_string_member(services, "available");
++
 +            if (strcmp(status, "enabled") == 0) {
-+              itemize(enabled_str, description, len);
++              target_grid = GTK_GRID (priv->enabled_services);
 +            } else if (strcmp(available, "yes") == 0) {
-+              itemize(available_str, description, len);
++              target_grid = GTK_GRID (priv->available_services);
 +            }
++
++            if (!target_grid)
++              continue;
++
++            GtkWidget *bullet = gtk_label_new ("•");
++            gtk_grid_attach (target_grid, bullet, 0, i, 1, 1);
++
++            GtkWidget *label = gtk_label_new (description);
++            gtk_label_set_wrap (GTK_LABEL (label), TRUE);
++            gtk_label_set_xalign (GTK_LABEL (label), 0);
++            gtk_grid_attach (target_grid, label, 1, i, 1, 1);
 +        }
 +    }
 +
 +    /* Display enabled and disabled but available services */
-+    if (enabled_str == NULL) {
-+      g_object_unref(GTK_WIDGET(priv->enabled_services_header));
-+    } else {
-+      gtk_label_set_text(GTK_LABEL(priv->enabled_services), enabled_str);
-+    }
-+    if (available_str == NULL) {
-+      g_object_unref(GTK_WIDGET(priv->available_services_header));
-+    } else {
-+      gtk_label_set_text(GTK_LABEL(priv->available_services), available_str);
-+    }
++    gtk_widget_set_visible (priv->enabled_services_header,
++      !!gtk_widget_get_first_child (priv->enabled_services));
++    gtk_widget_set_visible (priv->enabled_services,
++      !!gtk_widget_get_first_child (priv->enabled_services));
++    gtk_widget_set_visible (priv->available_services_header,
++      !!gtk_widget_get_first_child (priv->available_services));
++    gtk_widget_set_visible (priv->available_services,
++      !!gtk_widget_get_first_child (priv->available_services));
 +}
 +
 +static void
@@ -2781,20 +2892,21 @@ index 0000000..b992eca
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui
 new file mode 100644
-index 0000000..2ef0940
+index 0000000..36f966a
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui
-@@ -0,0 +1,134 @@
+@@ -0,0 +1,144 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
 +  <requires lib="gtk" version="4.0"/>
 +  <template class="GisUbuntuProServicesPage" parent="AdwBin">
 +  <child>
 +  <object class="GtkBox" id="services_page">
-+    <property name="margin-start">12</property>
++    <property name="margin-start">24</property>
 +    <property name="margin-top">12</property>
 +    <property name="margin-end">12</property>
 +    <property name="visible">True</property>
++    <property name="valign">start</property>
 +    <property name="orientation">vertical</property>
 +    <child>
 +      <object class="GtkLabel">
@@ -2826,6 +2938,7 @@ index 0000000..2ef0940
 +        <child>
 +          <object class="GtkFixed">
 +          <property name="visible">True</property>
++          <property name="margin-top">8</property>
 +          <property name="margin-end">10</property>
 +          <child>
 +            <object class="GtkPicture" id="checkmark">
@@ -2849,12 +2962,12 @@ index 0000000..2ef0940
 +          <property name="orientation">vertical</property>
 +        <child>
 +          <object class="GtkLabel">
-+            <property name="label" translatable="yes">Your subscription:</property>
++            <property name="label" translatable="yes">Your subscription</property>
 +            <property name="margin-bottom">10</property>
 +            <property name="visible">True</property>
 +            <property name="halign">start</property>
 +            <attributes>
-+              <attribute name="scale" value="1.1"/>
++              <attribute name="scale" value="1.2"/>
 +            </attributes>
 +          </object>
 +        </child>
@@ -2867,40 +2980,43 @@ index 0000000..2ef0940
 +        </child>
 +        <child>
 +          <object class="GtkLabel" id="enabled_services_header">
-+            <property name="label" translatable="yes">Your enabled services:</property>
++            <property name="label" translatable="yes">Your enabled services</property>
 +            <property name="margin-bottom">10</property>
 +            <property name="visible">True</property>
 +            <property name="halign">start</property>
 +            <attributes>
-+              <attribute name="scale" value="1.1"/>
++              <attribute name="scale" value="1.2"/>
 +            </attributes>
 +          </object>
 +        </child>
 +        <child>
-+          <object class="GtkLabel" id="enabled_services">
-+            <property name="margin-start">3</property>
-+            <property name="margin-bottom">10</property>
++          <object class="GtkGrid" id="enabled_services">
++            <property name="margin-start">8</property>
++            <property name="margin-bottom">20</property>
 +            <property name="visible">True</property>
-+            <property name="halign">start</property>
++            <property name="halign">fill</property>
++            <property name="column-spacing">8</property>
++            <property name="row-spacing">6</property>
 +          </object>
 +        </child>
 +        <child>
 +          <object class="GtkLabel" id="available_services_header">
-+            <property name="label" translatable="yes">Other available services:</property>
++            <property name="label" translatable="yes">Other available services</property>
 +            <property name="margin-bottom">10</property>
 +            <property name="visible">True</property>
 +            <property name="halign">start</property>
 +            <attributes>
-+              <attribute name="scale" value="1.1"/>
++              <attribute name="scale" value="1.2"/>
 +            </attributes>
 +          </object>
 +        </child>
 +        <child>
-+          <object class="GtkLabel" id="available_services">
-+            <property name="margin-start">3</property>
-+            <property name="margin-bottom">10</property>
++          <object class="GtkGrid" id="available_services">
++            <property name="margin-start">8</property>
 +            <property name="visible">True</property>
-+            <property name="halign">start</property>
++            <property name="halign">fill</property>
++            <property name="column-spacing">8</property>
++            <property name="row-spacing">6</property>
 +          </object>
 +        </child>
 +        </object>
@@ -2909,8 +3025,11 @@ index 0000000..2ef0940
 +        </child>
 +        <child>
 +          <object class="GtkLabel">
-+            <property name="label" translatable="yes">You can change the default enablements for your token on the ubuntu.com/pro web interface. You can also change enabled services in the Settings menu or with the `pro` command-line.</property>
-+            <property name="visible">True</property>
++            <property name="label" translatable="yes"
++              comments="translators: Use HTML encoded format for special characters such as '&amp;'"
++              ><![CDATA[You can change the default enablements for your token on the ubuntu.com/pro web interface. You can also change enabled services in the Settings menu or with the `<span font_family='monospace'>pro</span>` command-line.]]></property>
++            <property name="margin-top">20</property>
++            <property name="use-markup">True</property>
 +            <property name="wrap">True</property>
 +            <property name="halign">start</property>
 +          </object>
