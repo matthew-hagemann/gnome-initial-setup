@@ -2,7 +2,7 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.c
 ===================================================================
 --- /dev/null
 +++ gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.c
-@@ -0,0 +1,254 @@
+@@ -0,0 +1,274 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2024 Canonical
@@ -39,6 +39,8 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.c
 +  GtkScrolledWindow *scrolled_window;
 +  GtkDrawingArea *drawing_area;
 +
++  gchar *current_locale;
++
 +  PopplerDocument *document;
 +  guint total_pages;
 +};
@@ -59,6 +61,10 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.c
 +gis_eula_page_finalize (GObject *object)
 +{
 +  GisEulaPage *page = GIS_EULA_PAGE (object);
++  g_free(page->current_locale);
++  if (page->document) {
++    g_object_unref(page->document);
++  }
 +
 +  G_OBJECT_CLASS (gis_eula_page_parent_class)->finalize (object);
 +}
@@ -74,21 +80,15 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.c
 +  }
 +  g_message("Current locale_trimmed: %s", locale_trimmed);
 +
-+
 +  // Prepare locale variants dynamically    
 +  gchar *lang_and_variant = g_strdup_printf("_%s", locale_trimmed);
 +  gchar *lang_trimmed = g_strndup(locale_trimmed, 2);
 +  gchar *lang = g_strdup_printf("_%s", lang_trimmed);
 +  g_free(lang_trimmed);
 +  g_free(locale_trimmed);
-+
 +  g_message("Current lang: %s", lang);
 +  g_message("Current lang_and_var: %s", lang_and_variant);
-+
-+
 +  const gchar *locales[] = {lang_and_variant, lang, ""};
-+  gchar *uri;
-+  GFile *file = NULL;
 +
 +  // Trim the file extension from the EULA path
 +  gchar *base_eula_path = g_strdup(GIS_EULA_DEFAULT_PAGE_PATH);
@@ -98,24 +98,26 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.c
 +  }
 +
 +  // Iterate through the array of locale strings to attempt loading the PDF
++  gchar *uri;
++  GFile *file = NULL;
 +  for (gint i = 0; i < G_N_ELEMENTS(locales); i++) {
 +      uri = g_strdup_printf("%s%s.pdf", base_eula_path, locales[i]);
 +      file = g_file_new_for_path(uri);
-+
 +      PopplerDocument *document = NULL;
 +      GError *error = NULL;
++
 +      document = poppler_document_new_from_gfile(file, NULL, NULL, &error);
 +      if (document) {
 +          page->document = document;
 +          g_free(uri);
 +          g_object_unref(file);
 +          g_message("Document successfully loaded!");
-+          break;  // Successful loading of the document
++          break;  // Successfully loaded the document
 +      }
 +
 +      // Cleanup on failure to load
 +      if (error) {
-+          g_warning("Could not find locate PDF %s, reverting to fallback", uri);
++          g_debug("Could not find locate PDF %s, reverting to fallback", uri);
 +          g_error_free(error);
 +          error = NULL;
 +      }
@@ -199,18 +201,27 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.c
 +static void
 +gis_eula_page_locale_changed (GisPage *page)
 +{
-+  // GisEulaPage *eula_page = GIS_EULA_PAGE(page);
-+  // gchar *current_locale = setlocale(LC_ALL, NULL);
++  GisEulaPage *eula_page = GIS_EULA_PAGE(page);
++  const gchar *new_locale = getenv("LANG");
++  if (!new_locale) {
++      g_warning("LANG environment variable is not set or has changed unexpectedly");
++      return;
++  }
 +
-+  // // Attempt to reload the PDF with the new locale
-+  // g_message("Current locale for new locale: %s", current_locale);
-+  // if (!gis_eula_load_pdf(eula_page, current_locale)) {
-+  //   g_warning("Failed to reload PDF after locale change");
-+  //   return;
-+  // }
++  g_message("Locale changed: %s", new_locale);
 +
-+  //gtk_widget_queue_draw(GTK_WIDGET(eula_page->drawing_area));
-+  //g_message("PDF reloaded successfully for new locale");
++  if (!g_strcmp0(new_locale, eula_page->current_locale)) {
++      // Locale has not changed, do nothing
++      return;
++  }
++
++  g_free(eula_page->current_locale);
++  eula_page->current_locale = g_strdup(new_locale);
++
++  // Attempt to reload the PDF based on the new locale
++  if (!gis_eula_load_pdf(eula_page, new_locale)) {
++      g_warning("Failed to reload PDF on locale change");
++  }
 +}
 +
 +static void
@@ -232,10 +243,19 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.c
 +static void
 +gis_eula_page_init (GisEulaPage *page)
 +{
++    const gchar *env_lang = getenv("LANG");
++    if (!env_lang) {
++        g_warning("LANG environment variable is not set");
++        return;
++    }
++
++    gchar *current_locale = g_strdup(env_lang);
++    g_message("Initial locale: %s", current_locale);
++    page->current_locale = g_strdup(current_locale); 
++
 +    gis_page_set_needs_accept (GIS_PAGE(page), TRUE);
 +
 +    // Attempt to load the PDF; handle failure
-+    gchar *current_locale = setlocale(LC_ALL, NULL);
 +    g_message("Current locale: %s", current_locale);
 +    if (!gis_eula_load_pdf(page, current_locale)) { 
 +        g_warning("Failed to load pdf");
