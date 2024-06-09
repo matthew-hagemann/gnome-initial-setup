@@ -24,9 +24,9 @@ Subject: Add Ubuntu mode with special pages
  .../pages/summary/gis-summary-page.c               |    2 +-
  gnome-initial-setup/pages/ubuntu-pro/checkmark.svg |    1 +
  gnome-initial-setup/pages/ubuntu-pro/fail.svg      |    1 +
- .../pages/ubuntu-pro/gis-ubuntupro-attach-page.ui  |  256 +++
- .../pages/ubuntu-pro/gis-ubuntupro-offer-page.ui   |  251 +++
- .../pages/ubuntu-pro/gis-ubuntupro-page.c          |  944 ++++++++++
+ .../pages/ubuntu-pro/gis-ubuntupro-attach-page.ui  |  261 +++
+ .../pages/ubuntu-pro/gis-ubuntupro-offer-page.ui   |  256 +++
+ .../pages/ubuntu-pro/gis-ubuntupro-page.c          |  950 ++++++++++
  .../pages/ubuntu-pro/gis-ubuntupro-page.h          |  110 ++
  .../pages/ubuntu-pro/gis-ubuntupro-page.ui         |   24 +
  .../ubuntu-pro/gis-ubuntupro-services-page.ui      |  143 ++
@@ -49,7 +49,7 @@ Subject: Add Ubuntu mode with special pages
  .../pages/welcome/ubuntu-mascot.svg                |  196 +++
  .../pages/welcome/welcome.gresource.xml            |    2 +->
  po/POTFILES.in                                     |   10 +
- 46 files changed, 3676 insertions(+), 1878 deletions(-)
+ 46 files changed, 3692 insertions(+), 1878 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/app-center.svg
@@ -1329,10 +1329,10 @@ index 0000000..e3c9a52
 \ No newline at end of file
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
 new file mode 100644
-index 0000000..ffc750e
+index 0000000..1ec209c
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
-@@ -0,0 +1,256 @@
+@@ -0,0 +1,261 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
 +  <requires lib="gtk" version="4.0"/>
@@ -1373,10 +1373,15 @@ index 0000000..ffc750e
 +            <property name="margin-top">12</property>
 +            <property name="margin-bottom">12</property>
 +            <child>
-+              <object class="GtkPicture" id="ubuntu_pro_logo">
-+                <property name="visible">True</property>
-+                <property name="can-shrink">False</property>
-+                <property name="content-fit">scale-down</property>
++              <object class="AdwClamp">
++                <property name="maximum-size">300</property>
++                <property name="child">
++                  <object class="GtkPicture" id="ubuntu_pro_logo">
++                    <property name="valign">start</property>
++                    <property name="content-fit">scale-down</property>
++                    <property name="can-shrink">True</property>
++                  </object>
++                </property>
 +              </object>
 +            </child>
 +            <child>
@@ -1591,10 +1596,10 @@ index 0000000..ffc750e
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
 new file mode 100644
-index 0000000..e58ab99
+index 0000000..dc4827d
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
-@@ -0,0 +1,251 @@
+@@ -0,0 +1,256 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
 +  <requires lib="gtk" version="4.0"/>
@@ -1637,10 +1642,15 @@ index 0000000..e58ab99
 +            <property name="margin-top">12</property>
 +            <property name="margin-bottom">12</property>
 +            <child>
-+              <object class="GtkPicture" id="ubuntu_pro_logo">
-+                <property name="visible">True</property>
-+                <property name="can-shrink">False</property>
-+                <property name="content-fit">scale-down</property>
++              <object class="AdwClamp">
++                <property name="maximum-size">300</property>
++                <property name="child">
++                  <object class="GtkPicture" id="ubuntu_pro_logo">
++                    <property name="valign">start</property>
++                    <property name="content-fit">scale-down</property>
++                    <property name="can-shrink">True</property>
++                  </object>
++                </property>
 +              </object>
 +            </child>
 +            <child>
@@ -1848,10 +1858,10 @@ index 0000000..e58ab99
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
 new file mode 100644
-index 0000000..5a3fecb
+index 0000000..8b9c549
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
-@@ -0,0 +1,944 @@
+@@ -0,0 +1,950 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2022 Canonical Ltd.
@@ -1988,6 +1998,12 @@ index 0000000..5a3fecb
 +{
 +  g_autoptr(GError) error = NULL;
 +  GdkPixbuf *pixbuf;
++
++  if (x > 0)
++    x *= gtk_widget_get_scale_factor (GTK_WIDGET (widget));
++  if (y > 0)
++    y *= gtk_widget_get_scale_factor (GTK_WIDGET (widget));
++
 +  pixbuf = gdk_pixbuf_new_from_resource_at_scale (path, x, y, TRUE, &error);
 +  if (error) {
 +    g_warning("Unable to create pixbuf: %s\n", error->message);
@@ -2188,8 +2204,8 @@ index 0000000..5a3fecb
 +  GisUbuntuProServicesPagePrivate *services_priv = gis_ubuntupro_services_page_get_instance_private (services_page);
 +
 +  gchar *logo = is_dark_theme(GTK_WIDGET(page)) ? LOGO_DARK: LOGO;
-+  map_scalable_image(logo, GTK_PICTURE(attach_priv->ubuntu_pro_logo), -1, 66);
-+  map_scalable_image(logo, GTK_PICTURE(offer_priv->ubuntu_pro_logo), -1, 66);
++  gtk_picture_set_resource (GTK_PICTURE (offer_priv->ubuntu_pro_logo), logo);
++  gtk_picture_set_resource (GTK_PICTURE (attach_priv->ubuntu_pro_logo), logo);
 +  map_scalable_image(CHECK_ICON, GTK_PICTURE(services_priv->checkmark), 30, -1);
 +  // Needed so the picture is shown inside the GtkFixed (god knows why!)
 +  gtk_widget_set_size_request(services_priv->checkmark, 30, 30);
