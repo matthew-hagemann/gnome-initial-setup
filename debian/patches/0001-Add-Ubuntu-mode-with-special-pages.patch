@@ -26,7 +26,7 @@ Subject: Add Ubuntu mode with special pages
  gnome-initial-setup/pages/ubuntu-pro/fail.svg      |    1 +
  .../pages/ubuntu-pro/gis-ubuntupro-attach-page.ui  |  253 +++
  .../pages/ubuntu-pro/gis-ubuntupro-offer-page.ui   |  244 +++
- .../pages/ubuntu-pro/gis-ubuntupro-page.c          |  893 ++++++++++
+ .../pages/ubuntu-pro/gis-ubuntupro-page.c          |  942 ++++++++++
  .../pages/ubuntu-pro/gis-ubuntupro-page.h          |  110 ++
  .../pages/ubuntu-pro/gis-ubuntupro-page.ui         |   33 +
  .../ubuntu-pro/gis-ubuntupro-services-page.ui      |  141 ++
@@ -49,7 +49,7 @@ Subject: Add Ubuntu mode with special pages
  .../pages/welcome/ubuntu-mascot.svg                |  196 +++
  .../pages/welcome/welcome.gresource.xml            |    2 +->
  po/POTFILES.in                                     |   10 +
- 46 files changed, 3622 insertions(+), 1878 deletions(-)
+ 46 files changed, 3671 insertions(+), 1878 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/app-center.svg
@@ -1838,10 +1838,10 @@ index 0000000..0b2e517
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
 new file mode 100644
-index 0000000..c34d9cc
+index 0000000..77fafa0
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
-@@ -0,0 +1,893 @@
+@@ -0,0 +1,942 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2022 Canonical Ltd.
@@ -2311,6 +2311,50 @@ index 0000000..c34d9cc
 +    }
 +}
 +
++const struct {
++  const char *name;
++  const char *description;
++} service_names[] = {
++  { "anbox-cloud",
++    N_("Scalable Android in the cloud") },
++  { "cc-eal",
++    N_("Common Criteria EAL2 Provisioning Packages") },
++  { "esm-apps",
++    N_("Expanded Security Maintenance for Applications") },
++  { "esm-infra",
++    N_("Expanded Security Maintenance for Infrastructure") },
++  { "fips",
++    N_("NIST-certified FIPS crypto packages") },
++  { "fips-preview",
++    N_("Preview of FIPS crypto packages undergoing certification with NIST") },
++  { "fips-updates",
++    N_("FIPS compliant crypto packages with stable security updates") },
++  { "landscape",
++    N_("Management and administration tool for Ubuntu") },
++  { "livepatch",
++    N_("Canonical kernel Livepatch service") },
++  { "realtime-kernel",
++    N_("Ubuntu kernel with PREEMPT_RT patches integrated") },
++  { "ros",
++    N_("Security Updates for the Robot Operating System") },
++  { "ros-updates",
++    N_("All Updates for the Robot Operating System") },
++  { "usg",
++    N_("Security compliance and audit tools") },
++};
++
++static const char *
++get_translated_service_description (const char *service_name)
++{
++  for (unsigned i = 0; i < G_N_ELEMENTS (service_names); ++i)
++    {
++      if (g_strcmp0 (service_name, service_names[i].name) == 0)
++        return service_names[i].description;
++    }
++
++  g_return_val_if_reached (NULL);
++}
++
 +static void
 +display_ua_services(GisUbuntuProServicesPagePrivate *priv)
 +{
@@ -2320,7 +2364,7 @@ index 0000000..c34d9cc
 +    JsonArray   *services_array;
 +    g_autoptr(GError) error = NULL;
 +    guint       i, n_services;
-+    const char  *status, *description, *available, *contract_name;
++    const char  *status, *description, *available, *contract_name, *name;
 +    gsize       len;
 +    gchar *str;
 +
@@ -2356,12 +2400,11 @@ index 0000000..c34d9cc
 +    for (i = 0; i < n_services; i++) {
 +        services = json_array_get_object_element(services_array, i);
 +        if (
-+            json_object_has_member(services, "description") &&
 +            json_object_has_member(services, "status") &&
 +            json_object_has_member(services, "available")
 +        ) {
 +            GtkGrid *target_grid = NULL;
-+            description = json_object_get_string_member(services, "description");
++            name = json_object_get_string_member(services, "name");
 +            status = json_object_get_string_member(services, "status");
 +            available = json_object_get_string_member(services, "available");
 +
@@ -2376,6 +2419,12 @@ index 0000000..c34d9cc
 +
 +            GtkWidget *bullet = gtk_label_new ("•");
 +            gtk_grid_attach (target_grid, bullet, 0, i, 1, 1);
++
++            description = get_translated_service_description (name);
++            if (G_UNLIKELY (!description))
++              description = json_object_get_string_member(services, "status");
++            if (G_UNLIKELY (!description))
++              description = name;
 +
 +            GtkWidget *label = gtk_label_new (description);
 +            gtk_label_set_wrap (GTK_LABEL (label), TRUE);
