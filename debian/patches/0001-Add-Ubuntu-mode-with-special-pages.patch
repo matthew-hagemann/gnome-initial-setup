@@ -24,12 +24,12 @@ Subject: Add Ubuntu mode with special pages
  .../pages/summary/gis-summary-page.c               |    2 +-
  gnome-initial-setup/pages/ubuntu-pro/checkmark.svg |    1 +
  gnome-initial-setup/pages/ubuntu-pro/fail.svg      |    1 +
- .../pages/ubuntu-pro/gis-ubuntupro-attach-page.ui  |  253 +++
- .../pages/ubuntu-pro/gis-ubuntupro-offer-page.ui   |  244 +++
- .../pages/ubuntu-pro/gis-ubuntupro-page.c          |  942 ++++++++++
+ .../pages/ubuntu-pro/gis-ubuntupro-attach-page.ui  |  256 +++
+ .../pages/ubuntu-pro/gis-ubuntupro-offer-page.ui   |  250 +++
+ .../pages/ubuntu-pro/gis-ubuntupro-page.c          |  944 ++++++++++
  .../pages/ubuntu-pro/gis-ubuntupro-page.h          |  110 ++
  .../pages/ubuntu-pro/gis-ubuntupro-page.ui         |   33 +
- .../ubuntu-pro/gis-ubuntupro-services-page.ui      |  141 ++
+ .../ubuntu-pro/gis-ubuntupro-services-page.ui      |  142 ++
  gnome-initial-setup/pages/ubuntu-pro/meson.build   |   12 +
  .../pages/ubuntu-pro/ubuntu-pro-dark.svg           |   25 +
  .../pages/ubuntu-pro/ubuntu-pro.svg                |    1 +
@@ -49,7 +49,7 @@ Subject: Add Ubuntu mode with special pages
  .../pages/welcome/ubuntu-mascot.svg                |  196 +++
  .../pages/welcome/welcome.gresource.xml            |    2 +->
  po/POTFILES.in                                     |   10 +
- 46 files changed, 3671 insertions(+), 1878 deletions(-)
+ 46 files changed, 3683 insertions(+), 1878 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/app-center.svg
@@ -1329,10 +1329,10 @@ index 0000000..e3c9a52
 \ No newline at end of file
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
 new file mode 100644
-index 0000000..6ecfcd6
+index 0000000..ae7dc83
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
-@@ -0,0 +1,253 @@
+@@ -0,0 +1,256 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
 +  <requires lib="gtk" version="4.0"/>
@@ -1385,13 +1385,15 @@ index 0000000..6ecfcd6
 +            <child>
 +              <object class="GtkLabel">
 +                <property name="xalign">0</property>
++                <property name="valign">start</property>
++                <property name="halign">start</property>
 +                <property name="label" translatable="yes"
 +                ><![CDATA[Upgrade this machine to Ubuntu Pro for security updates on a much wider range of packages, until 2034. Fulfill FedRAMP, FIPS, STIG and HIPAA and other compliance and hardening requirements with certified tooling and crypto-modules. Free for up to 5 machines.
 +
 +More information on <a href="https://ubuntu.com/pro">ubuntu.com/pro</a>.]]></property>
 +                <property name="use-markup">True</property>
++                <property name="width-chars">35</property>
 +                <property name="wrap">True</property>
-+                <property name="max-width-chars">130</property>
 +              </object>
 +            </child>
 +          </object>
@@ -1410,6 +1412,7 @@ index 0000000..6ecfcd6
 +                  <property name="mnemonic_widget">magic_radio</property>
 +                  <property name="use_underline">True</property>
 +                  <property name="wrap">True</property>
++                  <property name="width-chars">35</property>
 +                  <property name="xalign">0</property>
 +                </object>
 +              </child>
@@ -1588,10 +1591,10 @@ index 0000000..6ecfcd6
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
 new file mode 100644
-index 0000000..0b2e517
+index 0000000..07d2ce5
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
-@@ -0,0 +1,244 @@
+@@ -0,0 +1,250 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
 +  <requires lib="gtk" version="4.0"/>
@@ -1654,6 +1657,7 @@ index 0000000..0b2e517
 +                    <property name="halign">start</property>
 +                    <property name="valign">start</property>
 +                    <property name="xalign">0</property>
++                    <property name="width-chars">35</property>
 +                    <property name="margin-bottom">12</property>
 +                    <property name="label" translatable="yes"
 +                      >Upgrade this machine to Ubuntu Pro. Free for up to 5 machines.</property>
@@ -1704,6 +1708,7 @@ index 0000000..0b2e517
 +                    <property name="halign">start</property>
 +                    <property name="valign">start</property>
 +                    <property name="xalign">0</property>
++                    <property name="width-chars">35</property>
 +                    <property name="label" translatable="yes"
 +                      >Fulfill FedRAMP, FIPS, STIG and HIPAA and other compliance and hardening requirements with certified tooling and crypto-modules.</property>
 +                    <layout>
@@ -1720,6 +1725,7 @@ index 0000000..0b2e517
 +                    <property name="xalign">0</property>
 +                    <property name="use-markup">True</property>
 +                    <property name="margin-top">12</property>
++                    <property name="width-chars">35</property>
 +                    <property name="label" translatable="yes"
 +                    comments="translators: Use HTML encoded format for special characters such as '&amp;'"
 +                      ><![CDATA[Learn more at <a href="https://ubuntu.com/pro">ubuntu.com/pro</a>.]]></property>
@@ -1788,6 +1794,8 @@ index 0000000..0b2e517
 +                      <object class="GtkLabel" id="offline_warning">
 +                        <property name="yalign">0.8</property>
 +                        <property name="visible">False</property>
++                        <property name="wrap">True</property>
++                        <property name="width-chars">35</property>
 +                        <property name="label" translatable="yes">An internet connection is required to enable Ubuntu Pro</property>
 +                      </object>
 +                    </child>
@@ -1823,6 +1831,7 @@ index 0000000..0b2e517
 +                          <attribute name="scale" value="0.85"/>
 +                        </attributes>
 +                        <property name="wrap">True</property>
++                        <property name="width-chars">30</property>
 +                        <property name="xalign">0</property>
 +                      </object>
 +                    </child>
@@ -1838,10 +1847,10 @@ index 0000000..0b2e517
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
 new file mode 100644
-index 0000000..77fafa0
+index 0000000..5a3fecb
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
-@@ -0,0 +1,942 @@
+@@ -0,0 +1,944 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2022 Canonical Ltd.
@@ -2428,7 +2437,9 @@ index 0000000..77fafa0
 +
 +            GtkWidget *label = gtk_label_new (description);
 +            gtk_label_set_wrap (GTK_LABEL (label), TRUE);
++            gtk_label_set_width_chars (GTK_LABEL (label), 35);
 +            gtk_label_set_xalign (GTK_LABEL (label), 0);
++            gtk_widget_set_halign (label, GTK_ALIGN_START);
 +            gtk_grid_attach (target_grid, label, 1, i, 1, 1);
 +        }
 +    }
@@ -2941,7 +2952,7 @@ index 0000000..b992eca
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui
 new file mode 100644
-index 0000000..36f966a
+index 0000000..7c0cfba
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui
 @@ -0,0 +1,144 @@
@@ -3080,6 +3091,7 @@ index 0000000..36f966a
 +            <property name="margin-top">20</property>
 +            <property name="use-markup">True</property>
 +            <property name="wrap">True</property>
++            <property name="width-chars">35</property>
 +            <property name="halign">start</property>
 +          </object>
 +        </child>
