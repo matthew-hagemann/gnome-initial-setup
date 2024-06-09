@@ -25,11 +25,11 @@ Subject: Add Ubuntu mode with special pages
  gnome-initial-setup/pages/ubuntu-pro/checkmark.svg |    1 +
  gnome-initial-setup/pages/ubuntu-pro/fail.svg      |    1 +
  .../pages/ubuntu-pro/gis-ubuntupro-attach-page.ui  |  256 +++
- .../pages/ubuntu-pro/gis-ubuntupro-offer-page.ui   |  250 +++
+ .../pages/ubuntu-pro/gis-ubuntupro-offer-page.ui   |  251 +++
  .../pages/ubuntu-pro/gis-ubuntupro-page.c          |  944 ++++++++++
  .../pages/ubuntu-pro/gis-ubuntupro-page.h          |  110 ++
  .../pages/ubuntu-pro/gis-ubuntupro-page.ui         |   24 +
- .../ubuntu-pro/gis-ubuntupro-services-page.ui      |  142 ++
+ .../ubuntu-pro/gis-ubuntupro-services-page.ui      |  143 ++
  gnome-initial-setup/pages/ubuntu-pro/meson.build   |   12 +
  .../pages/ubuntu-pro/ubuntu-pro-dark.svg           |   25 +
  .../pages/ubuntu-pro/ubuntu-pro.svg                |    1 +
@@ -49,7 +49,7 @@ Subject: Add Ubuntu mode with special pages
  .../pages/welcome/ubuntu-mascot.svg                |  196 +++
  .../pages/welcome/welcome.gresource.xml            |    2 +->
  po/POTFILES.in                                     |   10 +
- 46 files changed, 3674 insertions(+), 1878 deletions(-)
+ 46 files changed, 3676 insertions(+), 1878 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/app-center.svg
@@ -1329,7 +1329,7 @@ index 0000000..e3c9a52
 \ No newline at end of file
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
 new file mode 100644
-index 0000000..ae7dc83
+index 0000000..ffc750e
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
 @@ -0,0 +1,256 @@
@@ -1353,12 +1353,9 @@ index 0000000..ae7dc83
 +            <property name="label" translatable="yes">Enable Ubuntu Pro</property>
 +            <attributes>
 +              <attribute name="weight" value="bold"/>
-+            </attributes>
-+            <property name="wrap">True</property>
-+            <property name="xalign">0</property>
-+            <attributes>
 +              <attribute name="scale" value="1.4"/>
 +            </attributes>
++            <property name="xalign">0</property>
 +          </object>
 +        </child>
 +        <child>
@@ -1394,6 +1391,9 @@ index 0000000..ae7dc83
 +                <property name="use-markup">True</property>
 +                <property name="width-chars">35</property>
 +                <property name="wrap">True</property>
++                <attributes>
++                  <attribute name="line-height" value="1.25"/>
++                </attributes>
 +              </object>
 +            </child>
 +          </object>
@@ -1591,10 +1591,10 @@ index 0000000..ae7dc83
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
 new file mode 100644
-index 0000000..07d2ce5
+index 0000000..e58ab99
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
-@@ -0,0 +1,250 @@
+@@ -0,0 +1,251 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
 +  <requires lib="gtk" version="4.0"/>
@@ -1617,12 +1617,10 @@ index 0000000..07d2ce5
 +            <property name="label" translatable="yes">Enable Ubuntu Pro</property>
 +            <attributes>
 +              <attribute name="weight" value="bold"/>
++              <attribute name="scale" value="1.4"/>
 +            </attributes>
 +            <property name="wrap">True</property>
 +            <property name="xalign">0</property>
-+            <attributes>
-+              <attribute name="scale" value="1.4"/>
-+            </attributes>
 +          </object>
 +        </child>
 +        <child>
@@ -1715,6 +1713,9 @@ index 0000000..07d2ce5
 +                      <property name="column">1</property>
 +                      <property name="row">2</property>
 +                    </layout>
++                    <attributes>
++                      <attribute name="line-height" value="1.2"/>
++                    </attributes>
 +                  </object>
 +                </child>
 +                <child>
@@ -2943,7 +2944,7 @@ index 0000000..d03d133
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui
 new file mode 100644
-index 0000000..7c0cfba
+index 0000000..6162e61
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui
 @@ -0,0 +1,144 @@
@@ -2968,12 +2969,10 @@ index 0000000..7c0cfba
 +        <property name="label" translatable="yes">Ubuntu Pro Services</property>
 +        <attributes>
 +          <attribute name="weight" value="bold"/>
++          <attribute name="scale" value="1.4"/>
 +        </attributes>
 +        <property name="wrap">True</property>
 +        <property name="xalign">0</property>
-+        <attributes>
-+          <attribute name="scale" value="1.4"/>
-+        </attributes>
 +      </object>
 +    </child>
 +    <child>
@@ -3084,6 +3083,9 @@ index 0000000..7c0cfba
 +            <property name="wrap">True</property>
 +            <property name="width-chars">35</property>
 +            <property name="halign">start</property>
++            <attributes>
++              <attribute name="line-height" value="1.2"/>
++            </attributes>
 +          </object>
 +        </child>
 +  </object>
