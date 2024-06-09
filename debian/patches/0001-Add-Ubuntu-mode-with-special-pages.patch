@@ -28,7 +28,7 @@ Subject: Add Ubuntu mode with special pages
  .../pages/ubuntu-pro/gis-ubuntupro-offer-page.ui   |  250 +++
  .../pages/ubuntu-pro/gis-ubuntupro-page.c          |  944 ++++++++++
  .../pages/ubuntu-pro/gis-ubuntupro-page.h          |  110 ++
- .../pages/ubuntu-pro/gis-ubuntupro-page.ui         |   33 +
+ .../pages/ubuntu-pro/gis-ubuntupro-page.ui         |   24 +
  .../ubuntu-pro/gis-ubuntupro-services-page.ui      |  142 ++
  gnome-initial-setup/pages/ubuntu-pro/meson.build   |   12 +
  .../pages/ubuntu-pro/ubuntu-pro-dark.svg           |   25 +
@@ -49,7 +49,7 @@ Subject: Add Ubuntu mode with special pages
  .../pages/welcome/ubuntu-mascot.svg                |  196 +++
  .../pages/welcome/welcome.gresource.xml            |    2 +->
  po/POTFILES.in                                     |   10 +
- 46 files changed, 3683 insertions(+), 1878 deletions(-)
+ 46 files changed, 3674 insertions(+), 1878 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/app-center.svg
@@ -2913,38 +2913,29 @@ index 0000000..f90d0c2
 +#endif /* __GIS_UBUNTUPRO_PAGE_H__ */
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.ui
 new file mode 100644
-index 0000000..b992eca
+index 0000000..d03d133
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.ui
-@@ -0,0 +1,33 @@
+@@ -0,0 +1,24 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
 +  <requires lib="gtk" version="4.0"/>
 +  <template class="GisUbuntuProPage" parent="GisPage">
 +    <child>
-+  <object class="GtkBox" id="stepUbuntuPro">
-+    <property name="visible">True</property>
++      <object class="GtkStack" id="stack">
++        <property name="transition-type">slide-left-right</property>
++        <property name="vexpand">True</property>
++        <property name="hexpand">True</property>
++        <property name="hhomogeneous">False</property>
++        <property name="vhomogeneous">False</property>
 +        <child>
-+          <object class="GtkStack" id="stack">
-+            <property name="visible">True</property>
-+            <property name="valign">start</property>
-+            <property name="vexpand">True</property>
-+            <child>
-+              <object class="GisUbuntuProOfferPage" id="offer_page">
-+                <property name="visible">True</property>
-+              </object>
-+            </child>
-+            <child>
-+              <object class="GisUbuntuProAttachPage" id="attach_page">
-+                <property name="visible">True</property>
-+              </object>
-+            </child>
-+            <child>
-+              <object class="GisUbuntuProServicesPage" id="services_page">
-+                <property name="visible">True</property>
-+              </object>
-+            </child>
-+          </object>
++          <object class="GisUbuntuProOfferPage" id="offer_page" />
++        </child>
++        <child>
++          <object class="GisUbuntuProAttachPage" id="attach_page" />
++        </child>
++        <child>
++          <object class="GisUbuntuProServicesPage" id="services_page" />
 +        </child>
 +      </object>
 +    </child>
