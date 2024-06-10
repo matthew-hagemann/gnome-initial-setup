@@ -42,14 +42,14 @@ Subject: Add Ubuntu mode with special pages
  .../pages/ubuntu-report/meson.build                |   10 +
  .../ubuntu-report/ubuntu-report.gresource.xml      |    8 +
  .../pages/ubuntu-report/ubuntu-report.svg          |    1 +
- .../pages/welcome/gis-welcome-page.c               |   26 +-
+ .../pages/welcome/gis-welcome-page.c               |   29 +-
  .../pages/welcome/gis-welcome-page.css             |    5 +
  .../pages/welcome/gis-welcome-page.ui              |   56 +-
  .../pages/welcome/initial-setup-welcome.svg        | 1833 --------------------
  .../pages/welcome/ubuntu-mascot.svg                |  196 +++
  .../pages/welcome/welcome.gresource.xml            |    2 +->
  po/POTFILES.in                                     |   10 +
- 46 files changed, 3773 insertions(+), 1878 deletions(-)
+ 46 files changed, 3776 insertions(+), 1878 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/app-center.svg
@@ -3973,10 +3973,19 @@ index 0000000..8c1d52c
 @@ -0,0 +1 @@
 +<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="Layer_1" x="0px" y="0px" width="150px" height="150px" viewBox="0 0 400 400" style="enable-background:new 0 0 400 400;" xml:space="preserve"> <style type="text/css"> .st0{fill:#666666; fill-opacity:0.25;} </style> <g> <path class="st0" d="M301.4,372.4C271.7,390,237,400,200,400C89.5,400,0,310.5,0,200C0,89.5,89.5,0,200,0c110.5,0,200,89.5,200,200 c0,36.4-9.7,70.6-26.8,100l0,0L400,400l-100-26.8L301.4,372.4L301.4,372.4z"/> </g> </svg>
 diff --git a/gnome-initial-setup/pages/welcome/gis-welcome-page.c b/gnome-initial-setup/pages/welcome/gis-welcome-page.c
-index 1cad96e..f826660 100644
+index 1cad96e..dcd7bbe 100644
 --- a/gnome-initial-setup/pages/welcome/gis-welcome-page.c
 +++ b/gnome-initial-setup/pages/welcome/gis-welcome-page.c
-@@ -36,7 +36,8 @@ struct _GisWelcomePage
+@@ -28,6 +28,8 @@
+ #include "gis-welcome-page.h"
+ #include "gis-assistant.h"
+ 
++#include "gis-page-header.h"
++
+ 
+ struct _GisWelcomePage
+ {
+@@ -36,7 +38,8 @@ struct _GisWelcomePage
  
  typedef struct
  {
@@ -3986,7 +3995,7 @@ index 1cad96e..f826660 100644
  } GisWelcomePagePrivate;
  
  G_DEFINE_TYPE_WITH_PRIVATE (GisWelcomePage, gis_welcome_page, GIS_TYPE_PAGE)
-@@ -47,9 +48,11 @@ update_welcome_title (GisWelcomePage *page)
+@@ -47,9 +50,11 @@ update_welcome_title (GisWelcomePage *page)
    GisWelcomePagePrivate *priv = gis_welcome_page_get_instance_private (page);
    g_autofree char *name = g_get_os_info (G_OS_INFO_KEY_PRETTY_NAME);
    g_autofree char *text = NULL;
@@ -3999,7 +4008,7 @@ index 1cad96e..f826660 100644
  
    /* Translators: This is meant to be a warm, engaging welcome message,
     * like greeting somebody at the door. If the exclamation mark is not
-@@ -61,18 +64,32 @@ update_welcome_title (GisWelcomePage *page)
+@@ -61,18 +66,32 @@ update_welcome_title (GisWelcomePage *page)
     */
    text = g_strdup_printf (_("Welcome to %s !"), name);
  
@@ -4033,7 +4042,7 @@ index 1cad96e..f826660 100644
    gis_page_set_complete (GIS_PAGE (page), TRUE);
  }
  
-@@ -94,7 +111,8 @@ gis_welcome_page_class_init (GisWelcomePageClass *klass)
+@@ -94,7 +113,8 @@ gis_welcome_page_class_init (GisWelcomePageClass *klass)
  
    gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass), "/org/gnome/initial-setup/gis-welcome-page.ui");
  
@@ -4043,6 +4052,14 @@ index 1cad96e..f826660 100644
    gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), start_setup);
  
    page_class->page_id = PAGE_ID;
+@@ -104,6 +124,7 @@ gis_welcome_page_class_init (GisWelcomePageClass *klass)
+ static void
+ gis_welcome_page_init (GisWelcomePage *page)
+ {
++  g_type_ensure (GIS_TYPE_PAGE_HEADER);
+   gtk_widget_init_template (GTK_WIDGET (page));
+ 
+   gis_add_style_from_resource ("/org/gnome/initial-setup/gis-welcome-page.css");
 diff --git a/gnome-initial-setup/pages/welcome/gis-welcome-page.css b/gnome-initial-setup/pages/welcome/gis-welcome-page.css
 index 0abdd60..a093641 100644
 --- a/gnome-initial-setup/pages/welcome/gis-welcome-page.css
