@@ -41,7 +41,7 @@ Subject: Update style to the same than flutter installer
  create mode 100644 gnome-initial-setup/pages/timezone/timezone.svg
 
 diff --git a/gnome-initial-setup/gis-assistant.c b/gnome-initial-setup/gis-assistant.c
-index a69ea66..11aec53 100644
+index b141915..b3f9e09 100644
 --- a/gnome-initial-setup/gis-assistant.c
 +++ b/gnome-initial-setup/gis-assistant.c
 @@ -416,7 +416,7 @@ gis_assistant_locale_changed (GisAssistant *assistant)

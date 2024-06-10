@@ -26,7 +26,7 @@ Subject: Add Ubuntu mode with special pages
  gnome-initial-setup/pages/ubuntu-pro/fail.svg      |    1 +
  .../pages/ubuntu-pro/gis-ubuntupro-attach-page.ui  |  261 +++
  .../pages/ubuntu-pro/gis-ubuntupro-offer-page.ui   |  256 +++
- .../pages/ubuntu-pro/gis-ubuntupro-page.c          |  950 ++++++++++
+ .../pages/ubuntu-pro/gis-ubuntupro-page.c          | 1031 +++++++++++
  .../pages/ubuntu-pro/gis-ubuntupro-page.h          |  110 ++
  .../pages/ubuntu-pro/gis-ubuntupro-page.ui         |   24 +
  .../ubuntu-pro/gis-ubuntupro-services-page.ui      |  143 ++
@@ -49,7 +49,7 @@ Subject: Add Ubuntu mode with special pages
  .../pages/welcome/ubuntu-mascot.svg                |  196 +++
  .../pages/welcome/welcome.gresource.xml            |    2 +->
  po/POTFILES.in                                     |   10 +
- 46 files changed, 3692 insertions(+), 1878 deletions(-)
+ 46 files changed, 3773 insertions(+), 1878 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/app-center.svg
@@ -111,7 +111,7 @@ index 0000000..12c7bf0
 +</locatingRules>
 \ No newline at end of file
 diff --git a/gnome-initial-setup/gis-assistant.c b/gnome-initial-setup/gis-assistant.c
-index 68bf434..a69ea66 100644
+index 68bf434..b141915 100644
 --- a/gnome-initial-setup/gis-assistant.c
 +++ b/gnome-initial-setup/gis-assistant.c
 @@ -163,7 +163,8 @@ void
@@ -130,7 +130,7 @@ index 68bf434..a69ea66 100644
        is_first_page = assistant->pages->data == assistant->current_page;
 +      /* Hack to prevent the next button from Ubuntu Pro attach page from
 +       * being sensitive when the page is first mapped. */
-+      if (g_str_equal(
++      if (is_first_page && g_str_equal(
 +          GIS_PAGE_GET_CLASS(assistant->current_page)->page_id, "UbuntuPro"
 +      ))
 +        return;
@@ -1858,10 +1858,10 @@ index 0000000..dc4827d
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
 new file mode 100644
-index 0000000..8b9c549
+index 0000000..e5e56bc
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
-@@ -0,0 +1,950 @@
+@@ -0,0 +1,1031 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2022 Canonical Ltd.
@@ -1895,6 +1895,7 @@ index 0000000..8b9c549
 +
 +#include <glib/gi18n.h>
 +#include <gio/gio.h>
++#include <gio/gunixinputstream.h>
 +#include <polkit/polkit.h>
 +#include <json-glib/json-glib.h>
 +#include <time.h>
@@ -2030,7 +2031,7 @@ index 0000000..8b9c549
 +
 +  if (never_called && main_priv->current_page == ATTACH_PAGE) {
 +    gis_page_set_complete(GIS_PAGE(priv->main_page), TRUE);
-+    gis_ubuntupro_page_apply(GIS_PAGE(priv->main_page), NULL);
++    gis_page_apply_begin (GIS_PAGE(priv->main_page), NULL, NULL);
 +  }
 +  never_called = FALSE;
 +}
@@ -2246,7 +2247,7 @@ index 0000000..8b9c549
 +  RestJSONResponse resp; /* relevant response fields */
 +  g_autoptr(GError) error = NULL;
 +
-+  cmd = g_strconcat("/bin/ua api u.pro.attach.magic.wait.v1 --args magic_token=", priv->token, NULL);
++  cmd = g_strconcat("/usr/bin/pro api u.pro.attach.magic.wait.v1 --args magic_token=", priv->token, NULL);
 +  if (!g_spawn_command_line_sync(cmd, &std_out, &std_err, NULL, &error)) {
 +    g_warning ("Failed to request magic token: %s", error->message);
 +  }
@@ -2278,10 +2279,12 @@ index 0000000..8b9c549
 +  }
 +  gboolean token_received = poll_token_attach(priv);
 +  if (token_received) {
-+    priv->magic_token_polling = FALSE;
 +    status = SUCCESS;
 +    update_gui(priv, status);
++  } else if (time(0) > priv->expired_by) {
++    update_gui(priv, EXPIRED);
 +  }
++  priv->magic_token_polling = FALSE;
 +  pthread_exit(NULL);
 +}
 +
@@ -2473,41 +2476,113 @@ index 0000000..8b9c549
 +}
 +
 +static void
-+request_magic_attach (GisUbuntuProAttachPage *page)
++go_to_attach_page (GisUbuntuProPage *pro_page,
++                   status_t          status)
 +{
-+  GisUbuntuProAttachPagePrivate *priv = gis_ubuntupro_attach_page_get_instance_private (page);
-+  gchar *std_out, *std_err;
++  GisUbuntuProPagePrivate *pro_page_priv = gis_ubuntupro_page_get_instance_private (pro_page);
++  GisUbuntuProAttachPage *attach_page = GIS_UBUNTUPRO_ATTACH_PAGE (pro_page_priv->attach_page);
++  GisUbuntuProAttachPagePrivate *priv = gis_ubuntupro_attach_page_get_instance_private (attach_page);
++
++  if (gis_page_get_applying (GIS_PAGE (pro_page)))
++    gis_page_apply_complete (GIS_PAGE (pro_page), FALSE);
++
++  gtk_stack_set_visible_child (GTK_STACK (pro_page_priv->stack), GTK_WIDGET (attach_page));
++  pro_page_priv->current_page = ATTACH_PAGE;
++  update_gui(priv, status);
++}
++
++static void
++go_to_attach_page_idle (void *data)
++{
++  go_to_attach_page (GIS_UBUNTUPRO_PAGE (data), NONE);
++}
++
++static void
++on_magic_read (GObject *source_object,
++               GAsyncResult *res,
++               gpointer user_data)
++{
++  GisUbuntuProPage *pro_page = user_data;
++  GisUbuntuProPagePrivate *pro_page_priv = gis_ubuntupro_page_get_instance_private (pro_page);
++  GisUbuntuProAttachPage *attach_page = GIS_UBUNTUPRO_ATTACH_PAGE (pro_page_priv->attach_page);
++  GisUbuntuProAttachPagePrivate *priv = gis_ubuntupro_attach_page_get_instance_private (attach_page);
 +  g_autoptr(GError) error = NULL;
++  g_autofree char *std_out = NULL;
 +  int rc;
 +
-+  if (priv->magic_token_polling) {
-+    return;
-+  }
++  std_out = g_data_input_stream_read_line_finish (G_DATA_INPUT_STREAM (source_object),
++                                                  res, NULL, &error);
++  g_debug ("Received response %s", std_out);
 +
-+  if (!g_spawn_command_line_sync("/bin/ua api u.pro.attach.magic.initiate.v1",
-+                                 &std_out, &std_err, NULL, &error)) {
-+    g_warning ("Failed to request magic token: %s", error->message);
-+    return;
-+  }
++  if (!std_out)
++    {
++      if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
++        {
++          gis_page_apply_complete (GIS_PAGE (pro_page), FALSE);
++          return;
++        }
++
++      g_warning ("Failed to request magic token: %s",
++                 error ? error->message : "empty token result received");
++      go_to_attach_page (pro_page, FAIL);
++      return;
++    }
 +
 +  RestJSONResponse resp;
 +  if (!magic_parser(std_out, &resp)) {
-+    g_print("%s\n",std_out);
-+    g_warning("Couldn't parse response.\n");
++    g_warning("Couldn't parse response: %s", std_out);
++    go_to_attach_page (pro_page, FAIL);
 +    return;
 +  }
++
 +  gtk_label_set_text (GTK_LABEL (priv->pin_label), resp.code);
 +  priv->expired_by = resp.expiresIn + time(0);
 +  priv->token = g_strdup(resp.token);
 +  priv->magic_token_polling = TRUE;
-+  rc = pthread_create(&priv->poll_id, NULL, poll_magic_token, (void *)page);
++  rc = pthread_create(&priv->poll_id, NULL, poll_magic_token, attach_page);
 +  if (rc) {
 +    g_warning ("Couldn't create PIN polling thread");
++    go_to_attach_page (pro_page, FAIL);
 +    return;
 +  }
-+  update_gui(priv, 0);
 +  g_free(resp.token);
 +  g_free(resp.code);
++
++  go_to_attach_page (pro_page, NONE);
++}
++
++static void
++request_magic_attach (GisUbuntuProPage *page,
++                      GCancellable     *cancellable)
++{
++  GisUbuntuProPagePrivate *pro_page_priv = gis_ubuntupro_page_get_instance_private (page);
++  GisUbuntuProAttachPage *attach_page = GIS_UBUNTUPRO_ATTACH_PAGE (pro_page_priv->attach_page);
++  GisUbuntuProAttachPagePrivate *attach_priv = gis_ubuntupro_attach_page_get_instance_private (attach_page);
++  g_autoptr (GIOChannel) channel = NULL;
++  g_autoptr (GInputStream) stream = NULL;
++  g_autoptr (GDataInputStream) data_stream = NULL;
++  g_autoptr (GSource) source = NULL;
++  g_autoptr (GError) error = NULL;
++  const char* cmd_line[] = {"/usr/bin/pro", "api", "u.pro.attach.magic.initiate.v1", NULL};
++  int stdout_fd;
++
++  if (attach_priv->magic_token_polling || attach_priv->attaching) {
++    gis_page_apply_complete (GIS_PAGE (page), FALSE);
++    g_idle_add_once (go_to_attach_page_idle, page);
++    return;
++  }
++
++  if (!g_spawn_async_with_pipes (NULL, (char **) cmd_line, NULL, G_SPAWN_DEFAULT,
++                                 NULL, NULL, NULL, NULL, &stdout_fd, NULL,
++                                 &error)) {
++    g_warning ("Failed to request magic token: %s", error->message);
++    return;
++  }
++
++  stream = g_unix_input_stream_new (stdout_fd, TRUE);
++  data_stream = g_data_input_stream_new (stream);
++  g_data_input_stream_read_line_async (data_stream, G_PRIORITY_DEFAULT,
++                                       cancellable, on_magic_read, page);
 +}
 +
 +static void
@@ -2522,11 +2597,13 @@ index 0000000..8b9c549
 +
 +  if (retval == NULL) {
 +    g_warning ("Failed to attach token: %s", error->message);
++    gis_page_apply_complete (GIS_PAGE (priv->main_page), FALSE);
 +    status = FAIL;
 +  } else {
 +    SuccessfullyAttached = TRUE;
 +    status = SUCCESS;
 +    pthread_cancel(priv->poll_id);
++    gis_page_apply_complete (GIS_PAGE (priv->main_page), FALSE);
 +    gis_page_set_complete (GIS_PAGE(priv->main_page), TRUE);
 +    g_free(priv->contract_token);
 +    g_free(priv->token);
@@ -2584,8 +2661,7 @@ index 0000000..8b9c549
 +{
 +  GisUbuntuProAttachPagePrivate *priv = gis_ubuntupro_attach_page_get_instance_private (page);
 +
-+  const gchar *token = gtk_editable_get_text(GTK_EDITABLE(priv->token_field));
-+  ua_attach(token, priv);
++  gis_page_apply_begin (GIS_PAGE (priv->main_page), NULL, NULL);
 +}
 +
 +static void
@@ -2594,7 +2670,7 @@ index 0000000..8b9c549
 +  GisUbuntuProAttachPagePrivate *priv = gis_ubuntupro_attach_page_get_instance_private (page);
 +  priv->active_radio = MAGIC;
 +
-+  request_magic_attach(page);
++  gis_page_apply_begin (GIS_PAGE (priv->main_page), NULL, NULL);
 +}
 +
 +static void
@@ -2615,12 +2691,23 @@ index 0000000..8b9c549
 +  GisUbuntuProPagePrivate *priv = gis_ubuntupro_page_get_instance_private (page);
 +  GisUbuntuProOfferPage *offer_page = GIS_UBUNTUPRO_OFFER_PAGE (priv->offer_page);
 +  GisUbuntuProAttachPage *attach_page = GIS_UBUNTUPRO_ATTACH_PAGE (priv->attach_page);
++  GisUbuntuProAttachPagePrivate *attach_page_priv = gis_ubuntupro_attach_page_get_instance_private (attach_page);
 +
 +  switch (priv->current_page) {
 +  case OFFER_PAGE:
 +    return FALSE;
 +  case ATTACH_PAGE:
 +    gis_page_set_complete (gis_page, TRUE);
++    if (time(0) + 60 > attach_page_priv->expired_by)
++      {
++        if (attach_page_priv->poll_id)
++          {
++            pthread_cancel (attach_page_priv->poll_id);
++            attach_page_priv->poll_id = 0;
++          }
++        attach_page_priv->magic_token_polling = FALSE;
++        g_clear_pointer (&attach_page_priv->token, g_free);
++      }
 +    gtk_stack_set_visible_child (GTK_STACK (priv->stack), GTK_WIDGET(offer_page));
 +    priv->current_page = OFFER_PAGE;
 +    break;
@@ -2649,13 +2736,7 @@ index 0000000..8b9c549
 +      return FALSE;
 +    }
 +    /* Request magic token already if didn't yet and advance to next local page */
-+    if (!SuccessfullyAttached && !attach_priv->attaching) {
-+      request_magic_attach(attach_page);
-+    }
-+    gis_page_apply_complete (GIS_PAGE (page), FALSE);
-+    update_gui(attach_priv, 0);
-+    gtk_stack_set_visible_child (GTK_STACK (priv->stack), GTK_WIDGET(attach_page));
-+    priv->current_page = ATTACH_PAGE;
++    request_magic_attach(page, cancellable);
 +    break;
 +  case ATTACH_PAGE:
 +    if (SuccessfullyAttached) {
@@ -2663,16 +2744,16 @@ index 0000000..8b9c549
 +      display_ua_services(gis_ubuntupro_services_page_get_instance_private (services_page));
 +      gtk_stack_set_visible_child (GTK_STACK (priv->stack), priv->services_page);
 +      gis_page_apply_complete (GIS_PAGE (page), FALSE);
++      priv->current_page = SERVICES_PAGE;
 +    } else {
++      const char *token;
 +      if (attach_priv->active_radio == MAGIC) {
-+        ua_attach(attach_priv->contract_token, attach_priv);
++        token = attach_priv->contract_token;
 +      } else {
-+        request_token_attach(NULL, attach_page);
++        token = gtk_editable_get_text (GTK_EDITABLE (attach_priv->token_field));
 +      }
-+      gis_page_apply_complete (GIS_PAGE (page), FALSE);
-+      return FALSE;
++      ua_attach(token, attach_priv);
 +    }
-+    priv->current_page = SERVICES_PAGE;
 +    break;
 +  case SERVICES_PAGE:
 +    return FALSE;
