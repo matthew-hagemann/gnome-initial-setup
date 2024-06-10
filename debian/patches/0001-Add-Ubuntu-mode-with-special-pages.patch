@@ -24,12 +24,12 @@ Subject: Add Ubuntu mode with special pages
  .../pages/summary/gis-summary-page.c               |    2 +-
  gnome-initial-setup/pages/ubuntu-pro/checkmark.svg |    1 +
  gnome-initial-setup/pages/ubuntu-pro/fail.svg      |    1 +
- .../pages/ubuntu-pro/gis-ubuntupro-attach-page.ui  |  261 +++
- .../pages/ubuntu-pro/gis-ubuntupro-offer-page.ui   |  256 +++
- .../pages/ubuntu-pro/gis-ubuntupro-page.c          | 1064 ++++++++++++
+ .../pages/ubuntu-pro/gis-ubuntupro-attach-page.ui  |  186 ++
+ .../pages/ubuntu-pro/gis-ubuntupro-offer-page.ui   |  186 ++
+ .../pages/ubuntu-pro/gis-ubuntupro-page.c          | 1058 +++++++++++
  .../pages/ubuntu-pro/gis-ubuntupro-page.h          |  110 ++
  .../pages/ubuntu-pro/gis-ubuntupro-page.ui         |   24 +
- .../ubuntu-pro/gis-ubuntupro-services-page.ui      |  144 ++
+ .../ubuntu-pro/gis-ubuntupro-services-page.ui      |  107 ++
  gnome-initial-setup/pages/ubuntu-pro/meson.build   |   12 +
  .../pages/ubuntu-pro/ubuntu-pro-dark.svg           |   25 +
  .../pages/ubuntu-pro/ubuntu-pro.svg                |    1 +
@@ -49,7 +49,7 @@ Subject: Add Ubuntu mode with special pages
  .../pages/welcome/ubuntu-mascot.svg                |  196 +++
  .../pages/welcome/welcome.gresource.xml            |    2 +-
  po/POTFILES.in                                     |   10 +
- 46 files changed, 3813 insertions(+), 1878 deletions(-)
+ 46 files changed, 3625 insertions(+), 1878 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/app-center.svg
@@ -1333,51 +1333,23 @@ index 0000000..e3c9a52
 \ No newline at end of file
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
 new file mode 100644
-index 0000000..77e758b
+index 0000000..c83635f
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
-@@ -0,0 +1,261 @@
+@@ -0,0 +1,186 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
 +  <requires lib="gtk" version="4.0"/>
 +  <template class="GisUbuntuProAttachPage" parent="AdwBin">
-+  <child>
-+  <object class="GtkBox" id="attach_page">
-+    <property name="visible">True</property>
-+    <property name="orientation">vertical</property>
-+    <property name="margin-start">12</property>
-+    <property name="margin-top">12</property>
-+    <property name="margin-end">12</property>
++
++    <child>
++      <object class="AdwPreferencesPage">
++
 +        <child>
-+          <object class="GtkLabel">
-+            <property name="visible">True</property>
-+            <property name="halign">start</property>
-+            <property name="margin-top">3</property>
-+            <property name="margin-bottom">0</property>
-+            <property name="label" translatable="yes">Enable Ubuntu Pro</property>
-+            <attributes>
-+              <attribute name="weight" value="bold"/>
-+              <attribute name="scale" value="1.4"/>
-+            </attributes>
-+            <property name="xalign">0</property>
-+          </object>
-+        </child>
-+        <child>
-+          <object class="GtkSeparator">
-+            <property name="visible">True</property>
-+            <property name="margin-top">10</property>
-+            <property name="margin-bottom">10</property>
-+          </object>
-+        </child>
-+        <child>
-+          <object class="GtkGrid">
-+            <property name="visible">True</property>
-+            <property name="column-spacing">56</property>
-+            <property name="margin-start">30</property>
-+            <property name="margin-top">12</property>
-+            <property name="margin-bottom">12</property>
++          <object class="AdwPreferencesGroup">
 +            <child>
 +              <object class="AdwClamp">
++                <property name="margin-top">20</property>
 +                <property name="maximum-size">300</property>
 +                <property name="child">
 +                  <object class="GtkPicture" id="ubuntu_pro_logo">
@@ -1389,10 +1361,19 @@ index 0000000..77e758b
 +              </object>
 +            </child>
 +            <child>
++              <object class="GisPageHeader" id="header">
++                  <property name="margin-top">75</property>
++                  <property name="title" translatable="yes">Enable Ubuntu Pro</property>
++                  <property name="show_icon">False</property>
++                </object>
++            </child>
++          </object>
++        </child>
++
++        <child>
++          <object class="AdwPreferencesGroup">
++            <child>
 +              <object class="GtkLabel">
-+                <property name="xalign">0</property>
-+                <property name="valign">start</property>
-+                <property name="halign">start</property>
 +                <property name="label" translatable="yes"
 +                ><![CDATA[Upgrade this machine to Ubuntu Pro for security updates on a much wider range of packages, until 2034. Fulfill FedRAMP, FIPS, STIG and HIPAA and other compliance and hardening requirements with certified tooling and crypto-modules. Free for up to 5 machines.
 +
@@ -1407,246 +1388,159 @@ index 0000000..77e758b
 +            </child>
 +          </object>
 +        </child>
++
 +        <child>
-+          <object class="GtkCheckButton" id="magic_radio">
-+            <property name="halign">start</property>
-+            <property name="receives-default">False</property>
-+            <property name="margin-top">40</property>
-+            <property name="margin-bottom">6</property>
-+            <property name="margin-start">30</property>
-+             <child>
-+              <object class="GtkLabel">
-+                <property name="halign">start</property>
-+                  <property name="label" translatable="yes">_Attach machine via your Ubuntu One account</property>
-+                  <property name="mnemonic_widget">magic_radio</property>
-+                  <property name="use_underline">True</property>
-+                  <property name="wrap">True</property>
-+                  <property name="width-chars">35</property>
-+                  <property name="xalign">0</property>
-+                </object>
-+              </child>
-+            <signal name="activate" handler="on_magic_clicked" swapped="no"/>
-+          </object>
-+        </child>
-+        <child>
-+          <object class="GtkBox">
-+            <property name="visible">True</property>
-+        <child>
-+          <object class="GtkCheckButton" id="fake_radio">
-+            <property name="visible">True</property>
-+            <property name="can-focus">False</property>
-+            <signal name="realize" handler="set_check_button_as_padded_label" />
-+            <property name="margin-start"
-+                bind-source="magic_radio"
-+                bind-property="margin-start"
-+                bind-flags="sync-create" />
-+          </object>
-+        </child>
-+        <child>
-+          <object class="GtkBox">
-+            <property name="visible">True</property>
++          <object class="AdwPreferencesGroup">
 +            <child>
-+              <object class="GtkLabel" id="pin_label">
-+                <property name="selectable">True</property>
-+                <property name="visible">True</property>
-+                <property name="margin-top">8</property>
-+                <property name="margin-bottom">8</property>
-+                <property name="halign">start</property>
-+                <attributes>
-+                  <attribute name="scale" value="2"/>
-+                </attributes>
-+              </object>
-+            </child>
-+            <child>
-+              <object class="GtkFixed">
-+                <property name="visible">True</property>
-+                <property name="valign">center</property>
-+                <property name="margin-start">12</property>
-+                <property name="margin-end">6</property>
-+                <child>
++              <object class="AdwExpanderRow" id="pin_status">
++                <property name="title" translatable="yes">_Attach machine via your Ubuntu One account</property>
++                <property name="use-underline">True</property>
++                <property name="enable-expansion">True</property>
++                <property name="show-enable-switch">False</property>
++                <property name="use-markup">True</property>
++                <property name="expanded">True</property>
++                <property name="expanded" bind-source="token_status"
++                      bind-property="expanded"
++                      bind-flags="sync-create|invert-boolean|bidirectional"/>
++                <child type="prefix">
++                  <object class="GtkCheckButton" id="magic_radio">
++                    <property name="valign">center</property>
++                    <property name="active" bind-source="pin_status"
++                     bind-property="expanded" bind-flags="sync-create|bidirectional"/>
++                    <signal name="activate" handler="on_magic_clicked" swapped="no"/>
++                    <property name="focus-on-click">False</property>
++                    <property name="can-focus">False</property>
++                  </object>
++                </child>
++                <child type="suffix">
 +                  <object class="GtkSpinner" id="pin_spinner">
 +                    <property name="visible">True</property>
-+                    <property name="valign">center</property>
++                  </object>
++                </child>
++                <child type="suffix">
++                  <object class="GtkImage" id="pin_status_icon">
++                    <property name="visible">False</property>
 +                  </object>
 +                </child>
 +                <child>
-+                  <object class="GtkImage" id="pin_status_icon">
-+                    <property name="visible">False</property>
-+                    <property name="valign">center</property>
++                  <object class="AdwActionRow">
++                    <child type="prefix">
++                      <object class="GtkBox">
++                        <property name="orientation">vertical</property>
++                        <property name="margin-top">6</property>
++                        <property name="spacing">6</property>
++                        <child>
++                          <object class="GtkLabel" id="pin_label">
++                          <property name="selectable">True</property>
++                          <property name="visible">True</property>
++                          <property name="halign">start</property>
++                          <attributes>
++                            <attribute name="scale" value="2"/>
++                          </attributes>
++                        </object>
++                        </child>
++                        <child>
++                          <object class="GtkLabel" id="pin_hint">
++                            <property name="halign">start</property>
++                            <style>
++                              <class name="subtitle"/>
++                            </style>
++                          </object>
++                        </child>
++                      </object>
++                    </child>
 +                  </object>
 +                </child>
 +              </object>
 +            </child>
 +            <child>
-+              <object class="GtkLabel" id="pin_status">
-+                <property name="visible">True</property>
-+                <property name="use-markup">True</property>
-+                <property name="halign">start</property>
-+              </object>
-+            </child>
-+          </object>
-+        </child>
-+            </object>
-+            </child>
-+        <child>
-+          <object class="GtkBox">
-+            <property name="visible">True</property>
-+        <child>
-+          <object class="GtkCheckButton">
-+            <property name="visible">True</property>
-+            <property name="can-focus">False</property>
-+            <property name="group">fake_radio</property>
-+            <signal name="realize" handler="set_check_button_as_padded_label" />
-+            <property name="margin-start"
-+                bind-source="magic_radio"
-+                bind-property="margin-start"
-+                bind-flags="sync-create" />
-+          </object>
-+        </child>
-+        <child>
-+          <object class="GtkLabel" id="pin_hint">
-+            <property name="visible">True</property>
-+            <property name="margin-top">6</property>
-+            <property name="margin-bottom">8</property>
-+            <property name="halign">start</property>
-+          </object>
-+        </child>
-+          </object>
-+        </child>
-+        <child>
-+          <object class="GtkCheckButton" id="token_radio">
-+            <property name="halign">start</property>
-+            <signal name="realize" handler="set_children_valign_start" />
-+             <property name="child">
-+              <object class="GtkBox">
-+                <property name="orientation">vertical</property>
-+                <property name="spacing">2</property>
-+                <child>
-+                  <object class="GtkLabel">
-+                    <property name="halign">start</property>
-+                    <property name="mnemonic_widget">token_radio</property>
-+                    <property name="use_underline">True</property>
-+                    <property name="wrap">True</property>
-+                    <property name="xalign">0</property>
-+                    <property name="label" translatable="yes"
++              <object class="AdwExpanderRow" id="token_status">
++                <property name="title" translatable="yes"
 +                      comments="translators: This is the other way to attach a machine to Ubuntu Pro"
 +                      >Or add _token manually</property>
++                <property name="use-underline">True</property>
++                <property name="enable-expansion">True</property>
++                <property name="show-enable-switch">False</property>
++                <child type="prefix">
++                  <object class="GtkCheckButton" id="token_radio">
++                    <property name="group">magic_radio</property>
++                    <property name="valign">center</property>
++                    <property name="active" bind-source="token_status"
++                     bind-property="expanded" bind-flags="sync-create"/>
++                    <signal name="toggled" handler="on_radio_toggled" swapped="no"/>
++                    <property name="focus-on-click">False</property>
++                    <property name="can-focus">False</property>
 +                  </object>
 +                </child>
-+                <child>
-+                  <object class="GtkLabel">
-+                    <property name="label" translatable="yes"
-+                      comments="translators: Subtitle telling who can provide the Ubuntu Pro token"
-+                      >From your admin, or from ubuntu.com/pro</property>
-+                    <attributes>
-+                      <attribute name="scale" value="0.85"/>
-+                    </attributes>
-+                    <property name="wrap">True</property>
-+                    <property name="xalign">0</property>
++                <child type="suffix">
++                  <object class="GtkSpinner" id="token_spinner">
++                    <property name="visible">True</property>
 +                  </object>
 +                </child>
++                <child type="suffix">
++                  <object class="GtkImage" id="token_status_icon">
++                    <property name="visible">False</property>
++                  </object>
++                </child>
++
 +                <child>
-+                  <object class="GtkBox">
-+                    <property name="halign">start</property>
-+                    <child>
-+                      <object class="GtkEntry" id="token_field">
-+                        <property name="halign">start</property>
-+                        <property name="sensitive">False</property>
-+                        <property name="width-chars">35</property>
++                  <object class="AdwActionRow">
++                    <child type="prefix">
++                      <object class="GtkBox">
++                        <property name="orientation">vertical</property>
 +                        <property name="margin-top">6</property>
-+                        <property name="placeholder-text" translatable="yes">Token</property>
-+                        <property name="valign">center</property>
-+                        <signal name="activate" handler="request_token_attach" swapped="no"/>
-+                        <signal name="changed" handler="on_token_typing" swapped="no"/>
-+                      </object>
-+                    </child>
-+                    <child>
-+                      <object class="GtkFixed">
-+                        <property name="valign">center</property>
-+                        <property name="margin-start">6</property>
-+                        <property name="margin-end">4</property>
++                        <property name="spacing">6</property>
 +                        <child>
-+                          <object class="GtkSpinner" id="token_spinner">
-+                            <property name="valign">center</property>
++                          <object class="GtkEntry" id="token_field">
++                            <property name="sensitive">False</property>
++                            <property name="width-chars">35</property>
++                            <property name="placeholder-text" translatable="yes">Token</property>
++                            <signal name="activate" handler="request_token_attach" swapped="no"/>
++                            <signal name="changed" handler="on_token_typing" swapped="no"/>
 +                          </object>
 +                        </child>
 +                        <child>
-+                          <object class="GtkImage" id="token_status_icon">
-+                            <property name="visible">False</property>
-+                            <property name="valign">center</property>
++                          <object class="GtkLabel" id="token_hint">
++                            <property name="halign">start</property>
++                            <property name="label" translatable="yes"
++                              comments="translators: Subtitle telling who can provide the Ubuntu Pro token"
++                              >From your admin, or from ubuntu.com/pro</property>
++                            <style>
++                              <class name="subtitle"/>
++                            </style>
 +                          </object>
 +                        </child>
-+                      </object>
-+                    </child>
-+                    <child>
-+                      <object class="GtkLabel" id="token_status">
-+                        <property name="valign">center</property>
 +                      </object>
 +                    </child>
 +                  </object>
 +                </child>
 +              </object>
-+            </property>
-+            <property name="receives-default">False</property>
-+            <property name="margin-start">30</property>
-+            <property name="margin-top">20</property>
-+            <property name="group">magic_radio</property>
-+            <signal name="toggled" handler="on_radio_toggled" swapped="no"/>
++            </child>
 +          </object>
 +        </child>
-+  </object>
-+  </child>
-+</template>
++
++      </object>
++    </child>
++  </template>
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
 new file mode 100644
-index 0000000..dc4827d
+index 0000000..a5d09eb
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
-@@ -0,0 +1,256 @@
+@@ -0,0 +1,186 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
 +  <requires lib="gtk" version="4.0"/>
 +  <template class="GisUbuntuProOfferPage" parent="AdwBin">
 +    <child>
-+      <object class="GtkBox" id="offer_page">
-+        <property name="margin-start">12</property>
-+        <property name="margin-top">12</property>
-+        <property name="margin-end">12</property>
-+        <property name="visible">True</property>
-+        <property name="orientation">vertical</property>
-+        <property name="hexpand">true</property>
-+        <property name="vexpand">true</property>
++      <object class="AdwPreferencesPage">
++
 +        <child>
-+          <object class="GtkLabel">
-+            <property name="visible">True</property>
-+            <property name="halign">start</property>
-+            <property name="margin-top">3</property>
-+            <property name="margin-bottom">0</property>
-+            <property name="label" translatable="yes">Enable Ubuntu Pro</property>
-+            <attributes>
-+              <attribute name="weight" value="bold"/>
-+              <attribute name="scale" value="1.4"/>
-+            </attributes>
-+            <property name="wrap">True</property>
-+            <property name="xalign">0</property>
-+          </object>
-+        </child>
-+        <child>
-+          <object class="GtkSeparator">
-+            <property name="visible">True</property>
-+            <property name="margin-top">10</property>
-+            <property name="margin-bottom">10</property>
-+          </object>
-+        </child>
-+        <child>
-+          <object class="GtkBox">
-+            <property name="spacing">56</property>
-+            <property name="margin-start">30</property>
-+            <property name="margin-top">12</property>
-+            <property name="margin-bottom">12</property>
++          <object class="AdwPreferencesGroup">
 +            <child>
 +              <object class="AdwClamp">
++                <property name="margin-top">20</property>
 +                <property name="maximum-size">300</property>
 +                <property name="child">
 +                  <object class="GtkPicture" id="ubuntu_pro_logo">
@@ -1658,200 +1552,161 @@ index 0000000..dc4827d
 +              </object>
 +            </child>
 +            <child>
-+              <object class="GtkGrid">
-+                <property name="halign">fill</property>
-+                <property name="column-spacing">8</property>
-+                <property name="margin-start">8</property>
-+                <property name="row-spacing">6</property>
-+                <child>
-+                  <object class="GtkLabel">
-+                    <property name="wrap">True</property>
-+                    <property name="halign">start</property>
-+                    <property name="valign">start</property>
-+                    <property name="xalign">0</property>
-+                    <property name="width-chars">35</property>
-+                    <property name="margin-bottom">12</property>
-+                    <property name="label" translatable="yes"
-+                      >Upgrade this machine to Ubuntu Pro. Free for up to 5 machines.</property>
-+                    <layout>
-+                      <property name="column">0</property>
-+                      <property name="row">0</property>
-+                      <property name="column-span">2</property>
-+                    </layout>
-+                  </object>
-+                </child>
-+                <child>
-+                  <object class="GtkLabel">
-+                    <property name="label">•</property>
-+                    <property name="valign">start</property>
-+                    <layout>
-+                      <property name="column">0</property>
-+                      <property name="row">1</property>
-+                    </layout>
-+                  </object>
-+                </child>
-+                <child>
-+                  <object class="GtkLabel">
-+                    <property name="wrap">True</property>
-+                    <property name="halign">start</property>
-+                    <property name="valign">start</property>
-+                    <property name="xalign">0</property>
-+                    <property name="label" translatable="yes"
-+                      >Get security updates on a wide range of packages until 2034</property>
-+                    <layout>
-+                      <property name="column">1</property>
-+                      <property name="row">1</property>
-+                    </layout>
-+                  </object>
-+                </child>
-+                <child>
-+                  <object class="GtkLabel">
-+                    <property name="label">•</property>
-+                    <property name="valign">start</property>
-+                    <layout>
-+                      <property name="column">0</property>
-+                      <property name="row">2</property>
-+                    </layout>
-+                  </object>
-+                </child>
-+                <child>
-+                  <object class="GtkLabel">
-+                    <property name="wrap">True</property>
-+                    <property name="halign">start</property>
-+                    <property name="valign">start</property>
-+                    <property name="xalign">0</property>
-+                    <property name="width-chars">35</property>
-+                    <property name="label" translatable="yes"
-+                      >Fulfill FedRAMP, FIPS, STIG and HIPAA and other compliance and hardening requirements with certified tooling and crypto-modules.</property>
-+                    <layout>
-+                      <property name="column">1</property>
-+                      <property name="row">2</property>
-+                    </layout>
-+                    <attributes>
-+                      <attribute name="line-height" value="1.2"/>
-+                    </attributes>
-+                  </object>
-+                </child>
-+                <child>
-+                  <object class="GtkLabel">
-+                    <property name="wrap">True</property>
-+                    <property name="halign">start</property>
-+                    <property name="valign">start</property>
-+                    <property name="xalign">0</property>
-+                    <property name="use-markup">True</property>
-+                    <property name="margin-top">12</property>
-+                    <property name="width-chars">35</property>
-+                    <property name="label" translatable="yes"
-+                    comments="translators: Use HTML encoded format for special characters such as '&amp;'"
-+                      ><![CDATA[Learn more at <a href="https://ubuntu.com/pro">ubuntu.com/pro</a>.]]></property>
-+                    <layout>
-+                      <property name="column">0</property>
-+                      <property name="row">3</property>
-+                      <property name="column-span">2</property>
-+                    </layout>
-+                  </object>
-+                </child>
-+              </object>
++              <object class="GisPageHeader" id="header">
++                  <property name="margin-top">75</property>
++                  <property name="title" translatable="yes">Enable Ubuntu Pro</property>
++                  <property name="show_icon">False</property>
++                </object>
 +            </child>
 +          </object>
 +        </child>
++
 +        <child>
-+          <object class="GtkLabel">
-+            <property name="visible">True</property>
-+            <property name="margin-top">40</property>
-+            <property name="margin-start">30</property>
-+            <property name="margin-bottom">6</property>
-+            <property name="label" translatable="yes">Enable Ubuntu Pro now, or skip this step.</property>
-+            <attributes>
-+              <attribute name="weight" value="bold"/>
-+            </attributes>
-+            <property name="xalign">0</property>
-+          </object>
-+        </child>
-+        <child>
-+          <object class="GtkBox">
-+            <property name="visible">True</property>
-+            <property name="orientation">vertical</property>
-+            <property name="margin-start">30</property>
-+            <property name="spacing">6</property>
++          <object class="AdwPreferencesGroup">
 +            <child>
-+              <object class="GtkCheckButton" id="enable_pro_select">
-+                <property name="halign">start</property>
-+                <property name="receives-default">False</property>
-+                <property name="margin-top">6</property>
-+                <property name="group">skip_pro_select</property>
-+                <property name="child">
-+                  <object class="GtkBox">
-+                    <property name="visible">True</property>
-+                    <property name="orientation">horizontal</property>
-+                    <property name="halign">start</property>
++              <object class="AdwActionRow">
++                <property name="can-focus">False</property>
++                <child type="prefix">
++                  <object class="GtkGrid">
++                    <property name="halign">fill</property>
++                    <property name="column-spacing">8</property>
++                    <property name="margin-top">8</property>
++                    <property name="margin-bottom">8</property>
++                    <property name="margin-start">8</property>
++                    <property name="margin-end">8</property>
++                    <property name="row-spacing">6</property>
 +                    <child>
 +                      <object class="GtkLabel">
-+                      <property name="halign">start</property>
-+                        <property name="label" translatable="yes">_Enable Ubuntu Pro</property>
-+                        <property name="mnemonic_widget">enable_pro_select</property>
-+                        <property name="use_underline">True</property>
 +                        <property name="wrap">True</property>
++                        <property name="halign">start</property>
++                        <property name="valign">start</property>
 +                        <property name="xalign">0</property>
-+                      </object>
-+                    </child>
-+                    <child>
-+                      <object class="GtkImage" id="pro_status_image">
-+                        <property name="margin-start">30</property>
-+                        <property name="margin-end">6</property>
-+                        <property name="margin-top">6</property>
-+                        <property name="visible">False</property>
-+                        <property name="icon_size">normal</property>
-+                        <property name="icon-name">dialog-warning-symbolic</property>
-+                      </object>
-+                    </child>
-+                    <child>
-+                      <object class="GtkLabel" id="offline_warning">
-+                        <property name="yalign">0.8</property>
-+                        <property name="visible">False</property>
-+                        <property name="wrap">True</property>
 +                        <property name="width-chars">35</property>
-+                        <property name="label" translatable="yes">An internet connection is required to enable Ubuntu Pro</property>
++                        <property name="margin-bottom">12</property>
++                        <property name="label" translatable="yes"
++                          >Upgrade this machine to Ubuntu Pro. Free for up to 5 machines.</property>
++                        <layout>
++                          <property name="column">0</property>
++                          <property name="row">0</property>
++                          <property name="column-span">2</property>
++                        </layout>
++                      </object>
++                    </child>
++                    <child>
++                      <object class="GtkLabel">
++                        <property name="label">•</property>
++                        <property name="valign">start</property>
++                        <layout>
++                          <property name="column">0</property>
++                          <property name="row">1</property>
++                        </layout>
++                      </object>
++                    </child>
++                    <child>
++                      <object class="GtkLabel">
++                        <property name="wrap">True</property>
++                        <property name="halign">start</property>
++                        <property name="valign">start</property>
++                        <property name="xalign">0</property>
++                        <property name="label" translatable="yes"
++                          >Get security updates on a wide range of packages until 2034</property>
++                        <layout>
++                          <property name="column">1</property>
++                          <property name="row">1</property>
++                        </layout>
++                      </object>
++                    </child>
++                    <child>
++                      <object class="GtkLabel">
++                        <property name="label">•</property>
++                        <property name="valign">start</property>
++                        <layout>
++                          <property name="column">0</property>
++                          <property name="row">2</property>
++                        </layout>
++                      </object>
++                    </child>
++                    <child>
++                      <object class="GtkLabel">
++                        <property name="wrap">True</property>
++                        <property name="halign">start</property>
++                        <property name="valign">start</property>
++                        <property name="xalign">0</property>
++                        <property name="width-chars">35</property>
++                        <property name="label" translatable="yes"
++                          >Fulfill FedRAMP, FIPS, STIG and HIPAA and other compliance and hardening requirements with certified tooling and crypto-modules.</property>
++                        <layout>
++                          <property name="column">1</property>
++                          <property name="row">2</property>
++                        </layout>
++                        <attributes>
++                          <attribute name="line-height" value="1.2"/>
++                        </attributes>
++                      </object>
++                    </child>
++                    <child>
++                      <object class="GtkLabel">
++                        <property name="wrap">True</property>
++                        <property name="halign">start</property>
++                        <property name="valign">start</property>
++                        <property name="xalign">0</property>
++                        <property name="use-markup">True</property>
++                        <property name="margin-top">12</property>
++                        <property name="width-chars">35</property>
++                        <property name="label" translatable="yes"
++                        comments="translators: Use HTML encoded format for special characters such as '&amp;'"
++                          ><![CDATA[Learn more at <a href="https://ubuntu.com/pro">ubuntu.com/pro</a>.]]></property>
++                        <layout>
++                          <property name="column">0</property>
++                          <property name="row">3</property>
++                          <property name="column-span">2</property>
++                        </layout>
 +                      </object>
 +                    </child>
 +                  </object>
-+                </property>
++                </child>
++              </object>
++            </child>
++          </object>
++        </child>
++
++        <child>
++          <object class="AdwPreferencesGroup">
++            <property name="title" translatable="yes">Enable Ubuntu Pro now, or skip this step.</property>
++            <child>
++              <object class="AdwActionRow" id="enable_pro_row">
++                <property name="title" translatable="yes">_Enable Ubuntu Pro</property>
++                <property name="use-underline">True</property>
++                <property name="activatable-widget">enable_pro_select</property>
++                <child type="prefix">
++                  <object class="GtkCheckButton" id="enable_pro_select">
++                    <property name="group">skip_pro_select</property>
++                    <property name="focus-on-click">False</property>
++                    <property name="can-focus">False</property>
++                  </object>
++                </child>
++                <child type="suffix">
++                  <object class="GtkImage" id="offline_warning">
++                    <property name="icon-name">dialog-warning-symbolic</property>
++                    <property name="visible">False</property>
++                  </object>
++                </child>
 +              </object>
 +            </child>
 +            <child>
-+              <object class="GtkCheckButton" id="skip_pro_select">
-+                <signal name="realize" handler="set_children_valign_start" />
-+                <property name="halign">start</property>
-+                <property name="receives-default">False</property>
-+                <property name="margin-top">12</property>
-+                <property name="active">True</property>
-+                <property name="child">
-+                  <object class="GtkBox">
-+                    <property name="orientation">vertical</property>
-+                    <property name="spacing">2</property>
-+                    <child>
-+                      <object class="GtkLabel">
-+                        <property name="label" translatable="yes">_Skip for now</property>
-+                        <property name="mnemonic_widget">skip_pro_select</property>
-+                        <property name="use_underline">True</property>
-+                        <property name="wrap">True</property>
-+                        <property name="xalign">0</property>
-+                      </object>
-+                    </child>
-+                    <child>
-+                      <object class="GtkLabel">
-+                        <property name="label" translatable="yes"
-+                         ><![CDATA[You can always enable Ubuntu Pro later via the Software & Updates application]]></property>
-+                        <attributes>
-+                          <attribute name="scale" value="0.85"/>
-+                        </attributes>
-+                        <property name="wrap">True</property>
-+                        <property name="width-chars">30</property>
-+                        <property name="xalign">0</property>
-+                      </object>
-+                    </child>
++              <object class="AdwActionRow">
++                <property name="title" translatable="yes">_Skip for now</property>
++                <property name="subtitle" translatable="yes"
++                  ><![CDATA[You can always enable Ubuntu Pro later via the Software & Updates application]]></property>
++                <property name="use-underline">True</property>
++                <property name="use-markup">False</property>
++                <property name="activatable-widget">skip_pro_select</property>
++                <child type="prefix">
++                  <object class="GtkCheckButton" id="skip_pro_select">
++                    <property name="focus-on-click">False</property>
++                    <property name="can-focus">False</property>
 +                  </object>
-+                </property>
++                </child>
 +              </object>
 +            </child>
 +          </object>
@@ -1862,10 +1717,10 @@ index 0000000..dc4827d
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
 new file mode 100644
-index 0000000..4facc60
+index 0000000..41bb3de
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
-@@ -0,0 +1,1064 @@
+@@ -0,0 +1,1058 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2022 Canonical Ltd.
@@ -1893,6 +1748,7 @@ index 0000000..4facc60
 +#define LOGO_DARK  "/org/gnome/initial-setup/ubuntu-pro-dark.svg"
 +
 +#include "config.h"
++#include "gis-page-header.h"
 +#include "gis-ubuntupro-page.h"
 +#include "ubuntupro-resources.h"
 +#include "utils.h"
@@ -1932,6 +1788,7 @@ index 0000000..4facc60
 +
 +struct _GisUbuntuProOfferPagePrivate {
 +  GtkWidget *ubuntu_pro_logo;
++  GtkWidget *enable_pro_row;
 +  GtkWidget *enable_pro_select;
 +  GtkWidget *skip_pro_select;
 +  GtkWidget *offline_warning;
@@ -1973,6 +1830,7 @@ index 0000000..4facc60
 +typedef struct _GisUbuntuProAttachPagePrivate GisUbuntuProAttachPagePrivate;
 +
 +struct _GisUbuntuProServicesPagePrivate {
++  GtkWidget *ubuntu_pro_logo;
 +  GtkWidget *enabled_services;
 +  GtkWidget *enabled_services_header;
 +  GtkWidget *available_services;
@@ -1998,29 +1856,6 @@ index 0000000..4facc60
 +G_DEFINE_TYPE_WITH_PRIVATE (GisUbuntuProAttachPage, gis_ubuntupro_attach_page, ADW_TYPE_BIN);
 +G_DEFINE_TYPE_WITH_PRIVATE (GisUbuntuProServicesPage, gis_ubuntupro_services_page, ADW_TYPE_BIN);
 +
-+static void
-+map_scalable_image(const gchar *path, GtkPicture *widget, int x, int y)
-+{
-+  g_autoptr(GError) error = NULL;
-+  GdkPixbuf *pixbuf;
-+
-+  if (x > 0)
-+    x *= gtk_widget_get_scale_factor (GTK_WIDGET (widget));
-+  if (y > 0)
-+    y *= gtk_widget_get_scale_factor (GTK_WIDGET (widget));
-+
-+  pixbuf = gdk_pixbuf_new_from_resource_at_scale (path, x, y, TRUE, &error);
-+  if (error) {
-+    g_warning("Unable to create pixbuf: %s\n", error->message);
-+  }
-+
-+  if (pixbuf != NULL) {
-+    gtk_picture_set_pixbuf(widget, pixbuf);
-+  } else {
-+    g_warning("Unable to load pixbuf: %s\n", error->message);
-+  }
-+}
-+
 +/* The user may go back any number of pages during attachment, so we can't
 + * blindly skip to the services list page.
 + * Furthermore, after attachment the user can again navigate back to any page
@@ -2045,6 +1880,7 @@ index 0000000..4facc60
 +{
 +  GtkWidget *label, *icon, *spinner;
 +  g_autofree gchar *hint = NULL;
++  g_autofree gchar *subtitle = NULL;
 +  gboolean ready_to_attach;
 +
 +  if (priv->active_radio == MAGIC) {
@@ -2067,6 +1903,7 @@ index 0000000..4facc60
 +  } else {
 +    gtk_spinner_stop (GTK_SPINNER (spinner));
 +  }
++  gtk_widget_set_visible (spinner, priv->attaching);
 +
 +  gtk_widget_set_sensitive (priv->token_radio, !priv->attaching);
 +  gtk_widget_set_sensitive (priv->magic_radio, !priv->attaching);
@@ -2083,28 +1920,33 @@ index 0000000..4facc60
 +  }
 +  switch (status) {
 +  case SUCCESS:
-+    gtk_label_set_markup(GTK_LABEL(label), g_strconcat(
-+        "<span foreground=\"green\"><b>", _("Valid token"), "</b></span>", NULL
-+    ));
-+    gtk_image_set_from_resource(GTK_IMAGE(icon), CHECK_ICON);
++    subtitle = g_strconcat ("<span foreground=\"green\"><b>",
++                            _("Valid token"), "</b></span>", NULL);
++    adw_expander_row_set_subtitle (ADW_EXPANDER_ROW (label), subtitle);
++    gtk_image_set_from_resource (GTK_IMAGE(icon), CHECK_ICON);
 +    gtk_widget_set_sensitive(GTK_WIDGET(priv->token_field), FALSE);
 +    gtk_widget_set_sensitive(GTK_WIDGET(priv->magic_radio), FALSE);
 +    gtk_widget_set_sensitive(GTK_WIDGET(priv->token_radio), FALSE);
 +    break;
 +  case FAIL:
-+    gtk_label_set_markup(GTK_LABEL(label), g_strconcat(
-+      /* TRANSLATORS: The error shown when attaching an Ubuntu Pro contact fails.
-+       * it may be due to various reasons, most common is an invalid token. */
-+      "<span foreground=\"red\"><b>", _("Invalid token or attach failure"), "</b></span>", NULL
-+    ));
-+    gtk_image_set_from_resource(GTK_IMAGE(icon), FAIL_ICON);
++    subtitle = g_strconcat ("<span foreground=\"red\"><b>",
++                            /* TRANSLATORS: The error shown when attaching an
++                               Ubuntu Pro contact fails.
++                               It may be due to various reasons, most common is
++                               an invalid token.
++                             */
++                            _("Invalid token or attach failure"), "</b></span>",
++                            NULL);
++    adw_expander_row_set_subtitle (ADW_EXPANDER_ROW (label), subtitle);
++    gtk_image_set_from_icon_name (GTK_IMAGE(icon), "dialog-error-symbolic");
 +    break;
 +  case EXPIRED:
 +    hint = g_strdup ("Click the button to generate a new code.");
-+    gtk_label_set_markup(GTK_LABEL(label), _("Code expired"));
-+    gtk_image_set_from_resource(GTK_IMAGE(icon), FAIL_ICON);
++    adw_expander_row_set_subtitle (ADW_EXPANDER_ROW (label), _("Code expired"));
++    gtk_image_set_from_icon_name (GTK_IMAGE(icon), "dialog-warning-symbolic");
 +    break;
 +  default:
++    adw_expander_row_set_subtitle (ADW_EXPANDER_ROW (label), NULL);
 +    break;
 +  }
 +
@@ -2117,11 +1959,8 @@ index 0000000..4facc60
 +    }
 +  gtk_label_set_markup(GTK_LABEL(priv->pin_hint), hint);
 +  gtk_widget_set_visible(GTK_WIDGET(priv->token_status_icon), FALSE);
-+  gtk_widget_set_visible(GTK_WIDGET(priv->token_status), FALSE);
 +  gtk_widget_set_visible(GTK_WIDGET(priv->pin_status_icon), FALSE);
-+  gtk_widget_set_visible(GTK_WIDGET(priv->pin_status), FALSE);
 +  gtk_widget_set_visible(GTK_WIDGET(icon), status);
-+  gtk_widget_set_visible(GTK_WIDGET(label), status);
 +}
 +
 +static void
@@ -2133,7 +1972,12 @@ index 0000000..4facc60
 +
 +  gtk_widget_set_sensitive (priv->enable_pro_select, available);
 +  gtk_widget_set_visible (priv->offline_warning, !available);
-+  gtk_widget_set_visible (priv->pro_status_image, !available);
++  gtk_check_button_set_active (GTK_CHECK_BUTTON (priv->skip_pro_select),
++                               !available);
++  adw_action_row_set_subtitle (ADW_ACTION_ROW (priv->enable_pro_row),
++                               available ?
++                               NULL :
++                               _("An internet connection is required to enable Ubuntu Pro"));
 +}
 +
 +static void
@@ -2215,9 +2059,7 @@ index 0000000..4facc60
 +  gchar *logo = is_dark_theme(GTK_WIDGET(page)) ? LOGO_DARK: LOGO;
 +  gtk_picture_set_resource (GTK_PICTURE (offer_priv->ubuntu_pro_logo), logo);
 +  gtk_picture_set_resource (GTK_PICTURE (attach_priv->ubuntu_pro_logo), logo);
-+  map_scalable_image(CHECK_ICON, GTK_PICTURE(services_priv->checkmark), 30, -1);
-+  // Needed so the picture is shown inside the GtkFixed (god knows why!)
-+  gtk_widget_set_size_request(services_priv->checkmark, 30, 30);
++  gtk_picture_set_resource (GTK_PICTURE (services_priv->ubuntu_pro_logo), logo);
 +
 +  GNetworkMonitor *network_monitor = g_network_monitor_get_default ();
 +  offer_priv->network_cb = g_signal_connect (network_monitor, "network-changed",
@@ -2235,8 +2077,12 @@ index 0000000..4facc60
 +  attach_priv->main_page = page;
 +  priv->current_page = OFFER_PAGE;
 +
-+  gis_page_set_skippable (GIS_PAGE (page), FALSE);
-+  gis_page_set_complete (GIS_PAGE (page), TRUE);
++  g_object_bind_property (offer_priv->skip_pro_select, "active", page, "skippable",
++                          G_BINDING_SYNC_CREATE);
++  g_object_bind_property (offer_priv->skip_pro_select, "active", page, "complete",
++                          G_BINDING_SYNC_CREATE | G_BINDING_INVERT_BOOLEAN);
++  gtk_check_button_set_active (GTK_CHECK_BUTTON (offer_priv->skip_pro_select), TRUE);
++
 +  gtk_widget_show (GTK_WIDGET (page));
 +}
 +
@@ -2436,7 +2282,8 @@ index 0000000..4facc60
 +
 +    contract = json_object_get_object_member(root, "contract");
 +    contract_name = json_object_get_string_member(contract, "name");
-+    gtk_label_set_text(GTK_LABEL(priv->contract_name), contract_name);
++    adw_preferences_row_set_title (ADW_PREFERENCES_ROW (priv->contract_name),
++                                   contract_name);
 +
 +    services_array = json_object_get_array_member(root, "services");
 +    n_services = json_array_get_length(services_array);
@@ -2829,9 +2676,9 @@ index 0000000..4facc60
 +
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProOfferPage, ubuntu_pro_logo);
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProOfferPage, enable_pro_select);
++  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProOfferPage, enable_pro_row);
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProOfferPage, skip_pro_select);
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProOfferPage, offline_warning);
-+  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProOfferPage, pro_status_image);
 +
 +  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), set_children_valign_start);
 +
@@ -2868,6 +2715,7 @@ index 0000000..4facc60
 +{
 +  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass), "/org/gnome/initial-setup/gis-ubuntupro-services-page.ui");
 +
++  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProOfferPage, ubuntu_pro_logo);
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProServicesPage, enabled_services);
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProServicesPage, enabled_services_header);
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisUbuntuProServicesPage, available_services);
@@ -2882,9 +2730,10 @@ index 0000000..4facc60
 +  g_resources_register (ubuntupro_get_resource ());
 +
 +  /* Magic that makes stuff compile */
-+  gis_ubuntupro_offer_page_get_type ();
-+  gis_ubuntupro_attach_page_get_type ();
-+  gis_ubuntupro_services_page_get_type ();
++  g_type_ensure (GIS_TYPE_PAGE_HEADER);
++  g_type_ensure (GIS_TYPE_UBUNTUPRO_OFFER_PAGE);
++  g_type_ensure (GIS_TYPE_UBUNTUPRO_ATTACH_PAGE);
++  g_type_ensure (GIS_TYPE_UBUNTUPRO_SERVICES_PAGE);
 +
 +  gtk_widget_init_template (GTK_WIDGET (page));
 +}
@@ -2915,11 +2764,11 @@ index 0000000..4facc60
 +{
 +  gboolean attached;
 +  if (!get_ubuntu_advantage_attached (&attached)) {
-+      g_warning("Couldn't fetch the Ubuntu Pro status.\n");
++      g_warning ("Couldn't fetch the Ubuntu Pro status.");
 +      return NULL;
 +  }
 +  if (attached) {
-+      g_warning("Ubuntu Pro is already attached. Skipping Ubuntu Pro pages.\n");
++      g_warning ("Ubuntu Pro is already attached. Skipping Ubuntu Pro pages.");
 +      return NULL;
 +  }
 +
@@ -3078,152 +2927,115 @@ index 0000000..d03d133
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui
 new file mode 100644
-index 0000000..4f8f385
+index 0000000..f34a157
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui
-@@ -0,0 +1,144 @@
+@@ -0,0 +1,107 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
-+  <requires lib="gtk" version="4.0"/>
++  <requires lib="gtk" version="4.0" />
 +  <template class="GisUbuntuProServicesPage" parent="AdwBin">
-+  <child>
-+  <object class="GtkBox" id="services_page">
-+    <property name="margin-start">24</property>
-+    <property name="margin-top">12</property>
-+    <property name="margin-end">12</property>
-+    <property name="visible">True</property>
-+    <property name="valign">start</property>
-+    <property name="orientation">vertical</property>
 +    <child>
-+      <object class="GtkLabel">
-+        <property name="visible">True</property>
-+        <property name="halign">start</property>
-+        <property name="margin-top">3</property>
-+        <property name="margin-bottom">0</property>
-+        <property name="label" translatable="yes">Ubuntu Pro Services</property>
-+        <attributes>
-+          <attribute name="weight" value="bold"/>
-+          <attribute name="scale" value="1.4"/>
-+        </attributes>
-+        <property name="wrap">True</property>
-+        <property name="xalign">0</property>
++      <object class="AdwPreferencesPage">
++        <child>
++          <object class="AdwPreferencesGroup">
++            <child>
++              <object class="AdwClamp">
++                <property name="margin-top">20</property>
++                <property name="maximum-size">300</property>
++                <property name="child">
++                  <object class="GtkPicture" id="ubuntu_pro_logo">
++                    <property name="valign">start</property>
++                    <property name="content-fit">scale-down</property>
++                    <property name="can-shrink">True</property>
++                  </object>
++                </property>
++              </object>
++            </child>
++          </object>
++        </child>
++        <child>
++          <object class="AdwPreferencesGroup">
++            <child>
++              <object class="GisPageHeader" id="header">
++                <property name="title" translatable="yes">Ubuntu Pro Services</property>
++                <property name="show_icon">False</property>
++              </object>
++            </child>
++          </object>
++        </child>
++        <child>
++          <object class="AdwPreferencesGroup">
++            <property name="title" translatable="yes">Your subscription</property>
++            <child>
++              <object class="AdwActionRow" id="contract_name">
++                <property name="can-focus">False</property>
++                <child type="suffix">
++                  <object class="GtkImage" id="checkmark">
++                    <property name="resource">/org/gnome/initial-setup/checkmark.svg</property>
++                    <property name="pixel-size">22</property>
++                  </object>
++                </child>
++              </object>
++            </child>
++          </object>
++        </child>
++        <child>
++          <object class="AdwPreferencesGroup" id="enabled_services_header">
++            <property name="title" translatable="yes">Your enabled services</property>
++            <child>
++              <object class="AdwActionRow">
++                <property name="can-focus">False</property>
++                <child type="prefix">
++                  <object class="GtkGrid" id="enabled_services">
++                    <property name="margin-top">8</property>
++                    <property name="margin-bottom">8</property>
++                    <property name="margin-start">8</property>
++                    <property name="margin-end">8</property>
++                    <property name="halign">fill</property>
++                    <property name="column-spacing">8</property>
++                    <property name="row-spacing">6</property>
++                  </object>
++                </child>
++              </object>
++            </child>
++          </object>
++        </child>
++        <child>
++          <object class="AdwPreferencesGroup" id="available_services_header">
++            <property name="title" translatable="yes">Other available services</property>
++            <child>
++              <object class="AdwActionRow">
++                <property name="can-focus">False</property>
++                <child type="prefix">
++                  <object class="GtkGrid" id="available_services">
++                    <property name="margin-top">8</property>
++                    <property name="margin-bottom">8</property>
++                    <property name="margin-start">8</property>
++                    <property name="margin-end">8</property>
++                    <property name="halign">fill</property>
++                    <property name="column-spacing">8</property>
++                    <property name="row-spacing">6</property>
++                  </object>
++                </child>
++              </object>
++            </child>
++            <child>
++              <object class="GtkLabel">
++                <property name="label" translatable="yes" comments="translators: Use HTML encoded format for special characters such as '&amp;'"><![CDATA[You can change the default enablements for your token on the ubuntu.com/pro web interface. You can also change enabled services in the Settings menu or with the `<span font_family='monospace'>pro</span>` command-line.]]></property>
++                <property name="margin-top">20</property>
++                <property name="use-markup">True</property>
++                <property name="wrap">True</property>
++                <property name="width-chars">35</property>
++                <attributes>
++                  <attribute name="line-height" value="1.2" />
++                </attributes>
++              </object>
++            </child>
++          </object>
++        </child>
 +      </object>
 +    </child>
-+    <child>
-+      <object class="GtkSeparator">
-+        <property name="visible">True</property>
-+        <property name="margin-top">10</property>
-+        <property name="margin-bottom">10</property>
-+      </object>
-+    </child>
-+    <child>
-+      <object class="GtkBox">
-+        <property name="visible">True</property>
-+        <child>
-+          <object class="GtkFixed">
-+          <property name="visible">True</property>
-+          <property name="margin-top">8</property>
-+          <property name="margin-end">10</property>
-+          <child>
-+            <object class="GtkPicture" id="checkmark">
-+              <property name="visible">True</property>
-+              <property name="content-fit">scale-down</property>
-+              <property name="halign">start</property>
-+              <property name="valign">start</property>
-+            </object>
-+          </child>
-+          </object>
-+        </child>
-+        <child>
-+        <object class="GtkBox">
-+          <property name="vexpand">True</property>
-+          <property name="hexpand">True</property>
-+          <property name="vexpand-set">True</property>
-+          <property name="hexpand-set">True</property>
-+          <property name="halign">start</property>
-+          <property name="valign">start</property>
-+          <property name="visible">True</property>
-+          <property name="orientation">vertical</property>
-+        <child>
-+          <object class="GtkLabel">
-+            <property name="label" translatable="yes">Your subscription</property>
-+            <property name="margin-bottom">10</property>
-+            <property name="visible">True</property>
-+            <property name="halign">start</property>
-+            <attributes>
-+              <attribute name="scale" value="1.2"/>
-+            </attributes>
-+          </object>
-+        </child>
-+        <child>
-+          <object class="GtkLabel" id="contract_name">
-+            <property name="visible">True</property>
-+            <property name="margin-bottom">24</property>
-+            <property name="halign">start</property>
-+          </object>
-+        </child>
-+        <child>
-+          <object class="GtkLabel" id="enabled_services_header">
-+            <property name="label" translatable="yes">Your enabled services</property>
-+            <property name="margin-bottom">10</property>
-+            <property name="visible">True</property>
-+            <property name="halign">start</property>
-+            <attributes>
-+              <attribute name="scale" value="1.2"/>
-+            </attributes>
-+          </object>
-+        </child>
-+        <child>
-+          <object class="GtkGrid" id="enabled_services">
-+            <property name="margin-start">8</property>
-+            <property name="margin-bottom">20</property>
-+            <property name="visible">True</property>
-+            <property name="halign">fill</property>
-+            <property name="column-spacing">8</property>
-+            <property name="row-spacing">6</property>
-+          </object>
-+        </child>
-+        <child>
-+          <object class="GtkLabel" id="available_services_header">
-+            <property name="label" translatable="yes">Other available services</property>
-+            <property name="margin-bottom">10</property>
-+            <property name="visible">True</property>
-+            <property name="halign">start</property>
-+            <attributes>
-+              <attribute name="scale" value="1.2"/>
-+            </attributes>
-+          </object>
-+        </child>
-+        <child>
-+          <object class="GtkGrid" id="available_services">
-+            <property name="margin-start">8</property>
-+            <property name="visible">True</property>
-+            <property name="halign">fill</property>
-+            <property name="column-spacing">8</property>
-+            <property name="row-spacing">6</property>
-+          </object>
-+        </child>
-+        </object>
-+        </child>
-+        </object>
-+        </child>
-+        <child>
-+          <object class="GtkLabel">
-+            <property name="label" translatable="yes"
-+              comments="translators: Use HTML encoded format for special characters such as '&amp;'"
-+              ><![CDATA[You can change the default enablements for your token on the ubuntu.com/pro web interface. You can also change enabled services in the Settings menu or with the `<span font_family='monospace'>pro</span>` command-line.]]></property>
-+            <property name="margin-top">20</property>
-+            <property name="use-markup">True</property>
-+            <property name="wrap">True</property>
-+            <property name="width-chars">35</property>
-+            <property name="halign">start</property>
-+            <attributes>
-+              <attribute name="line-height" value="1.2"/>
-+            </attributes>
-+          </object>
-+        </child>
-+  </object>
-+  </child>
 +  </template>
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/meson.build b/gnome-initial-setup/pages/ubuntu-pro/meson.build
@@ -4010,7 +3822,7 @@ index 0000000..8c1d52c
 @@ -0,0 +1 @@
 +<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="Layer_1" x="0px" y="0px" width="150px" height="150px" viewBox="0 0 400 400" style="enable-background:new 0 0 400 400;" xml:space="preserve"> <style type="text/css"> .st0{fill:#666666; fill-opacity:0.25;} </style> <g> <path class="st0" d="M301.4,372.4C271.7,390,237,400,200,400C89.5,400,0,310.5,0,200C0,89.5,89.5,0,200,0c110.5,0,200,89.5,200,200 c0,36.4-9.7,70.6-26.8,100l0,0L400,400l-100-26.8L301.4,372.4L301.4,372.4z"/> </g> </svg>
 diff --git a/gnome-initial-setup/pages/welcome/gis-welcome-page.c b/gnome-initial-setup/pages/welcome/gis-welcome-page.c
-index 1cad96e..dcd7bbe 100644
+index 1cad96e..a2c0751 100644
 --- a/gnome-initial-setup/pages/welcome/gis-welcome-page.c
 +++ b/gnome-initial-setup/pages/welcome/gis-welcome-page.c
 @@ -28,6 +28,8 @@
