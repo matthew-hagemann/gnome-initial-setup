@@ -2,7 +2,7 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.c
 ===================================================================
 --- /dev/null
 +++ gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.c
-@@ -0,0 +1,273 @@
+@@ -0,0 +1,270 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2024 Canonical
@@ -79,7 +79,7 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.c
 +  }
 +  g_message("Current locale_trimmed: %s", locale_trimmed);
 +
-+  // Prepare locale variants dynamically    
++  // Prepare locale variants dynamically
 +  gchar *lang_and_variant = g_strdup_printf("_%s", locale_trimmed);
 +  gchar *lang_trimmed = g_strndup(locale_trimmed, 2);
 +  gchar *lang = g_strdup_printf("_%s", lang_trimmed);
@@ -201,24 +201,21 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.c
 +gis_eula_page_locale_changed (GisPage *page)
 +{
 +  GisEulaPage *eula_page = GIS_EULA_PAGE(page);
-+  const gchar *new_locale = getenv("LANG");
-+  if (!new_locale) {
-+      g_warning("LANG environment variable is not set or has changed unexpectedly");
-+      return;
-+  }
++  gchar *language;
++  language = gis_driver_get_user_language (GIS_PAGE (page)->driver);
 +
-+  g_message("Locale changed: %s", new_locale);
++  g_message("Locale changed: %s", language);
 +
-+  if (!g_strcmp0(new_locale, eula_page->current_locale)) {
++  if (!g_strcmp0(language, eula_page->current_locale)) {
 +      // Locale has not changed, do nothing
 +      return;
 +  }
 +
 +  g_free(eula_page->current_locale);
-+  eula_page->current_locale = g_strdup(new_locale);
++  eula_page->current_locale = g_strdup(language);
 +
 +  // Attempt to reload the PDF based on the new locale
-+  if (!gis_eula_load_pdf(eula_page, new_locale)) {
++  if (!gis_eula_load_pdf(eula_page, language)) {
 +      g_warning("Failed to reload PDF on locale change");
 +  }
 +}
@@ -250,13 +247,13 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.c
 +
 +    gchar *current_locale = g_strdup(env_lang);
 +    g_message("Initial locale: %s", current_locale);
-+    page->current_locale = g_strdup(current_locale); 
++    page->current_locale = g_strdup(current_locale);
 +
 +    gis_page_set_needs_accept (GIS_PAGE(page), TRUE);
 +
 +    // Attempt to load the PDF; handle failure
 +    g_message("Current locale: %s", current_locale);
-+    if (!gis_eula_load_pdf(page, current_locale)) { 
++    if (!gis_eula_load_pdf(page, current_locale)) {
 +        g_warning("Failed to load pdf");
 +        return;
 +    }
@@ -377,7 +374,7 @@ Index: gnome-initial-setup/gnome-initial-setup/gnome-initial-setup.c
 +  if (strcmp(page_id, "eula") == 0) {
 +    g_message("checking EULA");
 +    if (!g_file_test(GIS_EULA_DEFAULT_PAGE_PATH, G_FILE_TEST_EXISTS)) {
-+      g_message("skipping the eula");  
++      g_message("skipping the eula");
 +      return TRUE;
 +    }
 +  }
