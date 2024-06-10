@@ -2,7 +2,7 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.c
 ===================================================================
 --- /dev/null
 +++ gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.c
-@@ -0,0 +1,274 @@
+@@ -0,0 +1,273 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2024 Canonical
@@ -36,7 +36,6 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.c
 +{
 +  GisPage parent;
 +
-+  GtkScrolledWindow *scrolled_window;
 +  GtkDrawingArea *drawing_area;
 +
 +  gchar *current_locale;
@@ -281,7 +280,7 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.h
 ===================================================================
 --- /dev/null
 +++ gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.h
-@@ -0,0 +1,41 @@
+@@ -0,0 +1,40 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2020 Red Hat
@@ -312,8 +311,7 @@ Index: gnome-initial-setup/gnome-initial-setup/pages/eula/gis-eula-page.h
 +G_BEGIN_DECLS
 +
 +// TODO: change this
-+#define GIS_EULA_DEFAULT_PAGE_PATH "/home/matt/EULA.pdf"
-+#define GIS_EULA_DEFAULT_PAGE_DIR "/home/matt"
++#define GIS_EULA_DEFAULT_PAGE_PATH "/usr/share/desktop-provision/eula/EULA.pdf"
 +
 +#define GIS_TYPE_EULA_PAGE (gis_eula_page_get_type ())
 +G_DECLARE_FINAL_TYPE (GisEulaPage, gis_eula_page, GIS, EULA_PAGE, GisPage)
@@ -369,7 +367,7 @@ Index: gnome-initial-setup/gnome-initial-setup/gnome-initial-setup.c
    PAGE (network,  FALSE),
    PAGE (privacy,  FALSE),
    PAGE (timezone, TRUE),
-@@ -126,6 +128,18 @@ should_skip_page (const gchar  *page_id,
+@@ -128,6 +130,18 @@ should_skip_page (const gchar  *page_id,
      }
    }
  
