@@ -1,0 +1,448 @@
+From: Matthew Hagemann <matt.hagemann@canonical.com>
+Date: Tue, 11 Jun 2024 14:40:47 +0200
+Subject: Adding EULA page for OEMs
+
+The EULA page is conditionaly displayed if a EULA.pdf file is present under
+/usr/share/desktop-provision/eula/.
+It will first attempt to load the EULA matching your current locale
+(EULA_<locale>.pdf), using the variants first and then fallbacking to base
+language if the current varient is not available.
+If no match is found, EULA.pdf is then used.
+
+Note that multi-page pdf's are supported.
+
+Co-authored-by: Didier Roche-Tolomelli <didrocks@ubuntu.com>
+---
+ gnome-initial-setup/gnome-initial-setup.c         |  11 +
+ gnome-initial-setup/meson.build                   |   1 +
+ gnome-initial-setup/pages/eula/eula.gresource.xml |   7 +
+ gnome-initial-setup/pages/eula/gis-eula-page.c    | 232 ++++++++++++++++++++++
+ gnome-initial-setup/pages/eula/gis-eula-page.css  |  13 ++
+ gnome-initial-setup/pages/eula/gis-eula-page.h    |  38 ++++
+ gnome-initial-setup/pages/eula/gis-eula-page.ui   |  19 ++
+ gnome-initial-setup/pages/eula/meson.build        |  10 +
+ gnome-initial-setup/pages/meson.build             |   1 +
+ 9 files changed, 332 insertions(+)
+ create mode 100644 gnome-initial-setup/pages/eula/eula.gresource.xml
+ create mode 100644 gnome-initial-setup/pages/eula/gis-eula-page.c
+ create mode 100644 gnome-initial-setup/pages/eula/gis-eula-page.css
+ create mode 100644 gnome-initial-setup/pages/eula/gis-eula-page.h
+ create mode 100644 gnome-initial-setup/pages/eula/gis-eula-page.ui
+ create mode 100644 gnome-initial-setup/pages/eula/meson.build
+
+diff --git a/gnome-initial-setup/gnome-initial-setup.c b/gnome-initial-setup/gnome-initial-setup.c
+index b526038..43dc8eb 100644
+--- a/gnome-initial-setup/gnome-initial-setup.c
++++ b/gnome-initial-setup/gnome-initial-setup.c
+@@ -32,6 +32,7 @@
+ #include "pages/welcome/gis-welcome-page.h"
+ #include "pages/language/gis-language-page.h"
+ #include "pages/keyboard/gis-keyboard-page.h"
++#include "pages/eula/gis-eula-page.h"
+ #include "pages/network/gis-network-page.h"
+ #include "pages/timezone/gis-timezone-page.h"
+ #include "pages/privacy/gis-privacy-page.h"
+@@ -69,6 +70,7 @@ static PageData page_table[] = {
+   PAGE (welcome, FALSE),
+   PAGE (language, FALSE),
+   PAGE (keyboard, FALSE),
++  PAGE (eula,     TRUE),
+   PAGE (network,  FALSE),
+   PAGE (privacy,  FALSE),
+   PAGE (timezone, TRUE),
+@@ -128,6 +130,15 @@ should_skip_page (const gchar  *page_id,
+     }
+   }
+ 
++  /* check for the existence of the EULA file, skip the eula
++   * page if it is absent.
++   */
++  if (strcmp (page_id, "eula") == 0) {
++    if (!g_file_test (GIS_EULA_DEFAULT_PAGE_PATH, G_FILE_TEST_EXISTS)) {
++      return TRUE;
++    }
++  }
++
+   return FALSE;
+ }
+ 
+diff --git a/gnome-initial-setup/meson.build b/gnome-initial-setup/meson.build
+index b593a01..bbb72a4 100644
+--- a/gnome-initial-setup/meson.build
++++ b/gnome-initial-setup/meson.build
+@@ -56,6 +56,7 @@ dependencies = [
+     dependency ('snapd-glib-2'),
+     dependency ('libsoup-3.0'),
+     dependency ('sysmetrics'),
++    dependency ('poppler-glib'),
+     ibus_dep,
+     libmalcontent_dep,
+     libmalcontent_ui_dep,
+diff --git a/gnome-initial-setup/pages/eula/eula.gresource.xml b/gnome-initial-setup/pages/eula/eula.gresource.xml
+new file mode 100644
+index 0000000..fdf3cf1
+--- /dev/null
++++ b/gnome-initial-setup/pages/eula/eula.gresource.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<gresources>
++  <gresource prefix="/org/gnome/initial-setup">
++    <file preprocess="xml-stripblanks">gis-eula-page.ui</file>
++    <file>gis-eula-page.css</file>
++  </gresource>
++</gresources>
+diff --git a/gnome-initial-setup/pages/eula/gis-eula-page.c b/gnome-initial-setup/pages/eula/gis-eula-page.c
+new file mode 100644
+index 0000000..22c37fc
+--- /dev/null
++++ b/gnome-initial-setup/pages/eula/gis-eula-page.c
+@@ -0,0 +1,232 @@
++/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
++/*
++ * Copyright (C) 2024 Canonical
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of the
++ * License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, see <http://www.gnu.org/licenses/>.
++ *
++ */
++
++/* eula page */
++
++#define PAGE_ID "eula"
++
++#include "config.h"
++#include "gis-eula-page.h"
++#include "gis-assistant.h"
++
++#include <poppler.h>
++
++struct _GisEulaPage
++{
++  GisPage parent;
++
++  GtkDrawingArea *drawing_area;
++
++  gchar *current_locale;
++
++  PopplerDocument *document;
++  guint total_pages;
++};
++
++G_DEFINE_TYPE (GisEulaPage, gis_eula_page, GIS_TYPE_PAGE)
++
++
++static gboolean
++gis_eula_load_pdf (GisEulaPage *page, const gchar *current_locale)
++{
++  // Trim the file extension from the EULA default page path.
++  g_auto(GStrv) eulas = g_strsplit (GIS_EULA_DEFAULT_PAGE_PATH, ".", 2);
++  gchar* base_eula_path = eulas[0];
++
++  // Current_locale can be en_US.UTF-8 for instance
++  g_auto(GStrv) lang_and_variants = g_strsplit (current_locale, ".", 2);
++
++  g_auto(GStrv) langs = g_strsplit (lang_and_variants[0], "_", 2);
++  gchar* lang = langs[0];
++
++  const gchar *locales[] = {lang_and_variants[0], lang, ""};
++  // Iterate through the array of locale strings to attempt loading the PDF.
++  for (gint i = 0; i < G_N_ELEMENTS(locales); i++)
++  {
++      gchar *fmt = g_strdup("%s_%s.pdf");
++      if (strlen(locales[i]) == 0)
++      {
++        fmt = g_strdup("%s%s.pdf");
++      }
++
++      gchar *uri = g_strdup_printf (fmt, base_eula_path, locales[i]);
++      g_free (fmt);
++      GFile *file = g_file_new_for_path (uri);
++
++      GError *error = NULL;
++      PopplerDocument *document = poppler_document_new_from_gfile (file, NULL, NULL, &error);
++      g_object_unref (file);
++
++      if (error != NULL)
++      {
++          g_debug ("Could not find locate PDF %s: %s", uri, error->message);
++          g_free (uri);
++          g_error_free (error);
++          continue;
++      }
++
++      g_free (uri);
++
++      page->document = document;
++      break;
++  }
++
++  // If document is loaded, process it
++  if (page->document == NULL)
++  {
++      g_warning ("Failed to load any EULA document.");
++      return FALSE;
++  }
++
++  // Get the total number of pages in the document
++  page->total_pages = poppler_document_get_n_pages (page->document);
++  return TRUE;
++}
++
++double pdf_get_total_height (GisEulaPage *page, double width, double *scale)
++{
++    double total_height = 0;
++    double page_width, page_height;
++
++    for (int i = 0; i < page->total_pages; i++)
++    {
++        PopplerPage *ppage = poppler_document_get_page (page->document, i);
++        poppler_page_get_size (ppage, &page_width, &page_height);
++
++        if (i == 0)
++        {
++            *scale = width / page_width;
++        }
++
++        total_height += page_height * (*scale);
++        g_object_unref (ppage);
++    }
++
++    return total_height;
++}
++
++void pdf_render_all_pages (GisEulaPage *page, cairo_t *cairo, double scale)
++{
++    double y_offset = 0;
++
++    for (int i = 0; i < page->total_pages; i++)
++    {
++        PopplerPage *ppage = poppler_document_get_page (page->document, i);
++        double page_width, page_height;
++        poppler_page_get_size (ppage, &page_width, &page_height);
++
++        cairo_save (cairo);
++        cairo_scale (cairo, scale, scale);
++        cairo_translate (cairo, 0, y_offset / scale);
++        poppler_page_render (ppage, cairo);
++        cairo_restore (cairo);
++
++        y_offset += page_height * scale;
++        g_object_unref (ppage);
++    }
++}
++
++static void pdf_view_draw_content(GtkDrawingArea *area, cairo_t *cairo, int width, int height, gpointer user_data)
++{
++  GisEulaPage *page = GIS_EULA_PAGE (user_data);
++  double scale;
++  double total_height = pdf_get_total_height (page, width, &scale);
++
++  gtk_widget_set_size_request (GTK_WIDGET (page->drawing_area), -1, total_height);
++  pdf_render_all_pages (page, cairo, scale);
++}
++
++static void
++gis_eula_page_constructed (GObject *object)
++{
++  GisEulaPage *page = GIS_EULA_PAGE (object);
++
++  G_OBJECT_CLASS (gis_eula_page_parent_class)->constructed (object);
++
++  gis_page_set_complete (GIS_PAGE (page), TRUE);
++}
++
++static void
++gis_eula_page_finalize (GObject *object)
++{
++  GisEulaPage *page = GIS_EULA_PAGE (object);
++  g_free (page->current_locale);
++  if (page->document)
++  {
++    g_object_unref (page->document);
++  }
++
++  G_OBJECT_CLASS (gis_eula_page_parent_class)->finalize (object);
++}
++
++static void
++gis_eula_page_locale_changed (GisPage *page)
++{
++  GisEulaPage *eula_page = GIS_EULA_PAGE(page);
++  const gchar *language;
++
++  language = gis_driver_get_user_language (GIS_PAGE (page)->driver);
++
++  // Locale has not changed, do nothing
++  if (!g_strcmp0 (language, eula_page->current_locale)) {
++      return;
++  }
++
++  g_free (eula_page->current_locale);
++  eula_page->current_locale = g_strdup (language);
++
++  // Attempt to reload the PDF based on the new locale
++  if (!gis_eula_load_pdf (eula_page, eula_page->current_locale))
++      g_warning ("Failed to reload PDF on locale change, keep previous one");
++}
++
++static void
++gis_eula_page_class_init (GisEulaPageClass *klass)
++{
++  GisPageClass *page_class = GIS_PAGE_CLASS (klass);
++  GObjectClass *object_class = G_OBJECT_CLASS (klass);
++
++  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass), "/org/gnome/initial-setup/gis-eula-page.ui");
++  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisEulaPage, drawing_area);
++
++  page_class->page_id = PAGE_ID;
++  page_class->locale_changed = gis_eula_page_locale_changed;
++
++  object_class->constructed = gis_eula_page_constructed;
++  object_class->finalize = gis_eula_page_finalize;
++}
++
++static void
++gis_eula_page_init (GisEulaPage *page)
++{
++  // UI setup if PDF loaded successfully
++  gtk_widget_init_template (GTK_WIDGET (page));
++  gtk_drawing_area_set_draw_func (page->drawing_area, pdf_view_draw_content, page, NULL);
++  gis_add_style_from_resource ("/org/gnome/initial-setup/gis-eula-page.css");
++  gis_page_set_needs_accept (GIS_PAGE (page), TRUE);
++}
++
++GisPage *
++gis_prepare_eula_page (GisDriver *driver)
++{
++  return g_object_new (GIS_TYPE_EULA_PAGE,
++                       "driver", driver,
++                       NULL);
++}
++
+diff --git a/gnome-initial-setup/pages/eula/gis-eula-page.css b/gnome-initial-setup/pages/eula/gis-eula-page.css
+new file mode 100644
+index 0000000..a093641
+--- /dev/null
++++ b/gnome-initial-setup/pages/eula/gis-eula-page.css
+@@ -0,0 +1,13 @@
++.welcome-header-box {
++  padding: 30px;
++  background: linear-gradient(to bottom, #e3ecf8, #c4cdd8);
++}
++
++.welcome-status-page {
++  padding: 30px;
++}
++
++:link, :visited {
++  color: #24598f;
++  text-decoration: none;
++}
+\ No newline at end of file
+diff --git a/gnome-initial-setup/pages/eula/gis-eula-page.h b/gnome-initial-setup/pages/eula/gis-eula-page.h
+new file mode 100644
+index 0000000..6e441d2
+--- /dev/null
++++ b/gnome-initial-setup/pages/eula/gis-eula-page.h
+@@ -0,0 +1,38 @@
++/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
++/*
++ * Copyright (C) 2024 Canonical
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of the
++ * License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, see <http://www.gnu.org/licenses/>.
++ *
++ */
++
++#pragma once
++
++#include <glib-object.h>
++
++#include "gnome-initial-setup.h"
++
++G_BEGIN_DECLS
++
++// TODO: change this
++#define GIS_EULA_DEFAULT_PAGE_PATH "/usr/share/desktop-provision/eula/EULA.pdf"
++
++#define GIS_TYPE_EULA_PAGE (gis_eula_page_get_type ())
++G_DECLARE_FINAL_TYPE (GisEulaPage, gis_eula_page, GIS, EULA_PAGE, GisPage)
++
++GType gis_eula_page_get_type (void);
++
++GisPage *gis_prepare_eula_page (GisDriver *driver);
++
++G_END_DECLS
+diff --git a/gnome-initial-setup/pages/eula/gis-eula-page.ui b/gnome-initial-setup/pages/eula/gis-eula-page.ui
+new file mode 100644
+index 0000000..01edcdb
+--- /dev/null
++++ b/gnome-initial-setup/pages/eula/gis-eula-page.ui
+@@ -0,0 +1,19 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<interface>
++  <template class="GisEulaPage" parent="GisPage">
++    <child>
++      <object class="GtkScrolledWindow">
++        <property name="visible">True</property>
++        <property name="can-focus">True</property>
++        <property name="hscrollbar-policy">never</property>
++        <child>
++          <object class="GtkDrawingArea" id="drawing_area">
++            <property name="visible">True</property>
++            <property name="can-focus">False</property>
++            <property name="vexpand">True</property>
++          </object>
++        </child>
++      </object>
++    </child>
++  </template>
++</interface>
+\ No newline at end of file
+diff --git a/gnome-initial-setup/pages/eula/meson.build b/gnome-initial-setup/pages/eula/meson.build
+new file mode 100644
+index 0000000..389d3ab
+--- /dev/null
++++ b/gnome-initial-setup/pages/eula/meson.build
+@@ -0,0 +1,10 @@
++sources += gnome.compile_resources(
++    'eula-resources',
++    files('eula.gresource.xml'),
++    c_name: 'eula'
++)
++
++sources += files(
++    'gis-eula-page.c',
++    'gis-eula-page.h',
++)
+diff --git a/gnome-initial-setup/pages/meson.build b/gnome-initial-setup/pages/meson.build
+index 2ed2a5f..1a54d65 100644
+--- a/gnome-initial-setup/pages/meson.build
++++ b/gnome-initial-setup/pages/meson.build
+@@ -1,5 +1,6 @@
+ pages = [
+    'account',
++   'eula',
+    'language',
+    'keyboard',
+    'network',
