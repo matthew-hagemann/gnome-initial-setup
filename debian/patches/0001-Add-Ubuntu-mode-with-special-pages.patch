@@ -33,7 +33,7 @@ Subject: Add Ubuntu mode with special pages
  gnome-initial-setup/pages/ubuntu-pro/meson.build   |   12 +
  .../pages/ubuntu-pro/ubuntu-pro-dark.svg           |   25 +
  .../pages/ubuntu-pro/ubuntu-pro.svg                |    1 +
- .../pages/ubuntu-pro/ubuntupro.gresource.xml       |   14 +
+ .../pages/ubuntu-pro/ubuntupro.gresource.xml       |   16 +
  gnome-initial-setup/pages/ubuntu-pro/utils.c       |  119 ++
  gnome-initial-setup/pages/ubuntu-pro/utils.h       |    7 +
  .../pages/ubuntu-report/gis-ubuntu-report-page.c   |  376 ++++
@@ -49,7 +49,7 @@ Subject: Add Ubuntu mode with special pages
  .../pages/welcome/ubuntu-mascot.svg                |  196 +++
  .../pages/welcome/welcome.gresource.xml            |    2 +-
  po/POTFILES.in                                     |   10 +
- 46 files changed, 3625 insertions(+), 1878 deletions(-)
+ 46 files changed, 3627 insertions(+), 1878 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/app-center.svg
@@ -1717,7 +1717,7 @@ index 0000000..a5d09eb
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
 new file mode 100644
-index 0000000..41bb3de
+index 0000000..ae03937
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
 @@ -0,0 +1,1058 @@
@@ -1742,8 +1742,8 @@ index 0000000..41bb3de
 +/* Canonical Ubuntu Pro page {{{1 */
 +
 +#define PAGE_ID "UbuntuPro"
-+#define CHECK_ICON "/org/gnome/initial-setup/checkmark.svg"
-+#define FAIL_ICON  "/org/gnome/initial-setup/fail.svg"
++#define CHECK_ICON "pro-checkmark"
++#define FAIL_ICON  "pro-fail"
 +#define LOGO       "/org/gnome/initial-setup/ubuntu-pro.svg"
 +#define LOGO_DARK  "/org/gnome/initial-setup/ubuntu-pro-dark.svg"
 +
@@ -1923,7 +1923,7 @@ index 0000000..41bb3de
 +    subtitle = g_strconcat ("<span foreground=\"green\"><b>",
 +                            _("Valid token"), "</b></span>", NULL);
 +    adw_expander_row_set_subtitle (ADW_EXPANDER_ROW (label), subtitle);
-+    gtk_image_set_from_resource (GTK_IMAGE(icon), CHECK_ICON);
++    gtk_image_set_from_icon_name (GTK_IMAGE(icon), CHECK_ICON);
 +    gtk_widget_set_sensitive(GTK_WIDGET(priv->token_field), FALSE);
 +    gtk_widget_set_sensitive(GTK_WIDGET(priv->magic_radio), FALSE);
 +    gtk_widget_set_sensitive(GTK_WIDGET(priv->token_radio), FALSE);
@@ -2927,7 +2927,7 @@ index 0000000..d03d133
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui
 new file mode 100644
-index 0000000..f34a157
+index 0000000..e01d6b5
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui
 @@ -0,0 +1,107 @@
@@ -2972,7 +2972,7 @@ index 0000000..f34a157
 +                <property name="can-focus">False</property>
 +                <child type="suffix">
 +                  <object class="GtkImage" id="checkmark">
-+                    <property name="resource">/org/gnome/initial-setup/checkmark.svg</property>
++                    <property name="icon-name">pro-checkmark</property>
 +                    <property name="pixel-size">22</property>
 +                  </object>
 +                </child>
@@ -3097,10 +3097,10 @@ index 0000000..d377e41
 \ No newline at end of file
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/ubuntupro.gresource.xml b/gnome-initial-setup/pages/ubuntu-pro/ubuntupro.gresource.xml
 new file mode 100644
-index 0000000..9257186
+index 0000000..ee8851d
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/ubuntupro.gresource.xml
-@@ -0,0 +1,14 @@
+@@ -0,0 +1,16 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<gresources>
 +  <gresource prefix="/org/gnome/initial-setup">
@@ -3110,8 +3110,10 @@ index 0000000..9257186
 +    <file preprocess="xml-stripblanks" alias="gis-ubuntupro-services-page.ui">gis-ubuntupro-services-page.ui</file>
 +    <file alias="ubuntu-pro-dark.svg">ubuntu-pro-dark.svg</file>
 +    <file alias="ubuntu-pro.svg">ubuntu-pro.svg</file>
-+    <file alias="checkmark.svg">checkmark.svg</file>
-+    <file alias="fail.svg">fail.svg</file>
++  </gresource>
++  <gresource prefix="/org/gnome/InitialSetup/icons">
++    <file preprocess="xml-stripblanks" alias="scalable/actions/pro-checkmark.svg">checkmark.svg</file>
++    <file preprocess="xml-stripblanks" alias="scalable/actions/pro-fail.svg">fail.svg</file>
 +  </gresource>
 +</gresources>
 +
