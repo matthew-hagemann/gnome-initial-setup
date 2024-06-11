@@ -8,3 +8,4 @@ reenable-existing-user-mode.patch
 ubuntu-distributor-logo.patch
 Update-style-to-the-same-than-flutter-installer.patch
 Add-wrapper-for-convd-flutter-ui.patch
+Do-not-skip-g-i-s-first-login-mode-after-user-creation.patch
