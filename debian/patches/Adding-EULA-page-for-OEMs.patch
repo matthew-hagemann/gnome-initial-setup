@@ -4,25 +4,26 @@ Subject: Adding EULA page for OEMs
 
 The EULA page is conditionaly displayed if a EULA.pdf file is present under
 /usr/share/desktop-provision/eula/.
-It will first attempt to load the EULA matching your current locale
-(EULA_<locale>.pdf), using the variants first and then fallbacking to base
-language if the current varient is not available.
+It will first attempt to asynchronously loading the EULA matching your current
+locale (EULA_<locale>.pdf), using the variants first and then fallbacking to
+base language if the current varient is not available.
 If no match is found, EULA.pdf is then used.
 
 Note that multi-page pdf's are supported.
 
 Co-authored-by: Didier Roche-Tolomelli <didrocks@ubuntu.com>
+Co-authored-by: Marco Trevisan <marco@ubuntu.com>
 ---
- gnome-initial-setup/gnome-initial-setup.c         |  11 +
+ gnome-initial-setup/gnome-initial-setup.c         |   2 +
  gnome-initial-setup/meson.build                   |   1 +
  gnome-initial-setup/pages/eula/eula.gresource.xml |   7 +
- gnome-initial-setup/pages/eula/gis-eula-page.c    | 232 ++++++++++++++++++++++
- gnome-initial-setup/pages/eula/gis-eula-page.css  |  13 ++
- gnome-initial-setup/pages/eula/gis-eula-page.h    |  38 ++++
- gnome-initial-setup/pages/eula/gis-eula-page.ui   |  19 ++
+ gnome-initial-setup/pages/eula/gis-eula-page.c    | 331 ++++++++++++++++++++++
+ gnome-initial-setup/pages/eula/gis-eula-page.css  |  10 +
+ gnome-initial-setup/pages/eula/gis-eula-page.h    |  35 +++
+ gnome-initial-setup/pages/eula/gis-eula-page.ui   |  43 +++
  gnome-initial-setup/pages/eula/meson.build        |  10 +
  gnome-initial-setup/pages/meson.build             |   1 +
- 9 files changed, 332 insertions(+)
+ 9 files changed, 440 insertions(+)
  create mode 100644 gnome-initial-setup/pages/eula/eula.gresource.xml
  create mode 100644 gnome-initial-setup/pages/eula/gis-eula-page.c
  create mode 100644 gnome-initial-setup/pages/eula/gis-eula-page.css
@@ -31,7 +32,7 @@ Co-authored-by: Didier Roche-Tolomelli <didrocks@ubuntu.com>
  create mode 100644 gnome-initial-setup/pages/eula/meson.build
 
 diff --git a/gnome-initial-setup/gnome-initial-setup.c b/gnome-initial-setup/gnome-initial-setup.c
-index b526038..43dc8eb 100644
+index b526038..f02cea9 100644
 --- a/gnome-initial-setup/gnome-initial-setup.c
 +++ b/gnome-initial-setup/gnome-initial-setup.c
 @@ -32,6 +32,7 @@
@@ -50,22 +51,6 @@ index b526038..43dc8eb 100644
    PAGE (network,  FALSE),
    PAGE (privacy,  FALSE),
    PAGE (timezone, TRUE),
-@@ -128,6 +130,15 @@ should_skip_page (const gchar  *page_id,
-     }
-   }
- 
-+  /* check for the existence of the EULA file, skip the eula
-+   * page if it is absent.
-+   */
-+  if (strcmp (page_id, "eula") == 0) {
-+    if (!g_file_test (GIS_EULA_DEFAULT_PAGE_PATH, G_FILE_TEST_EXISTS)) {
-+      return TRUE;
-+    }
-+  }
-+
-   return FALSE;
- }
- 
 diff --git a/gnome-initial-setup/meson.build b/gnome-initial-setup/meson.build
 index b593a01..bbb72a4 100644
 --- a/gnome-initial-setup/meson.build
@@ -93,10 +78,10 @@ index 0000000..fdf3cf1
 +</gresources>
 diff --git a/gnome-initial-setup/pages/eula/gis-eula-page.c b/gnome-initial-setup/pages/eula/gis-eula-page.c
 new file mode 100644
-index 0000000..22c37fc
+index 0000000..242edd6
 --- /dev/null
 +++ b/gnome-initial-setup/pages/eula/gis-eula-page.c
-@@ -0,0 +1,232 @@
+@@ -0,0 +1,331 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2024 Canonical
@@ -122,7 +107,6 @@ index 0000000..22c37fc
 +
 +#include "config.h"
 +#include "gis-eula-page.h"
-+#include "gis-assistant.h"
 +
 +#include <poppler.h>
 +
@@ -130,8 +114,12 @@ index 0000000..22c37fc
 +{
 +  GisPage parent;
 +
++  GtkWidget *page_stack;
++  GtkWidget *loading_spinner;
++  GtkWidget *document_missing;
++  GtkWidget *document_window;
 +  GtkDrawingArea *drawing_area;
-+
++  GCancellable *loading_cancellable;
 +  gchar *current_locale;
 +
 +  PopplerDocument *document;
@@ -140,138 +128,210 @@ index 0000000..22c37fc
 +
 +G_DEFINE_TYPE (GisEulaPage, gis_eula_page, GIS_TYPE_PAGE)
 +
++/* Define autopointers for poppler-glib */
++G_DEFINE_AUTOPTR_CLEANUP_FUNC(PopplerDocument, g_object_unref);
++G_DEFINE_AUTOPTR_CLEANUP_FUNC(PopplerPage, g_object_unref);
 +
-+static gboolean
-+gis_eula_load_pdf (GisEulaPage *page, const gchar *current_locale)
++#define GIS_EULA_DEFAULT_PAGE_PATH "/usr/share/desktop-provision/eula"
++#define GIS_EULA_DEFAULT_PAGE_NAME "EULA"
++
++#define PAGES_SEPARATION 10
++
++static void
++load_pdf_thread (GTask *task,
++                 gpointer source_object,
++                 gpointer task_data,
++                 GCancellable *cancellable)
 +{
-+  // Trim the file extension from the EULA default page path.
-+  g_auto(GStrv) eulas = g_strsplit (GIS_EULA_DEFAULT_PAGE_PATH, ".", 2);
-+  gchar* base_eula_path = eulas[0];
++  const char *current_locale = task_data;
 +
-+  // Current_locale can be en_US.UTF-8 for instance
-+  g_auto(GStrv) lang_and_variants = g_strsplit (current_locale, ".", 2);
++  /* Current_locale can be en_US.UTF-8@euro for instance */
++  g_auto(GStrv) lang_and_variants = g_get_locale_variants (current_locale);
 +
-+  g_auto(GStrv) langs = g_strsplit (lang_and_variants[0], "_", 2);
-+  gchar* lang = langs[0];
-+
-+  const gchar *locales[] = {lang_and_variants[0], lang, ""};
-+  // Iterate through the array of locale strings to attempt loading the PDF.
-+  for (gint i = 0; i < G_N_ELEMENTS(locales); i++)
-+  {
-+      gchar *fmt = g_strdup("%s_%s.pdf");
-+      if (strlen(locales[i]) == 0)
-+      {
-+        fmt = g_strdup("%s%s.pdf");
-+      }
-+
-+      gchar *uri = g_strdup_printf (fmt, base_eula_path, locales[i]);
-+      g_free (fmt);
-+      GFile *file = g_file_new_for_path (uri);
-+
-+      GError *error = NULL;
-+      PopplerDocument *document = poppler_document_new_from_gfile (file, NULL, NULL, &error);
-+      g_object_unref (file);
-+
-+      if (error != NULL)
-+      {
-+          g_debug ("Could not find locate PDF %s: %s", uri, error->message);
-+          g_free (uri);
-+          g_error_free (error);
-+          continue;
-+      }
-+
-+      g_free (uri);
-+
-+      page->document = document;
-+      break;
-+  }
-+
-+  // If document is loaded, process it
-+  if (page->document == NULL)
-+  {
-+      g_warning ("Failed to load any EULA document.");
-+      return FALSE;
-+  }
-+
-+  // Get the total number of pages in the document
-+  page->total_pages = poppler_document_get_n_pages (page->document);
-+  return TRUE;
-+}
-+
-+double pdf_get_total_height (GisEulaPage *page, double width, double *scale)
-+{
-+    double total_height = 0;
-+    double page_width, page_height;
-+
-+    for (int i = 0; i < page->total_pages; i++)
++  /* Iterate through the array of locale strings to attempt loading the PDF. */
++  for (size_t i = 0; ; i++)
 +    {
-+        PopplerPage *ppage = poppler_document_get_page (page->document, i);
-+        poppler_page_get_size (ppage, &page_width, &page_height);
++      const char *locale = lang_and_variants[i];
++      g_autofree char *localized = NULL;
 +
-+        if (i == 0)
++      if (g_task_return_error_if_cancelled (task))
++        return;
++
++      if (!locale)
++        localized = g_strdup (GIS_EULA_DEFAULT_PAGE_NAME ".pdf");
++      else
++        localized = g_strdup_printf (GIS_EULA_DEFAULT_PAGE_NAME "_%s.pdf", locale);
++
++      g_autoptr(GFile) file =
++        g_file_new_build_filename (GIS_EULA_DEFAULT_PAGE_PATH, localized, NULL);
++
++      g_autoptr(GError) error = NULL;
++      g_autoptr(PopplerDocument) document = NULL;
++      document = poppler_document_new_from_gfile (file, NULL, NULL, &error);
++      if (!document)
 +        {
-+            *scale = width / page_width;
++          g_debug ("Could not locate PDF %s: %s",
++                   g_file_peek_path (file), error->message);
++          if (!locale)
++            {
++              g_task_return_error (task, g_steal_pointer (&error));
++              return;
++            }
++
++          continue;
 +        }
 +
-+        total_height += page_height * (*scale);
-+        g_object_unref (ppage);
++      g_task_return_pointer (task, g_steal_pointer (&document), g_object_unref);
++      return;
 +    }
 +
-+    return total_height;
++  /* If document is loaded, process it */
++  g_task_return_new_error_literal (task, G_IO_ERROR, G_IO_ERROR_NOT_FOUND,
++                                   "Failed to load any EULA document");
 +}
 +
-+void pdf_render_all_pages (GisEulaPage *page, cairo_t *cairo, double scale)
++double
++pdf_get_total_size (GisEulaPage *page, double width,
++                    double *scale, double *out_max_width)
 +{
-+    double y_offset = 0;
++  double total_height = 0;
++  double page_width, page_height;
 +
-+    for (int i = 0; i < page->total_pages; i++)
++  *out_max_width = 0;
++
++  for (int i = 0; i < page->total_pages; i++)
 +    {
-+        PopplerPage *ppage = poppler_document_get_page (page->document, i);
-+        double page_width, page_height;
-+        poppler_page_get_size (ppage, &page_width, &page_height);
++      g_autoptr(PopplerPage) ppage = poppler_document_get_page (page->document, i);
++      poppler_page_get_size (ppage, &page_width, NULL);
 +
-+        cairo_save (cairo);
-+        cairo_scale (cairo, scale, scale);
-+        cairo_translate (cairo, 0, y_offset / scale);
-+        poppler_page_render (ppage, cairo);
-+        cairo_restore (cairo);
++      *out_max_width = MAX (*out_max_width, page_width);
++    }
 +
-+        y_offset += page_height * scale;
-+        g_object_unref (ppage);
++  *scale = width / *out_max_width;
++
++  for (int i = 0; i < page->total_pages; i++)
++    {
++      g_autoptr(PopplerPage) ppage = poppler_document_get_page (page->document, i);
++      poppler_page_get_size (ppage, &page_width, &page_height);
++
++      total_height += page_height * (*scale);
++    }
++
++  if (page->total_pages)
++    total_height += (PAGES_SEPARATION * page->total_pages - 1);
++
++  return total_height;
++}
++
++static void
++pdf_render_all_pages (GisEulaPage *page,
++                      cairo_t     *cairo,
++                      double       max_width,
++                      double       scale)
++{
++  double y_offset = 0;
++
++  for (int i = 0; i < page->total_pages; i++)
++    {
++      g_autoptr(PopplerPage) ppage = poppler_document_get_page (page->document, i);
++      double page_width, page_height;
++      poppler_page_get_size (ppage, &page_width, &page_height);
++      double x = ((max_width - page_width) / 2) * scale;
++
++      /* Ensure page as white background, as it's not for all PDFs */
++      cairo_rectangle (cairo, x, y_offset,
++                       page_width * scale, page_height * scale);
++      cairo_set_source_rgb (cairo, 1, 1, 1);
++      cairo_fill (cairo);
++
++      cairo_save (cairo);
++      cairo_translate (cairo, x, y_offset);
++      cairo_scale (cairo, scale, scale);
++      poppler_page_render (ppage, cairo);
++      cairo_restore (cairo);
++
++      cairo_rectangle (cairo, 0,
++                       y_offset + (page_height + PAGES_SEPARATION / 2.0) * scale,
++                       max_width * scale, 1);
++      cairo_set_source_rgb (cairo, 0, 0, 0);
++      cairo_fill (cairo);
++
++      y_offset += (page_height + PAGES_SEPARATION) * scale;
 +    }
 +}
 +
-+static void pdf_view_draw_content(GtkDrawingArea *area, cairo_t *cairo, int width, int height, gpointer user_data)
++static void
++pdf_view_draw_content(GtkDrawingArea *area,
++                      cairo_t        *cr,
++                      int             width,
++                      int             height,
++                      gpointer        user_data)
 +{
 +  GisEulaPage *page = GIS_EULA_PAGE (user_data);
 +  double scale;
-+  double total_height = pdf_get_total_height (page, width, &scale);
++  double max_width;
++  double total_height = pdf_get_total_size (page, width, &scale, &max_width);
 +
 +  gtk_widget_set_size_request (GTK_WIDGET (page->drawing_area), -1, total_height);
-+  pdf_render_all_pages (page, cairo, scale);
++  pdf_render_all_pages (page, cr, max_width, scale);
 +}
 +
 +static void
 +gis_eula_page_constructed (GObject *object)
 +{
-+  GisEulaPage *page = GIS_EULA_PAGE (object);
-+
 +  G_OBJECT_CLASS (gis_eula_page_parent_class)->constructed (object);
-+
-+  gis_page_set_complete (GIS_PAGE (page), TRUE);
 +}
 +
 +static void
 +gis_eula_page_finalize (GObject *object)
 +{
 +  GisEulaPage *page = GIS_EULA_PAGE (object);
++
 +  g_free (page->current_locale);
-+  if (page->document)
-+  {
-+    g_object_unref (page->document);
-+  }
++  g_clear_object (&page->document);
++  g_cancellable_cancel (page->loading_cancellable);
++  g_clear_object (&page->loading_cancellable);
 +
 +  G_OBJECT_CLASS (gis_eula_page_parent_class)->finalize (object);
++}
++
++static void
++pdf_loaded (GObject *source_object,
++            GAsyncResult *res,
++            gpointer user_data)
++{
++  GisEulaPage *eula_page = GIS_EULA_PAGE (source_object);
++  g_autoptr (PopplerDocument) document = NULL;
++  g_autoptr (GError) error = NULL;
++
++  document = g_task_propagate_pointer (G_TASK (res), &error);
++  if (error)
++    {
++      if (g_error_matches(error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
++        return;
++
++      g_warning ("Failed loading PDF: %s", error->message);
++    }
++
++  if (document)
++    {
++      eula_page->total_pages = poppler_document_get_n_pages (document);
++      eula_page->document = g_steal_pointer (&document);
++      gtk_stack_set_visible_child (GTK_STACK (eula_page->page_stack),
++                                   GTK_WIDGET (eula_page->document_window));
++    }
++  else if (eula_page->document)
++    {
++      g_warning ("Failed to reload PDF on locale change, keep previous one");
++    }
++  else
++    {
++      gtk_stack_set_visible_child (GTK_STACK (eula_page->page_stack),
++                                   GTK_WIDGET (eula_page->document_missing));
++      g_critical ("No EULA to show!");
++    }
++
++  gis_page_set_complete (GIS_PAGE (eula_page), TRUE);
 +}
 +
 +static void
@@ -282,17 +342,25 @@ index 0000000..22c37fc
 +
 +  language = gis_driver_get_user_language (GIS_PAGE (page)->driver);
 +
-+  // Locale has not changed, do nothing
-+  if (!g_strcmp0 (language, eula_page->current_locale)) {
++  /* Locale has not changed, do nothing */
++  if (!eula_page->document &&
++      g_strcmp0 (language, eula_page->current_locale) == 0)
 +      return;
-+  }
 +
-+  g_free (eula_page->current_locale);
-+  eula_page->current_locale = g_strdup (language);
++  g_cancellable_cancel (eula_page->loading_cancellable);
++  g_clear_object (&eula_page->loading_cancellable);
++  eula_page->loading_cancellable = g_cancellable_new ();
 +
-+  // Attempt to reload the PDF based on the new locale
-+  if (!gis_eula_load_pdf (eula_page, eula_page->current_locale))
-+      g_warning ("Failed to reload PDF on locale change, keep previous one");
++  g_set_str (&eula_page->current_locale, language);
++
++  gtk_stack_set_visible_child (GTK_STACK (eula_page->page_stack),
++                               GTK_WIDGET (eula_page->loading_spinner));
++
++  /* Attempt to reload the PDF based on the new locale */
++  g_autoptr(GTask) task = g_task_new (page, eula_page->loading_cancellable,
++                                      pdf_loaded, NULL);
++  g_task_set_task_data (task, g_strdup (eula_page->current_locale), g_free);
++  g_task_run_in_thread (task, load_pdf_thread);
 +}
 +
 +static void
@@ -302,6 +370,10 @@ index 0000000..22c37fc
 +  GObjectClass *object_class = G_OBJECT_CLASS (klass);
 +
 +  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass), "/org/gnome/initial-setup/gis-eula-page.ui");
++  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisEulaPage, page_stack);
++  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisEulaPage, loading_spinner);
++  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisEulaPage, document_window);
++  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisEulaPage, document_missing);
 +  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisEulaPage, drawing_area);
 +
 +  page_class->page_id = PAGE_ID;
@@ -314,7 +386,7 @@ index 0000000..22c37fc
 +static void
 +gis_eula_page_init (GisEulaPage *page)
 +{
-+  // UI setup if PDF loaded successfully
++  /* UI setup if PDF loaded successfully */
 +  gtk_widget_init_template (GTK_WIDGET (page));
 +  gtk_drawing_area_set_draw_func (page->drawing_area, pdf_view_draw_content, page, NULL);
 +  gis_add_style_from_resource ("/org/gnome/initial-setup/gis-eula-page.css");
@@ -324,6 +396,18 @@ index 0000000..22c37fc
 +GisPage *
 +gis_prepare_eula_page (GisDriver *driver)
 +{
++  /* check for the existence of the EULA file, skip the eula
++   * page if it is absent.
++   */
++  if (!g_file_test (GIS_EULA_DEFAULT_PAGE_PATH G_DIR_SEPARATOR_S
++                    GIS_EULA_DEFAULT_PAGE_NAME ".pdf",
++                    G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR |
++                    G_FILE_TEST_IS_SYMLINK))
++    {
++      g_debug ("No EULA page found, skipping page");
++      return NULL;
++    }
++
 +  return g_object_new (GIS_TYPE_EULA_PAGE,
 +                       "driver", driver,
 +                       NULL);
@@ -331,30 +415,26 @@ index 0000000..22c37fc
 +
 diff --git a/gnome-initial-setup/pages/eula/gis-eula-page.css b/gnome-initial-setup/pages/eula/gis-eula-page.css
 new file mode 100644
-index 0000000..a093641
+index 0000000..9b0bebd
 --- /dev/null
 +++ b/gnome-initial-setup/pages/eula/gis-eula-page.css
-@@ -0,0 +1,13 @@
-+.welcome-header-box {
-+  padding: 30px;
-+  background: linear-gradient(to bottom, #e3ecf8, #c4cdd8);
+@@ -0,0 +1,10 @@
++.eula-document-scroll-area {
++  background-color: rgba(0, 0, 0, 0.15);
 +}
 +
-+.welcome-status-page {
-+  padding: 30px;
++.eula-document-area {
++  background-color: white;
++  margin: 10px 20px;
++  margin-bottom: 20px;
++  box-shadow: 6px 8px 15px @dark_3;
 +}
-+
-+:link, :visited {
-+  color: #24598f;
-+  text-decoration: none;
-+}
-\ No newline at end of file
 diff --git a/gnome-initial-setup/pages/eula/gis-eula-page.h b/gnome-initial-setup/pages/eula/gis-eula-page.h
 new file mode 100644
-index 0000000..6e441d2
+index 0000000..ebe5ff5
 --- /dev/null
 +++ b/gnome-initial-setup/pages/eula/gis-eula-page.h
-@@ -0,0 +1,38 @@
+@@ -0,0 +1,35 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2024 Canonical
@@ -382,9 +462,6 @@ index 0000000..6e441d2
 +
 +G_BEGIN_DECLS
 +
-+// TODO: change this
-+#define GIS_EULA_DEFAULT_PAGE_PATH "/usr/share/desktop-provision/eula/EULA.pdf"
-+
 +#define GIS_TYPE_EULA_PAGE (gis_eula_page_get_type ())
 +G_DECLARE_FINAL_TYPE (GisEulaPage, gis_eula_page, GIS, EULA_PAGE, GisPage)
 +
@@ -395,30 +472,53 @@ index 0000000..6e441d2
 +G_END_DECLS
 diff --git a/gnome-initial-setup/pages/eula/gis-eula-page.ui b/gnome-initial-setup/pages/eula/gis-eula-page.ui
 new file mode 100644
-index 0000000..01edcdb
+index 0000000..043d28a
 --- /dev/null
 +++ b/gnome-initial-setup/pages/eula/gis-eula-page.ui
-@@ -0,0 +1,19 @@
+@@ -0,0 +1,43 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
 +  <template class="GisEulaPage" parent="GisPage">
 +    <child>
-+      <object class="GtkScrolledWindow">
-+        <property name="visible">True</property>
-+        <property name="can-focus">True</property>
-+        <property name="hscrollbar-policy">never</property>
++      <object class="GtkStack" id="page_stack">
++        <property name="transition-type">crossfade</property>
 +        <child>
-+          <object class="GtkDrawingArea" id="drawing_area">
-+            <property name="visible">True</property>
-+            <property name="can-focus">False</property>
-+            <property name="vexpand">True</property>
++          <object class="GtkSpinner" id="loading_spinner">
++            <property name="halign">center</property>
++            <property name="valign">center</property>
++            <property name="spinning">True</property>
++          </object>
++        </child>
++        <child>
++          <object class="GtkImage" id="document_missing">
++            <property name="halign">center</property>
++            <property name="valign">center</property>
++            <property name="icon-name">image-missing-symbolic</property>
++            <property name="pixel-size">250</property>
++          </object>
++        </child>
++        <child>
++          <object class="GtkScrolledWindow" id="document_window">
++            <property name="can-focus">True</property>
++            <property name="hscrollbar-policy">never</property>
++            <style>
++              <class name="eula-document-scroll-area"/>
++            </style>
++            <child>
++              <object class="GtkDrawingArea" id="drawing_area">
++                <style>
++                  <class name="eula-document-area"/>
++                </style>
++                <property name="can-focus">False</property>
++                <property name="vexpand">True</property>
++              </object>
++            </child>
 +          </object>
 +        </child>
 +      </object>
 +    </child>
 +  </template>
 +</interface>
-\ No newline at end of file
 diff --git a/gnome-initial-setup/pages/eula/meson.build b/gnome-initial-setup/pages/eula/meson.build
 new file mode 100644
 index 0000000..389d3ab
