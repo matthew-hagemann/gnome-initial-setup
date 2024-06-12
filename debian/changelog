@@ -14,6 +14,18 @@ gnome-initial-setup (46.2-1ubuntu2) UNRELEASED; urgency=medium
   [ Marco Trevisan (Treviño) ]
   * d/p/Update-style-to-the-same-than-flutter-installer: simplify patch
 
+  [ Matt Hagemann ]
+  [ Didier Roche-Tolomelli ]
+  * d/p/Do-not-skip-g-i-s-first-login-mode-after-user-creation.patch:
+    - g-i-s first login experience has different screens from user creation.
+      Do not skip it.
+  * d/p/Adding-EULA-page-for-OEMs.patch:
+    - Optional EULA page for OEMS during user creation.
+  * d/p/Allow-setting-hostname-to-local-account-page.patch:
+    - Allow an user to edit their hostname on the local account creation page.
+  * debian/control:
+    - Add libpoppler-glib-dev build-dep.
+
  -- Yao Wei (魏銘廷) <yao.wei@canonical.com>  Wed, 05 Jun 2024 14:17:17 +0800
 
 gnome-initial-setup (46.2-1ubuntu1) oracular; urgency=medium
