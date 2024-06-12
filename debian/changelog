@@ -7,14 +7,25 @@ gnome-initial-setup (46.2-1ubuntu2) UNRELEASED; urgency=medium
     - code comment on is_desktop for when setting up the first user
 
   [ Didier Roche-Tolomelli ]
+  [ Marco Trevisan (Treviño) ]
   * debian/patches/Update-style-to-the-same-than-flutter-installer.patch:
     - update user creation icons to ones matching more the ubuntu style.
     - update some icon sizes as those icons are more detailed.
 
+  [ Matt Hagemann ]
+  [ Didier Roche-Tolomelli ]
   [ Marco Trevisan (Treviño) ]
-  * d/p/Update-style-to-the-same-than-flutter-installer: simplify patch
+  * d/p/Do-not-skip-g-i-s-first-login-mode-after-user-creation.patch:
+    - g-i-s first login experience has different screens from user creation.
+      Do not skip it.
+  * d/p/Adding-EULA-page-for-OEMs.patch:
+    - Add optional EULA page for showing OEMs documents during user creation.
+  * d/p/Allow-setting-hostname-to-local-account-page.patch:
+    - Allow an user to edit their hostname on the local account creation page.
+  * debian/control:
+    - Add libpoppler-glib-dev build-dep.
 
- -- Yao Wei (魏銘廷) <yao.wei@canonical.com>  Wed, 05 Jun 2024 14:17:17 +0800
+ -- Marco Trevisan (Treviño) <marco@ubuntu.com>  Thu, 13 Jun 2024 01:55:17 +0200
 
 gnome-initial-setup (46.2-1ubuntu1) oracular; urgency=medium
 
