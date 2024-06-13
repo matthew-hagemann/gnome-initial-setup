@@ -29,7 +29,7 @@ Subject: Add Ubuntu mode with special pages
  .../pages/ubuntu-pro/gis-ubuntupro-page.c          | 1031 +++++++++++
  .../pages/ubuntu-pro/gis-ubuntupro-page.h          |  110 ++
  .../pages/ubuntu-pro/gis-ubuntupro-page.ui         |   24 +
- .../ubuntu-pro/gis-ubuntupro-services-page.ui      |  143 ++
+ .../ubuntu-pro/gis-ubuntupro-services-page.ui      |  144 ++
  gnome-initial-setup/pages/ubuntu-pro/meson.build   |   12 +
  .../pages/ubuntu-pro/ubuntu-pro-dark.svg           |   25 +
  .../pages/ubuntu-pro/ubuntu-pro.svg                |    1 +
@@ -43,11 +43,11 @@ Subject: Add Ubuntu mode with special pages
  .../ubuntu-report/ubuntu-report.gresource.xml      |    8 +
  .../pages/ubuntu-report/ubuntu-report.svg          |    1 +
  .../pages/welcome/gis-welcome-page.c               |   29 +-
- .../pages/welcome/gis-welcome-page.css             |    5 +
+ .../pages/welcome/gis-welcome-page.css             |    4 +
  .../pages/welcome/gis-welcome-page.ui              |   56 +-
  .../pages/welcome/initial-setup-welcome.svg        | 1833 --------------------
  .../pages/welcome/ubuntu-mascot.svg                |  196 +++
- .../pages/welcome/welcome.gresource.xml            |    2 +->
+ .../pages/welcome/welcome.gresource.xml            |    2 +-
  po/POTFILES.in                                     |   10 +
  46 files changed, 3776 insertions(+), 1878 deletions(-)
  create mode 100644 data/its/polkit.its
@@ -3041,7 +3041,7 @@ index 0000000..d03d133
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui
 new file mode 100644
-index 0000000..6162e61
+index 0000000..4f8f385
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui
 @@ -0,0 +1,144 @@
@@ -4061,19 +4061,17 @@ index 1cad96e..dcd7bbe 100644
  
    gis_add_style_from_resource ("/org/gnome/initial-setup/gis-welcome-page.css");
 diff --git a/gnome-initial-setup/pages/welcome/gis-welcome-page.css b/gnome-initial-setup/pages/welcome/gis-welcome-page.css
-index 0abdd60..a093641 100644
+index 0abdd60..d995e10 100644
 --- a/gnome-initial-setup/pages/welcome/gis-welcome-page.css
 +++ b/gnome-initial-setup/pages/welcome/gis-welcome-page.css
-@@ -6,3 +6,8 @@
+@@ -6,3 +6,7 @@
  .welcome-status-page {
    padding: 30px;
  }
 +
 +:link, :visited {
-+  color: #24598f;
 +  text-decoration: none;
 +}
-\ No newline at end of file
 diff --git a/gnome-initial-setup/pages/welcome/gis-welcome-page.ui b/gnome-initial-setup/pages/welcome/gis-welcome-page.ui
 index dd62662..92192c4 100644
 --- a/gnome-initial-setup/pages/welcome/gis-welcome-page.ui
