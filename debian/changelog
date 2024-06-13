@@ -22,6 +22,9 @@ gnome-initial-setup (46.2-1ubuntu2) UNRELEASED; urgency=medium
     - Add optional EULA page for showing OEMs documents during user creation.
   * d/p/Allow-setting-hostname-to-local-account-page.patch:
     - Allow an user to edit their hostname on the local account creation page.
+  * d/p/Skip-privacy-page-in-user-creation-setup.patch :
+    - The button doesn’t open any browsers and this setting was not in
+      oem-config.
   * debian/control:
     - Add libpoppler-glib-dev build-dep.
 

@@ -1,0 +1,25 @@
+From: Didier Roche <didier.roche@canonical.com>
+Date: Thu, 13 Jun 2024 08:05:55 +0200
+Subject: Skip privacy page in user creation setup
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+
+The button doesn’t open any browsers and this setting was not in
+oem-config.
+---
+ gnome-initial-setup/gnome-initial-setup.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/gnome-initial-setup/gnome-initial-setup.c b/gnome-initial-setup/gnome-initial-setup.c
+index f02cea9..e0a69bc 100644
+--- a/gnome-initial-setup/gnome-initial-setup.c
++++ b/gnome-initial-setup/gnome-initial-setup.c
+@@ -72,7 +72,6 @@ static PageData page_table[] = {
+   PAGE (keyboard, FALSE),
+   PAGE (eula,     TRUE),
+   PAGE (network,  FALSE),
+-  PAGE (privacy,  FALSE),
+   PAGE (timezone, TRUE),
+   PAGE (software, TRUE),
+   PAGE (account,  TRUE),
