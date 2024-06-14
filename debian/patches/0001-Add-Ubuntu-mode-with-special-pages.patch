@@ -26,7 +26,7 @@ Subject: Add Ubuntu mode with special pages
  gnome-initial-setup/pages/ubuntu-pro/fail.svg      |    1 +
  .../pages/ubuntu-pro/gis-ubuntupro-attach-page.ui  |  261 +++
  .../pages/ubuntu-pro/gis-ubuntupro-offer-page.ui   |  256 +++
- .../pages/ubuntu-pro/gis-ubuntupro-page.c          | 1031 +++++++++++
+ .../pages/ubuntu-pro/gis-ubuntupro-page.c          | 1044 +++++++++++
  .../pages/ubuntu-pro/gis-ubuntupro-page.h          |  110 ++
  .../pages/ubuntu-pro/gis-ubuntupro-page.ui         |   24 +
  .../ubuntu-pro/gis-ubuntupro-services-page.ui      |  144 ++
@@ -49,7 +49,7 @@ Subject: Add Ubuntu mode with special pages
  .../pages/welcome/ubuntu-mascot.svg                |  196 +++
  .../pages/welcome/welcome.gresource.xml            |    2 +-
  po/POTFILES.in                                     |   10 +
- 46 files changed, 3776 insertions(+), 1878 deletions(-)
+ 46 files changed, 3789 insertions(+), 1878 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/app-center.svg
@@ -1858,10 +1858,10 @@ index 0000000..dc4827d
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
 new file mode 100644
-index 0000000..e5e56bc
+index 0000000..0f6e72a
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
-@@ -0,0 +1,1031 @@
+@@ -0,0 +1,1044 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2022 Canonical Ltd.
@@ -2345,30 +2345,43 @@ index 0000000..e5e56bc
 +  const char *description;
 +} service_names[] = {
 +  { "anbox-cloud",
++    /* TRANSLATORS: The anbox-cloud Ubuntu Pro Service description. */
 +    N_("Scalable Android in the cloud") },
 +  { "cc-eal",
++    /* TRANSLATORS: The cc-eal Ubuntu Pro Service description. */
 +    N_("Common Criteria EAL2 Provisioning Packages") },
 +  { "esm-apps",
++    /* TRANSLATORS: The esm-apps Ubuntu Pro Service description. */
 +    N_("Expanded Security Maintenance for Applications") },
 +  { "esm-infra",
++    /* TRANSLATORS: The esm-infra Ubuntu Pro Service description. */
 +    N_("Expanded Security Maintenance for Infrastructure") },
 +  { "fips",
++    /* TRANSLATORS: The fips Ubuntu Pro Service description. */
 +    N_("NIST-certified FIPS crypto packages") },
 +  { "fips-preview",
++    /* TRANSLATORS: The fips-preview Ubuntu Pro Service description. */
 +    N_("Preview of FIPS crypto packages undergoing certification with NIST") },
 +  { "fips-updates",
++    /* TRANSLATORS: The fips-updates Ubuntu Pro Service description. */
 +    N_("FIPS compliant crypto packages with stable security updates") },
 +  { "landscape",
++    /* TRANSLATORS: The landscape Ubuntu Pro Service description. */
 +    N_("Management and administration tool for Ubuntu") },
 +  { "livepatch",
++    /* TRANSLATORS: The livepatch Ubuntu Pro Service description. */
 +    N_("Canonical kernel Livepatch service") },
 +  { "realtime-kernel",
++    /* TRANSLATORS: The realtime-kernel Ubuntu Pro Service description. */
 +    N_("Ubuntu kernel with PREEMPT_RT patches integrated") },
 +  { "ros",
++    /* TRANSLATORS: The ros Ubuntu Pro Service description. */
 +    N_("Security Updates for the Robot Operating System") },
 +  { "ros-updates",
++    /* TRANSLATORS: The ros-updates Ubuntu Pro Service description. */
 +    N_("All Updates for the Robot Operating System") },
 +  { "usg",
++    /* TRANSLATORS: The usg Ubuntu Pro Service description. */
 +    N_("Security compliance and audit tools") },
 +};
 +
