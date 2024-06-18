@@ -55,6 +55,10 @@ gnome-initial-setup (46.2-1ubuntu3) UNRELEASED; urgency=medium
   * d/p/Ubuntu mode: Do not override links color in the welcome page
     (LP: #2069346)
 
+  [ Matt Hagemann ]
+  * d/p/Minor-design-and-copy-tweaks.patch:
+    - add error hints for setting hostname on accounts page
+
  -- Marco Trevisan (Treviño) <marco@ubuntu.com>  Tue, 18 Jun 2024 15:47:33 +0200
 
 gnome-initial-setup (46.2-1ubuntu2) oracular; urgency=medium
