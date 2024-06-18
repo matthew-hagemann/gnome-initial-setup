@@ -26,7 +26,7 @@ Subject: Add Ubuntu mode with special pages
  gnome-initial-setup/pages/ubuntu-pro/fail.svg      |    1 +
  .../pages/ubuntu-pro/gis-ubuntupro-attach-page.ui  |  261 +++
  .../pages/ubuntu-pro/gis-ubuntupro-offer-page.ui   |  256 +++
- .../pages/ubuntu-pro/gis-ubuntupro-page.c          | 1044 +++++++++++
+ .../pages/ubuntu-pro/gis-ubuntupro-page.c          | 1064 ++++++++++++
  .../pages/ubuntu-pro/gis-ubuntupro-page.h          |  110 ++
  .../pages/ubuntu-pro/gis-ubuntupro-page.ui         |   24 +
  .../ubuntu-pro/gis-ubuntupro-services-page.ui      |  144 ++
@@ -49,7 +49,7 @@ Subject: Add Ubuntu mode with special pages
  .../pages/welcome/ubuntu-mascot.svg                |  196 +++
  .../pages/welcome/welcome.gresource.xml            |    2 +-
  po/POTFILES.in                                     |   10 +
- 46 files changed, 3789 insertions(+), 1878 deletions(-)
+ 46 files changed, 3809 insertions(+), 1878 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/app-center.svg
@@ -1329,7 +1329,7 @@ index 0000000..e3c9a52
 \ No newline at end of file
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
 new file mode 100644
-index 0000000..1ec209c
+index 0000000..77e758b
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
 @@ -0,0 +1,261 @@
@@ -1858,10 +1858,10 @@ index 0000000..dc4827d
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
 new file mode 100644
-index 0000000..091bd35
+index 0000000..4facc60
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
-@@ -0,0 +1,1044 @@
+@@ -0,0 +1,1064 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2022 Canonical Ltd.
@@ -1958,6 +1958,7 @@ index 0000000..091bd35
 +  gboolean attaching;
 +  gint64 expired_by;
 +  pthread_t poll_id;
++  guint attach_idle;
 +  enum active_radio_t {
 +    MAGIC,
 +    TOKEN,
@@ -1985,7 +1986,6 @@ index 0000000..091bd35
 +};
 +
 +typedef struct _RestJSONResponse RestJSONResponse;
-+static void ua_attach(const gchar *, GisUbuntuProAttachPagePrivate *);
 +static gboolean magic_parser(gchar*, RestJSONResponse*);
 +static gboolean gis_ubuntupro_page_apply (GisPage*, GCancellable*);
 +
@@ -2089,7 +2089,9 @@ index 0000000..091bd35
 +    break;
 +  case FAIL:
 +    gtk_label_set_markup(GTK_LABEL(label), g_strconcat(
-+        "<span foreground=\"red\"><b>", _("Invalid token"), "</b></span>", NULL
++      /* TRANSLATORS: The error shown when attaching an Ubuntu Pro contact fails.
++       * it may be due to various reasons, most common is an invalid token. */
++      "<span foreground=\"red\"><b>", _("Invalid token or attach failure"), "</b></span>", NULL
 +    ));
 +    gtk_image_set_from_resource(GTK_IMAGE(icon), FAIL_ICON);
 +    break;
@@ -2608,25 +2610,29 @@ index 0000000..091bd35
 +  g_autoptr(GVariant) retval = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), result, &error);
 +  status_t status;
 +
++  gis_page_set_hide_navigation (GIS_PAGE (priv->main_page), FALSE);
++  gis_page_apply_complete (GIS_PAGE (priv->main_page), FALSE);
++  g_clear_handle_id (&priv->attach_idle, g_source_remove);
++
 +  if (retval == NULL) {
 +    g_warning ("Failed to attach token: %s", error->message);
-+    gis_page_apply_complete (GIS_PAGE (priv->main_page), FALSE);
 +    status = FAIL;
 +  } else {
 +    SuccessfullyAttached = TRUE;
 +    status = SUCCESS;
 +    pthread_cancel(priv->poll_id);
-+    gis_page_apply_complete (GIS_PAGE (priv->main_page), FALSE);
 +    gis_page_set_complete (GIS_PAGE(priv->main_page), TRUE);
-+    g_free(priv->contract_token);
-+    g_free(priv->token);
++    g_clear_pointer (&priv->contract_token, g_free);
++    g_clear_pointer (&priv->token, g_free);
 +  }
 +  priv->attaching = FALSE;
 +  update_gui(priv, status);
 +}
 +
 +static void
-+ua_attach(const gchar *token, GisUbuntuProAttachPagePrivate *priv)
++ua_attach(const gchar                   *token,
++          GisUbuntuProAttachPagePrivate *priv,
++          GCancellable                  *cancellable)
 +{
 +  GDBusConnection *bus;
 +  g_autoptr(GError) error = NULL;
@@ -2652,7 +2658,7 @@ index 0000000..091bd35
 +      G_VARIANT_TYPE("()"),
 +      G_DBUS_CALL_FLAGS_NONE,
 +      543210, /* I have observed that -1, the default timeout, is not enough. */
-+      NULL,
++      cancellable,
 +      on_ua_attach_requested,
 +      priv);
 +  }
@@ -2732,6 +2738,18 @@ index 0000000..091bd35
 +  return TRUE;
 +}
 +
++static void
++on_attach_idle (gpointer data)
++{
++  GisUbuntuProPage *page = GIS_UBUNTUPRO_PAGE (data);
++  GisUbuntuProPagePrivate *priv = gis_ubuntupro_page_get_instance_private (page);
++  GisUbuntuProAttachPage *attach_page = GIS_UBUNTUPRO_ATTACH_PAGE (priv->attach_page);
++  GisUbuntuProAttachPagePrivate *attach_priv = gis_ubuntupro_attach_page_get_instance_private (attach_page);
++
++  gis_page_set_hide_navigation (GIS_PAGE (page), TRUE);
++  attach_priv->attach_idle = 0;
++}
++
 +/* Callback for the Next button */
 +static gboolean
 +gis_ubuntupro_page_apply (GisPage      *gis_page,
@@ -2765,7 +2783,9 @@ index 0000000..091bd35
 +      } else {
 +        token = gtk_editable_get_text (GTK_EDITABLE (attach_priv->token_field));
 +      }
-+      ua_attach(token, attach_priv);
++      ua_attach (token, attach_priv, cancellable);
++      g_clear_handle_id (&attach_priv->attach_idle, g_source_remove);
++      attach_priv->attach_idle = g_idle_add_once (on_attach_idle, page);
 +    }
 +    break;
 +  case SERVICES_PAGE:
