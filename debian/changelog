@@ -1,3 +1,62 @@
+gnome-initial-setup (46.2-1ubuntu3) UNRELEASED; urgency=medium
+
+  [ Didier Roche ]
+  * Relax hostname validation rules.
+    Allow more correct hostname validations, still keeping the user error
+    strings for now.
+    Co-Authored-By: Matt Hagemann <matt.hagemann@canonical.com>
+
+  [ Nathan Pratta Teodosio ]
+  [ Marco Trevisan (Treviño) ]
+  * debian/patches: Refresh git indexes
+  * Fix alignment in bullet points in first Pro page.
+    (LP: #2062971)
+  * Align radio button text and its hint below in first Pro page.
+    (LP: #2062971)
+  * Remove all extraneous instances of can-focus.
+    As that prevents keyboard navigation of the pages (LP: #2069375).
+  * d/p: Ubuntu pages, bind functions to template.
+    C Functions referenced by the template must be bound to the template or
+    they won't be properly connected. (LP: #2068614)
+  * d/p: Ubuntu pages, ensure welcome screen is loaded (LP: #2068862)
+  * d/p: Ubuntu pages, reference private widgets only after construction.
+    They're just not created earlier, so we ended up referring to NULL
+    pointers instead of the actual widgets (LP: #2068614)
+  * d/p: Ubuntu pages, use filling alignment for the Ubuntu Pro offer message
+    (LP: #2062971)
+  * d/p: Ubuntu mode, always set the missing connection warning icon.
+    Then it's visibility is controlled as before, but at least now we will
+    show it even if there's no connection setup on startup (LP: #2068632)
+  * d/p: Ubuntu mode, add pro pages to POTFILE and improve strings to be
+    translated.
+    UI or C files of the Ubuntu Pro pages were not translatable, so add the
+    files to the POTFILES and fix the strings that contained elements that
+    should not be exposed to translators (LP: #2068639)
+  * d/p: Ubuntu Pro, add translatable pro services descriptions (LP: #2068639).
+  * d/p: Ubuntu Pro, fix alignment of widgets to match design (LP: #2062971)
+  * d/p: Ubuntu Pro, Use a grid to properly align dotted list elements.
+    We were listing the elements using manual formatting and this was broken
+    for lower resolutions or in general for longer texts, making a dotted
+    list not properly padded.
+    So use a grid to manage this, this indeed changes the text used by
+    translations but because of lp:2068639 it's not a problem because no
+    translations are available so far.
+    Also in this way RTL languages are properly handled (LP: #2062971)
+  * d/p: Ubuntu Pro, limit the wrapped label widths not to increase window size.
+    (LP: #2068856)
+  * d/p: Ubuntu Pro, animate stack on pro page changes (LP: #2068856)
+  * d/p: Ubuntu Pro, improve readability of long labels (LP: #2062971)
+  * d/p: Ubuntu Pro, scale icons and images to follow widget scaling
+    (LP: #2068675)
+  * d/p: Ubuntu Pro, use async spawn of pro client process.
+    The pro client process may slow in responding to us the tokens, so use
+    asynchronous spawn to ensure we don't hang the UI while calling it.
+    (LP: #2068859)
+  * d/p/Ubuntu mode: Do not override links color in the welcome page
+    (LP: #2069346)
+
+ -- Marco Trevisan (Treviño) <marco@ubuntu.com>  Tue, 18 Jun 2024 15:47:33 +0200
+
 gnome-initial-setup (46.2-1ubuntu2) oracular; urgency=medium
 
   [ Yao Wei (魏銘廷) ]
