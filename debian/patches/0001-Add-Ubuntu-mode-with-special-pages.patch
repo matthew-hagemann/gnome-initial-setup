@@ -1858,7 +1858,7 @@ index 0000000..dc4827d
 +</interface>
 diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
 new file mode 100644
-index 0000000..0f6e72a
+index 0000000..091bd35
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
 @@ -0,0 +1,1044 @@
@@ -2119,23 +2119,25 @@ index 0000000..0f6e72a
 +}
 +
 +static void
++update_network_status (GisUbuntuProOfferPage *offer_page,
++                       gboolean               available)
++{
++  GisUbuntuProOfferPagePrivate *priv =
++    gis_ubuntupro_offer_page_get_instance_private (offer_page);
++
++  gtk_widget_set_sensitive (priv->enable_pro_select, available);
++  gtk_widget_set_visible (priv->offline_warning, !available);
++  gtk_widget_set_visible (priv->pro_status_image, !available);
++}
++
++static void
 +network_status_changed (GNetworkMonitor *monitor,
 +                        gboolean         available,
 +                        gpointer         user_data)
 +{
-+  GisUbuntuProOfferPagePrivate *priv = user_data;
++  GisUbuntuProOfferPage *offer_page = user_data;
 +
-+  if (!available) {
-+    gtk_widget_set_sensitive (priv->enable_pro_select, FALSE);
-+    gtk_widget_show (GTK_WIDGET (priv->offline_warning));
-+    gtk_widget_show (GTK_WIDGET (priv->pro_status_image));
-+    gtk_check_button_set_active (GTK_CHECK_BUTTON (priv->skip_pro_select), TRUE);
-+  }
-+  else {
-+    gtk_widget_set_sensitive (priv->enable_pro_select, TRUE);
-+    gtk_widget_hide (GTK_WIDGET (priv->offline_warning));
-+    gtk_widget_hide (GTK_WIDGET (priv->pro_status_image));
-+  }
++  update_network_status (offer_page, available);
 +}
 +
 +/* This allows to use start padding for GtkCheckButtons that do not support it
@@ -2213,13 +2215,11 @@ index 0000000..0f6e72a
 +
 +  GNetworkMonitor *network_monitor = g_network_monitor_get_default ();
 +  offer_priv->network_cb = g_signal_connect (network_monitor, "network-changed",
-+                    G_CALLBACK (network_status_changed), offer_priv);
++                                             G_CALLBACK (network_status_changed),
++                                             offer_page);
 +
-+  if (!g_network_monitor_get_network_available (network_monitor)) {
-+    gtk_widget_set_sensitive (offer_priv->enable_pro_select, FALSE);
-+    gtk_widget_show (GTK_WIDGET (offer_priv->offline_warning));
-+    gtk_widget_show (GTK_WIDGET (offer_priv->pro_status_image));
-+  }
++  update_network_status (offer_page,
++                         g_network_monitor_get_network_available (network_monitor));
 +
 +  /* Initializate priv values */
 +  attach_priv->magic_token_polling = FALSE;
