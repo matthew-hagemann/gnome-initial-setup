@@ -1,0 +1,27 @@
+From 36c3fd9b202dee2b87fcc823c54d652f5052db4d Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Yao=20Wei=20=28=E9=AD=8F=E9=8A=98=E5=BB=B7=29?=
+ <yao.wei@canonical.com>
+Date: Wed, 26 Jun 2024 10:47:36 +0800
+Subject: [PATCH] keyboard: fix ibus signal race when language page causes page
+ rebuild
+
+This is an issue that can be caused by switching between languages, that
+ibus might receive "connected" signal after IBusBus is freed by the
+language switch in the Language page, which will rebuild all other pages
+in the assistant including keyboard selection.
+
+Origin: upstream, https://gitlab.gnome.org/GNOME/gnome-initial-setup/-/merge_requests/257
+---
+ gnome-initial-setup/pages/keyboard/cc-input-chooser.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/gnome-initial-setup/pages/keyboard/cc-input-chooser.c
++++ b/gnome-initial-setup/pages/keyboard/cc-input-chooser.c
+@@ -780,6 +780,7 @@
+ 	g_hash_table_unref (priv->inputs);
+         g_clear_pointer (&priv->input_widget_boxes, g_ptr_array_unref);
+ #ifdef HAVE_IBUS
++	g_signal_handlers_disconnect_by_func (priv->ibus, fetch_ibus_engines, chooser);
+         g_clear_object (&priv->ibus);
+         if (priv->ibus_cancellable)
+                 g_cancellable_cancel (priv->ibus_cancellable);
