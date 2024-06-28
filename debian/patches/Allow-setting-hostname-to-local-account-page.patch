@@ -6,8 +6,8 @@ Allow an user to edit their hostname on the local account creation page.
 The validation for setting a hostname re-uses the same logic from the username
 validation to not introduce new strings for translation, while additionally
 ensuring the hostname is not already in use on the network.
-When an user enters their username, a suggested hostname is syncronised based
-on the username, however it can be overidden.
+When an user enters their username, a suggested hostname is synchronised based
+on the username, however it can be overridden.
 Added error hints specific to setting a hostname.
 
 Co-authored-by: Didier Roche-Tolomelli <didrocks@ubuntu.com>

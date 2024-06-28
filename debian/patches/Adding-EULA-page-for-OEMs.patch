@@ -2,11 +2,11 @@ From: Matthew Hagemann <matt.hagemann@canonical.com>
 Date: Tue, 11 Jun 2024 14:40:47 +0200
 Subject: Adding EULA page for OEMs
 
-The EULA page is conditionaly displayed if a EULA.pdf file is present under
+The EULA page is conditionally displayed if a EULA.pdf file is present under
 /usr/share/desktop-provision/eula/.
 It will first attempt to asynchronously loading the EULA matching your current
 locale (EULA_<locale>.pdf), using the variants first and then fallbacking to
-base language if the current varient is not available.
+base language if the current variant is not available.
 If no match is found, EULA.pdf is then used.
 
 Note that multi-page pdf's are supported.
