@@ -1240,7 +1240,7 @@ index 0000000..103f2f9
 +                <object class="GtkButton">
 +                  <property name="margin_top">12</property>
 +                  <property name="halign">end</property>
-+                  <property name="label" translatable="1">Open App Center now</property>
++                  <property name="label" translatable="yes">Open App Center now</property>
 +                  <signal name="clicked" handler="open_software"/>
 +                </object>
 +              </child>
@@ -3924,19 +3924,19 @@ index 0000000..ad0816c
 +                <child>
 +                  <object class="GtkButton" id="show_report_b">
 +                    <property name="visible">True</property>
-+                    <property name="label" translatable="1">Show the First Report</property>
++                    <property name="label" translatable="yes">Show the First Report</property>
 +                    <signal name="clicked" handler="show_report"/>
 +                  </object>
 +                </child>
 +                <child>
 +                  <object class="GtkButton" id="cancel_report_b">
 +                    <property name="visible">False</property>
-+                    <property name="label" translatable="1">Cancel</property>
++                    <property name="label" translatable="yes">Cancel</property>
 +                  </object>
 +                </child>
 +                <child>
 +                  <object class="GtkButton">
-+                    <property name="label" translatable="1">Legal notice</property>
++                    <property name="label" translatable="yes">Legal notice</property>
 +                    <signal name="clicked" handler="show_legal"/>
 +                  </object>
 +                </child>

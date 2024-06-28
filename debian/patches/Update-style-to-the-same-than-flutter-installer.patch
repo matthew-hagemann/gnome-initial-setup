@@ -1350,7 +1350,7 @@ index 103f2f9..8dd03cc 100644
 +                  <object class="GtkButton">
 +                    <property name="margin_top">0</property>
 +                    <property name="halign">center</property>
-+                    <property name="label" translatable="1">Open App Center</property>
++                    <property name="label" translatable="yes">Open App Center</property>
 +                    <signal name="clicked" handler="open_software"/>
 +                  </object>
 +                </child>
@@ -1433,7 +1433,7 @@ index 103f2f9..8dd03cc 100644
 -                <object class="GtkButton">
 -                  <property name="margin_top">12</property>
 -                  <property name="halign">end</property>
--                  <property name="label" translatable="1">Open App Center now</property>
+-                  <property name="label" translatable="yes">Open App Center now</property>
 -                  <signal name="clicked" handler="open_software"/>
 -                </object>
 -              </child>
@@ -1742,7 +1742,7 @@ index 1884552..27f4da5 100644
 +                <property name="halign">end</property>
 +                <child>
 +                  <object class="GtkButton" id="show_data_privacy_button">
-+                    <property name="label" translatable="1">Data privacy</property>
++                    <property name="label" translatable="yes">Data privacy</property>
 +                    <signal name="clicked" handler="show_data_privacy"/>
 +                  </object>
 +                </child>

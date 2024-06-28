@@ -1,3 +1,11 @@
+gnome-initial-setup (46.2-1ubuntu4) UNRELEASED; urgency=medium
+
+  * debian/patches/0001-Add-Ubuntu-mode-with-special-pages.patch,
+    debian/patches/Update-style-to-the-same-than-flutter-installer.patch:
+    - use transtable="yes" instead of ="1" in .ui files
+
+ -- Sebastien Bacher <seb128@ubuntu.com>  Fri, 28 Jun 2024 10:42:14 +0200
+
 gnome-initial-setup (46.2-1ubuntu3) oracular; urgency=medium
 
   [ Didier Roche ]
