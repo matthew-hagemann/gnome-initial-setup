@@ -1,22 +1,22 @@
-gnome-initial-setup (46.3-1ubuntu1) UNRELEASED; urgency=medium
+gnome-initial-setup (46.3-1ubuntu1) oracular; urgency=medium
 
+  [ Jeremy Bícha ]
   * Merge with Debian
+  * Refresh patches
+  * Drop patch applied in new release
 
- -- Jeremy Bícha <jbicha@ubuntu.com>  Fri, 28 Jun 2024 14:38:12 -0400
+  [ Sebastien Bacher ]
+  * debian/patches/0001-Add-Ubuntu-mode-with-special-pages.patch,
+    debian/patches/Update-style-to-the-same-than-flutter-installer.patch:
+    - use transtable="yes" instead of ="1" in .ui files
+
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Fri, 28 Jun 2024 14:54:22 -0400
 
 gnome-initial-setup (46.3-1) unstable; urgency=medium
 
   * New upstream release
 
  -- Jeremy Bícha <jbicha@ubuntu.com>  Fri, 28 Jun 2024 14:36:23 -0400
-
-gnome-initial-setup (46.2-1ubuntu4) UNRELEASED; urgency=medium
-
-  * debian/patches/0001-Add-Ubuntu-mode-with-special-pages.patch,
-    debian/patches/Update-style-to-the-same-than-flutter-installer.patch:
-    - use transtable="yes" instead of ="1" in .ui files
-
- -- Sebastien Bacher <seb128@ubuntu.com>  Fri, 28 Jun 2024 10:42:14 +0200
 
 gnome-initial-setup (46.2-1ubuntu3) oracular; urgency=medium
 
