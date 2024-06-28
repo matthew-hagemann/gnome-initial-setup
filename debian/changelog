@@ -1,3 +1,9 @@
+gnome-initial-setup (46.3-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Fri, 28 Jun 2024 14:36:23 -0400
+
 gnome-initial-setup (46.2-1ubuntu4) UNRELEASED; urgency=medium
 
   * debian/patches/0001-Add-Ubuntu-mode-with-special-pages.patch,
@@ -126,7 +132,7 @@ gnome-initial-setup (46.2-1ubuntu1) oracular; urgency=medium
 
  -- Nathan Pratta Teodosio <nathan.teodosio@canonical.com>  Wed, 29 May 2024 11:01:30 +0200
 
-gnome-initial-setup (46.2-1) UNRELEASED; urgency=medium
+gnome-initial-setup (46.2-1) unstable; urgency=medium
 
   * New upstream release
 
