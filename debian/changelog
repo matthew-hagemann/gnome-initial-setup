@@ -1,3 +1,9 @@
+gnome-initial-setup (46.3-1ubuntu1) UNRELEASED; urgency=medium
+
+  * Merge with Debian
+
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Fri, 28 Jun 2024 14:38:12 -0400
+
 gnome-initial-setup (46.3-1) unstable; urgency=medium
 
   * New upstream release
