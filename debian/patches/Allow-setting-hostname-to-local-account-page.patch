@@ -13,12 +13,12 @@ Added error hints specific to setting a hostname.
 Co-authored-by: Didier Roche-Tolomelli <didrocks@ubuntu.com>
 Co-authored-by: Marco Trevisan <marco@ubuntu.com>
 ---
- .../pages/account/gis-account-page-local.c         | 279 ++++++++++++++++++++-
+ .../pages/account/gis-account-page-local.c         | 277 ++++++++++++++++++++-
  .../pages/account/gis-account-page-local.ui        |  60 ++++-
- 2 files changed, 332 insertions(+), 7 deletions(-)
+ 2 files changed, 331 insertions(+), 6 deletions(-)
 
 diff --git a/gnome-initial-setup/pages/account/gis-account-page-local.c b/gnome-initial-setup/pages/account/gis-account-page-local.c
-index ecd8e20..3c9c10a 100644
+index ba879fb..406b4be 100644
 --- a/gnome-initial-setup/pages/account/gis-account-page-local.c
 +++ b/gnome-initial-setup/pages/account/gis-account-page-local.c
 @@ -28,6 +28,7 @@
@@ -265,14 +265,7 @@ index ecd8e20..3c9c10a 100644
  
    return G_SOURCE_REMOVE;
  }
-@@ -200,12 +389,15 @@ username_changed (GtkComboBoxText     *combo,
-   username = gtk_editable_get_text (GTK_EDITABLE (entry));
-   if (*username == '\0')
-     page->has_custom_username = FALSE;
--  else if (gtk_widget_has_focus (entry) ||
-+  else if (gtk_widget_get_focus_child (entry) ||
-            gtk_combo_box_get_active (GTK_COMBO_BOX (page->username_combo)) > 0)
-     page->has_custom_username = TRUE;
+@@ -207,6 +396,9 @@ username_changed (GtkComboBoxText     *combo,
  
    clear_entry_validation_error (GTK_ENTRY (entry));
  
@@ -282,7 +275,7 @@ index ecd8e20..3c9c10a 100644
    page->valid_username = FALSE;
    validation_changed (page);
  
-@@ -216,6 +408,31 @@ username_changed (GtkComboBoxText     *combo,
+@@ -217,6 +409,31 @@ username_changed (GtkComboBoxText     *combo,
    update_avatar_text (page);
  }
  
@@ -314,7 +307,7 @@ index ecd8e20..3c9c10a 100644
  static void
  on_remove_avatar_button_clicked (GisAccountPageLocal *page)
  {
-@@ -297,10 +514,16 @@ gis_account_page_local_constructed (GObject *object)
+@@ -298,10 +515,16 @@ gis_account_page_local_constructed (GObject *object)
                      G_CALLBACK (username_changed), page);
    track_focus_out (page, page->username_combo);
  
@@ -331,7 +324,7 @@ index ecd8e20..3c9c10a 100644
    g_signal_connect (page->enable_parental_controls_check_button, "toggled",
                      G_CALLBACK (enable_parental_controls_check_button_toggled_cb), page);
  
-@@ -311,6 +534,7 @@ gis_account_page_local_constructed (GObject *object)
+@@ -312,6 +535,7 @@ gis_account_page_local_constructed (GObject *object)
  
    page->valid_name = FALSE;
    page->valid_username = FALSE;
@@ -339,7 +332,7 @@ index ecd8e20..3c9c10a 100644
  
    /* FIXME: change this for a large deployment scenario; maybe through a GSetting? */
    page->account_type = ACT_USER_ACCOUNT_TYPE_ADMINISTRATOR;
-@@ -319,6 +543,7 @@ gis_account_page_local_constructed (GObject *object)
+@@ -320,6 +544,7 @@ gis_account_page_local_constructed (GObject *object)
    gtk_editable_set_text (GTK_EDITABLE (page->fullname_entry), "");
    gtk_list_store_clear (GTK_LIST_STORE (gtk_combo_box_get_model (GTK_COMBO_BOX (page->username_combo))));
    page->has_custom_username = FALSE;
@@ -347,7 +340,7 @@ index ecd8e20..3c9c10a 100644
  
    gtk_menu_button_set_popover (GTK_MENU_BUTTON (page->avatar_button),
                                 GTK_WIDGET (page->photo_dialog));
-@@ -332,6 +557,9 @@ gis_account_page_local_dispose (GObject *object)
+@@ -333,6 +558,9 @@ gis_account_page_local_dispose (GObject *object)
    GisAccountPageLocal *page = GIS_ACCOUNT_PAGE_LOCAL (object);
  
    g_clear_handle_id (&page->timeout_id, g_source_remove);
@@ -357,7 +350,7 @@ index ecd8e20..3c9c10a 100644
  
    G_OBJECT_CLASS (gis_account_page_local_parent_class)->dispose (object);
  }
-@@ -547,6 +775,9 @@ gis_account_page_local_class_init (GisAccountPageLocalClass *klass)
+@@ -548,6 +776,9 @@ gis_account_page_local_class_init (GisAccountPageLocalClass *klass)
    gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisAccountPageLocal, fullname_entry);
    gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisAccountPageLocal, username_combo);
    gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisAccountPageLocal, username_explanation);
@@ -367,7 +360,7 @@ index ecd8e20..3c9c10a 100644
    gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisAccountPageLocal, enable_parental_controls_box);
    gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass), GisAccountPageLocal, enable_parental_controls_check_button);
    gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), on_remove_avatar_button_clicked);
-@@ -582,7 +813,7 @@ gis_account_page_local_init (GisAccountPageLocal *page)
+@@ -583,7 +814,7 @@ gis_account_page_local_init (GisAccountPageLocal *page)
  gboolean
  gis_account_page_local_validate (GisAccountPageLocal *page)
  {
@@ -376,7 +369,7 @@ index ecd8e20..3c9c10a 100644
  }
  
  gboolean
-@@ -593,11 +824,29 @@ gis_account_page_local_create_user (GisAccountPageLocal  *local,
+@@ -594,11 +825,29 @@ gis_account_page_local_create_user (GisAccountPageLocal  *local,
    return local_create_user (local, page, error);
  }
  
@@ -407,7 +400,7 @@ index ecd8e20..3c9c10a 100644
    gboolean parental_controls_enabled;
    GdkTexture *texture = NULL;
  
-@@ -631,9 +880,27 @@ gis_account_page_local_apply (GisAccountPageLocal *local, GisPage *page)
+@@ -632,9 +881,27 @@ gis_account_page_local_apply (GisAccountPageLocal *local, GisPage *page)
  #endif
    gis_driver_set_parental_controls_enabled (driver, parental_controls_enabled);
  

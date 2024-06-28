@@ -1132,7 +1132,7 @@ index 0000000..e451214
 +#endif /* __GIS_APPS_PAGE_H__ */
 diff --git a/gnome-initial-setup/pages/apps/gis-apps-page.ui b/gnome-initial-setup/pages/apps/gis-apps-page.ui
 new file mode 100644
-index 0000000..103f2f9
+index 0000000..411aca7
 --- /dev/null
 +++ b/gnome-initial-setup/pages/apps/gis-apps-page.ui
 @@ -0,0 +1,119 @@
@@ -3860,7 +3860,7 @@ index 0000000..846eb9b
 +#endif /* __GIS_UBUNTU_REPORT_PAGE_H__ */
 diff --git a/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui
 new file mode 100644
-index 0000000..ad0816c
+index 0000000..56936d1
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui
 @@ -0,0 +1,104 @@
