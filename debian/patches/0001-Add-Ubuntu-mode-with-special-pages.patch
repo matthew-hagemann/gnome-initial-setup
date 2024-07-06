@@ -10,7 +10,7 @@ Subject: Add Ubuntu mode with special pages
  gnome-initial-setup/gis-driver.h                   |    6 +
  gnome-initial-setup/gis-page.c                     |   15 +
  gnome-initial-setup/gis-page.h                     |    2 +
- gnome-initial-setup/gnome-initial-setup.c          |   46 +-
+ gnome-initial-setup/gnome-initial-setup.c          |   50 +-
  gnome-initial-setup/meson.build                    |    3 +
  gnome-initial-setup/pages/apps/app-center.svg      |    3 +
  gnome-initial-setup/pages/apps/apps.gresource.xml  |    9 +
@@ -49,7 +49,7 @@ Subject: Add Ubuntu mode with special pages
  .../pages/welcome/ubuntu-mascot.svg                |  196 +++
  .../pages/welcome/welcome.gresource.xml            |    2 +-
  po/POTFILES.in                                     |   10 +
- 46 files changed, 3809 insertions(+), 1878 deletions(-)
+ 46 files changed, 3813 insertions(+), 1878 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/app-center.svg
@@ -263,7 +263,7 @@ index 742cc71..adb11e0 100644
  gboolean     gis_page_save_data (GisPage  *page,
                                   GError  **error);
 diff --git a/gnome-initial-setup/gnome-initial-setup.c b/gnome-initial-setup/gnome-initial-setup.c
-index 7ca2bc2..591f83e 100644
+index 7ca2bc2..d7afd23 100644
 --- a/gnome-initial-setup/gnome-initial-setup.c
 +++ b/gnome-initial-setup/gnome-initial-setup.c
 @@ -40,12 +40,17 @@
@@ -312,13 +312,17 @@ index 7ca2bc2..591f83e 100644
      return !should_skip_page ("language", skip_pages);
  
    /* check through our skip pages list for pages we don't want */
-@@ -188,6 +205,25 @@ destroy_page (gpointer data)
+@@ -188,6 +205,29 @@ destroy_page (gpointer data)
      gis_assistant_remove_page (GIS_ASSISTANT (assistant), page);
  }
  
 +static gboolean
 +is_desktop (const gchar *name)
 +{
++  /* note that, for first user account creation inside gnome-initial-setup user,
++   * XDG_CURRENT_DESKTOP is set to "GNOME-Greeter:GNOME"
++   */
++
 +  const gchar *xdg_current_desktop;
 +  g_auto(GStrv) tokens = NULL;
 +  int i;
@@ -338,7 +342,7 @@ index 7ca2bc2..591f83e 100644
  static void
  rebuild_pages_cb (GisDriver *driver)
  {
-@@ -200,7 +236,11 @@ rebuild_pages_cb (GisDriver *driver)
+@@ -200,7 +240,11 @@ rebuild_pages_cb (GisDriver *driver)
  
    assistant = gis_driver_get_assistant (driver);
    current_page = gis_assistant_get_current_page (assistant);
@@ -351,12 +355,12 @@ index 7ca2bc2..591f83e 100644
  
    g_ptr_array_free (skipped_pages, TRUE);
    skipped_pages = g_ptr_array_new_with_free_func (destroy_page);
-@@ -208,7 +248,7 @@ rebuild_pages_cb (GisDriver *driver)
+@@ -208,7 +252,7 @@ rebuild_pages_cb (GisDriver *driver)
    if (current_page != NULL) {
      destroy_pages_after (assistant, current_page);
  
 -    for (page_data = page_table; page_data->page_id != NULL; ++page_data)
-+    for (page_data = ubuntu_page_table; page_data->page_id != NULL; ++page_data) // FIXME conditional
++    for (; page_data->page_id != NULL; ++page_data)
        if (g_str_equal (page_data->page_id, GIS_PAGE_GET_CLASS (current_page)->page_id))
          break;
  
