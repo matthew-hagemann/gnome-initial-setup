@@ -4055,7 +4055,7 @@ index 1cad96e..dcd7bbe 100644
 +  if (!version)
 +    text_release_notes = g_strdup ("");
 +  else
-+    text_release_notes = g_strdup_printf ("<a href=\"http://www.ubuntu.com/getubuntu/releasenotes?os=ubuntu&amp;ver=%s\">View changelog</a>", version);
++    text_release_notes = g_strdup_printf ("<a href=\"http://www.ubuntu.com/getubuntu/releasenotes?os=ubuntu&amp;ver=%s\">%s</a>", version, _("View release notes"));
 +
 +  g_object_set (priv->release_notes, "label", text_release_notes, NULL);
  }
