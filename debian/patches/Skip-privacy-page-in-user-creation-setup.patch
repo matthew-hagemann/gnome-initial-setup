@@ -12,7 +12,7 @@ oem-config.
  1 file changed, 1 deletion(-)
 
 diff --git a/gnome-initial-setup/gnome-initial-setup.c b/gnome-initial-setup/gnome-initial-setup.c
-index 51a65ca..b0e76b2 100644
+index f02cea9..e0a69bc 100644
 --- a/gnome-initial-setup/gnome-initial-setup.c
 +++ b/gnome-initial-setup/gnome-initial-setup.c
 @@ -72,7 +72,6 @@ static PageData page_table[] = {

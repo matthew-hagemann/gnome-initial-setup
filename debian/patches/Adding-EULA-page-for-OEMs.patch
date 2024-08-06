@@ -32,7 +32,7 @@ Co-authored-by: Marco Trevisan <marco@ubuntu.com>
  create mode 100644 gnome-initial-setup/pages/eula/meson.build
 
 diff --git a/gnome-initial-setup/gnome-initial-setup.c b/gnome-initial-setup/gnome-initial-setup.c
-index 670dd42..51a65ca 100644
+index b526038..f02cea9 100644
 --- a/gnome-initial-setup/gnome-initial-setup.c
 +++ b/gnome-initial-setup/gnome-initial-setup.c
 @@ -32,6 +32,7 @@

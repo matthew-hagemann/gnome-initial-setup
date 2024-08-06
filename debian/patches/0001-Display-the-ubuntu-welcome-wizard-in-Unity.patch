@@ -21,7 +21,7 @@ index f3d0df7..38f86cf 100644
  AutostartCondition=unless-exists gnome-initial-setup-done
  X-GNOME-HiddenUnderSystemd=@systemd_hidden@
 diff --git a/gnome-initial-setup/gnome-initial-setup.c b/gnome-initial-setup/gnome-initial-setup.c
-index 591f83e..670dd42 100644
+index d7afd23..b526038 100644
 --- a/gnome-initial-setup/gnome-initial-setup.c
 +++ b/gnome-initial-setup/gnome-initial-setup.c
 @@ -93,6 +93,16 @@ static PageData ubuntu_page_table[] = {
@@ -41,7 +41,7 @@ index 591f83e..670dd42 100644
  #undef PAGE
  
  static gboolean
-@@ -239,6 +249,8 @@ rebuild_pages_cb (GisDriver *driver)
+@@ -243,6 +253,8 @@ rebuild_pages_cb (GisDriver *driver)
  
    if (is_desktop ("ubuntu"))
      page_data = ubuntu_page_table;
