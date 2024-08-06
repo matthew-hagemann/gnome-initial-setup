@@ -1,3 +1,12 @@
+gnome-initial-setup (46.3-1ubuntu3) UNRELEASED; urgency=medium
+
+  * d/p: Ubuntu Pro, use style that is more consistent with the app
+    (LP: #2076189)
+  * d/p: Ubuntu Pro, scale icons automatically (LP: #2068675)
+  * debian/patches: Refresh git indexes
+
+ -- Marco Trevisan (Treviño) <marco@ubuntu.com>  Tue, 06 Aug 2024 14:55:20 -0600
+
 gnome-initial-setup (46.3-1ubuntu2) oracular; urgency=medium
 
   * debian/patches/0001-Add-Ubuntu-mode-with-special-pages.patch:
