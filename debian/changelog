@@ -1,11 +1,11 @@
-gnome-initial-setup (46.3-1ubuntu3) UNRELEASED; urgency=medium
+gnome-initial-setup (46.3-1ubuntu3) oracular; urgency=medium
 
   * d/p: Ubuntu Pro, use style that is more consistent with the app
     (LP: #2076189)
   * d/p: Ubuntu Pro, scale icons automatically (LP: #2068675)
   * debian/patches: Refresh git indexes
 
- -- Marco Trevisan (Treviño) <marco@ubuntu.com>  Tue, 06 Aug 2024 14:55:20 -0600
+ -- Marco Trevisan (Treviño) <marco@ubuntu.com>  Tue, 06 Aug 2024 14:55:55 -0600
 
 gnome-initial-setup (46.3-1ubuntu2) oracular; urgency=medium
 
