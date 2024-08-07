@@ -1,6 +1,5 @@
-/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 /*
- * Copyright (C) 2012 Red Hat
+ * Copyright 2024 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -14,27 +13,17 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
- *
- * Written by:
- *     Jasper St. Pierre <jstpierre@mecheye.net>
  */
 
-#ifndef __GIS_PASSWORD_PAGE_H__
-#define __GIS_PASSWORD_PAGE_H__
+#pragma once
 
-#include <glib-object.h>
-
-#include "gnome-initial-setup.h"
+#include <glib.h>
+#include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
-#define GIS_TYPE_PASSWORD_PAGE               (gis_password_page_get_type ())
-
-G_DECLARE_FINAL_TYPE (GisPasswordPage, gis_password_page, GIS, PASSWORD_PAGE, GisPage)
-
-GisPage *gis_prepare_password_page (GisDriver *driver);
-GisPage *gis_prepare_parent_password_page (GisDriver *driver);
+gboolean gis_activate_link (GtkLabel    *label,
+                            const gchar *uri,
+                            GtkWidget   *any_widget);
 
 G_END_DECLS
-
-#endif /* __GIS_PASSWORD_PAGE_H__ */

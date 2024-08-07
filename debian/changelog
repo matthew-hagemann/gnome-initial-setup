@@ -1,3 +1,10 @@
+gnome-initial-setup (47~beta-1) unstable; urgency=medium
+
+  * New upstream release
+  * Bump Standards Version to 4.7.0
+
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Wed, 07 Aug 2024 12:06:55 -0400
+
 gnome-initial-setup (46.3-1ubuntu3) oracular; urgency=medium
 
   * d/p: Ubuntu Pro, use style that is more consistent with the app

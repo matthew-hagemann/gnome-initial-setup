@@ -1,5 +1,5 @@
 # gnome-initial-setup's Portuguese translation.
-# Copyright © 2012-2024 gnome-initial-setup
+# Copyright © 2012-2023 gnome-initial-setup
 # This file is distributed under the same license as the gnome-initial-setup package.
 # Duarte Loreto <happyguy_pt@hotmail.com>, 2012, 2013, 2014.
 # Fernando Carvalho <phaetonkde@gmail.com>, 2013.
@@ -8,14 +8,15 @@
 # Sérgio Cardeira <cardeira.sergio@gmail.com>, 2016.
 # Juliano Camargo <julianosc@pm.me>, 2020.
 # Hugo Carvalho <hugokarvalho@hotmail.com>, 2020, 2021, 2022, 2023, 2024.
+# João Carvalhinho <joao.carvalhinho@gmail.com>, 2024.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: 3.12\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-initial-setup/"
 "issues/\n"
-"POT-Creation-Date: 2024-05-19 11:31+0000\n"
-"PO-Revision-Date: 2024-05-21 23:09+0100\n"
+"POT-Creation-Date: 2024-05-01 17:09+0000\n"
+"PO-Revision-Date: 2024-05-06 23:17+0100\n"
 "Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
 "Language-Team: Portuguese (https://l10n.gnome.org/teams/pt/)\n"
 "Language: pt\n"
@@ -23,7 +24,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.4.4\n"
+"X-Generator: Poedit 3.4.2\n"
 "X-Project-Style: gnome\n"
 
 #: data/gnome-initial-setup-first-login.desktop.in.in:3
@@ -63,7 +64,7 @@ msgstr "— Configuração inicial do GNOME"
 
 #: gnome-initial-setup/pages/account/gis-account-page-enterprise.c:181
 msgid "Failed to cache account"
-msgstr "Falha ao colocar a conta em cache"
+msgstr "Falha ao registar a conta"
 
 #: gnome-initial-setup/pages/account/gis-account-page-enterprise.c:231
 msgid "Failed to register account"
@@ -160,11 +161,11 @@ msgstr "Falha em criar utilizador '%s': "
 
 #: gnome-initial-setup/pages/account/gis-account-page-local.ui:28
 msgid "Change Avatar"
-msgstr "Mudar o Avatar"
+msgstr "Mudar Avatar"
 
 #: gnome-initial-setup/pages/account/gis-account-page-local.ui:46
 msgid "Remove Avatar"
-msgstr "Remover o Avatar"
+msgstr "Remover Avatar"
 
 #: gnome-initial-setup/pages/account/gis-account-page-local.ui:64
 #: gnome-initial-setup/pages/account/gis-account-page.c:274
@@ -752,11 +753,12 @@ msgid ""
 "\n"
 "        Alternatively, choose install to launch the installer."
 msgstr ""
-"Pode experimentar uma versão temporária do ${NAME} sem efetuar alterações no "
-"computador. Se decidir instalar mais tarde, basta iniciar o instalador a "
-"partir da vista Atividades.\n"
+"Pode experimentar uma versão temporária do ${NAME} sem fazer alterações no "
+"seu computador. Se posteriormente decidir instalar, bastará lançar o "
+"instalador da sua vista de Actividades\n"
 "\n"
-"        Em alternativa, selecione instalar para iniciar o instalador."
+"         Em alternativa, escolha Instalar para inicializar o processo de "
+"instalação."
 
 #: po/EXTRA_STRINGS.sh:7
 msgid "Install to Disk…"
@@ -765,12 +767,12 @@ msgstr "Instalar no disco…"
 #: po/EXTRA_STRINGS.sh:8
 #, sh-format
 msgid "Try ${NAME}"
-msgstr "Experimentar o ${NAME}"
+msgstr "Experimentar ${NAME}"
 
 #: po/EXTRA_STRINGS.sh:9
 #, sh-format
 msgid "Install ${PRETTY_NAME}"
-msgstr "Instalar o ${PRETTY_NAME}"
+msgstr "Instalar ${PRETTY_NAME}"
 
 #~ msgid "Please check the name and username. You can choose a picture too."
 #~ msgstr ""
