@@ -203,10 +203,10 @@ index 9e46b45..742cc71 100644
  void         gis_page_set_needs_accept (GisPage *page, gboolean needs_accept);
  gboolean     gis_page_get_has_forward (GisPage *page);
 diff --git a/gnome-initial-setup/pages/summary/gis-summary-page.c b/gnome-initial-setup/pages/summary/gis-summary-page.c
-index d3bb799..5e90e8a 100644
+index e1ca0ce..5fed9ac 100644
 --- a/gnome-initial-setup/pages/summary/gis-summary-page.c
 +++ b/gnome-initial-setup/pages/summary/gis-summary-page.c
-@@ -249,6 +249,8 @@ gis_summary_page_constructed (GObject *object)
+@@ -256,6 +256,8 @@ gis_summary_page_constructed (GObject *object)
  
    G_OBJECT_CLASS (gis_summary_page_parent_class)->constructed (object);
  

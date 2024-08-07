@@ -52,10 +52,10 @@ index b526038..f02cea9 100644
    PAGE (privacy,  FALSE),
    PAGE (timezone, TRUE),
 diff --git a/gnome-initial-setup/meson.build b/gnome-initial-setup/meson.build
-index b593a01..bbb72a4 100644
+index 713d328..1916226 100644
 --- a/gnome-initial-setup/meson.build
 +++ b/gnome-initial-setup/meson.build
-@@ -56,6 +56,7 @@ dependencies = [
+@@ -60,6 +60,7 @@ dependencies = [
      dependency ('snapd-glib-2'),
      dependency ('libsoup-3.0'),
      dependency ('sysmetrics'),

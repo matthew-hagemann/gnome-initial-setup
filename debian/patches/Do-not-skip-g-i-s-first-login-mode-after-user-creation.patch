@@ -10,12 +10,12 @@ Ensure we always present it as the set of screens is different.
  1 file changed, 1 deletion(-)
 
 diff --git a/gnome-initial-setup/gnome-initial-setup-copy-worker.c b/gnome-initial-setup/gnome-initial-setup-copy-worker.c
-index 2d3441d..28dfd16 100644
+index bc62baf..b5121e2 100644
 --- a/gnome-initial-setup/gnome-initial-setup-copy-worker.c
 +++ b/gnome-initial-setup/gnome-initial-setup-copy-worker.c
-@@ -101,7 +101,6 @@ main (int    argc,
+@@ -309,7 +309,6 @@ main (int    argc,
  #define FILE(path) \
-   move_file_from_homedir (src, dest, path);
+   copy_file_from_homedir (src, dest, path);
  
 -  FILE (".config/gnome-initial-setup-done");
    FILE (".config/dconf/user");

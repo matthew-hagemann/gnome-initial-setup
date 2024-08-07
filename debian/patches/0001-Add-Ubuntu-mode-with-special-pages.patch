@@ -365,10 +365,10 @@ index 7ca2bc2..d7afd23 100644
          break;
  
 diff --git a/gnome-initial-setup/meson.build b/gnome-initial-setup/meson.build
-index 2d0374f..b593a01 100644
+index 57bda03..713d328 100644
 --- a/gnome-initial-setup/meson.build
 +++ b/gnome-initial-setup/meson.build
-@@ -53,6 +53,9 @@ dependencies = [
+@@ -57,6 +57,9 @@ dependencies = [
      dependency ('krb5'),
      dependency ('libsecret-1', version: '>= 0.18.8'),
      dependency ('pwquality'),
@@ -1290,10 +1290,10 @@ index 8d327f6..2ed2a5f 100644
  
  if libmalcontent_dep.found() and libmalcontent_ui_dep.found()
 diff --git a/gnome-initial-setup/pages/privacy/gis-privacy-page.c b/gnome-initial-setup/pages/privacy/gis-privacy-page.c
-index 323e1aa..7750cf8 100644
+index 1e3934e..8af750e 100644
 --- a/gnome-initial-setup/pages/privacy/gis-privacy-page.c
 +++ b/gnome-initial-setup/pages/privacy/gis-privacy-page.c
-@@ -247,7 +247,7 @@ gis_privacy_page_apply (GisPage *gis_page,
+@@ -168,7 +168,7 @@ gis_privacy_page_apply (GisPage *gis_page,
  static void
  gis_privacy_page_locale_changed (GisPage *page)
  {
@@ -1303,7 +1303,7 @@ index 323e1aa..7750cf8 100644
  
  static void
 diff --git a/gnome-initial-setup/pages/summary/gis-summary-page.c b/gnome-initial-setup/pages/summary/gis-summary-page.c
-index 5e90e8a..d34aad3 100644
+index 5fed9ac..b9ecc4c 100644
 --- a/gnome-initial-setup/pages/summary/gis-summary-page.c
 +++ b/gnome-initial-setup/pages/summary/gis-summary-page.c
 @@ -189,7 +189,7 @@ done_cb (GtkButton *button, GisSummaryPage *page)
@@ -6057,10 +6057,10 @@ index 67a960f..41b35a5 100644
    </gresource>
  </gresources>
 diff --git a/po/POTFILES.in b/po/POTFILES.in
-index 10536d1..2159715 100644
+index 977cfda..a7d7146 100644
 --- a/po/POTFILES.in
 +++ b/po/POTFILES.in
-@@ -43,3 +43,13 @@ gnome-initial-setup/pages/timezone/gis-timezone-page.ui
+@@ -44,3 +44,13 @@ gnome-initial-setup/pages/timezone/gis-timezone-page.ui
  gnome-initial-setup/pages/welcome/gis-welcome-page.c
  gnome-initial-setup/pages/welcome/gis-welcome-page.ui
  po/EXTRA_STRINGS.sh
