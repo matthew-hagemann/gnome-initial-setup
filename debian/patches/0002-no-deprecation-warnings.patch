@@ -12,7 +12,7 @@ warnings difficult to detect.
  1 file changed, 1 insertion(+)
 
 diff --git a/meson.build b/meson.build
-index 114640b..8f00164 100644
+index 5f95239..c65c1b0 100644
 --- a/meson.build
 +++ b/meson.build
 @@ -8,6 +8,7 @@ project('gnome-initial-setup',
