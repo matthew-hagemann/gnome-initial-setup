@@ -1,10 +1,10 @@
-gnome-initial-setup (47~rc-1ubuntu1) UNRELEASED; urgency=medium
+gnome-initial-setup (47~rc-1ubuntu1) oracular; urgency=medium
 
   [ Alessandro Astone ]
   * Merge with Debian
   * Refresh patches
 
- -- Alessandro Astone <alessandro.astone@canonical.com>  Fri, 06 Sep 2024 17:18:09 +0200
+ -- Marco Trevisan (Treviño) <marco@ubuntu.com>  Fri, 06 Sep 2024 18:47:40 +0200
 
 gnome-initial-setup (47~rc-1) unstable; urgency=medium
 
