@@ -1,3 +1,10 @@
+gnome-initial-setup (47~rc-1) unstable; urgency=medium
+
+  [ Alessandro Astone ]
+  * New upstream release
+
+ -- Marco Trevisan (Treviño) <marco@ubuntu.com>  Fri, 06 Sep 2024 16:47:21 +0200
+
 gnome-initial-setup (47~beta-1ubuntu1) oracular; urgency=medium
 
   * Merge with Debian
