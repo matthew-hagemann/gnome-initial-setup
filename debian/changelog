@@ -1,3 +1,9 @@
+gnome-initial-setup (47~rc-1ubuntu3) UNRELEASED; urgency=medium
+
+  * Fix some issues in the svg from the previous upload
+
+ -- Sebastien Bacher <seb128@ubuntu.com>  Mon, 16 Sep 2024 12:46:37 +0200
+
 gnome-initial-setup (47~rc-1ubuntu2) oracular; urgency=medium
 
   * ubuntu-mascot.svg: update the mascot for Oracular (lp: #2080521)
