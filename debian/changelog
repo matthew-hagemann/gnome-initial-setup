@@ -1,3 +1,9 @@
+gnome-initial-setup (47.0-1ubuntu1) oracular; urgency=medium
+
+  * New upstream version
+
+ -- Sebastien Bacher <seb128@ubuntu.com>  Mon, 16 Sep 2024 16:31:45 +0200
+
 gnome-initial-setup (47.0-1) unstable; urgency=medium
 
   * New upstream release
