@@ -82,11 +82,10 @@ Subject: Add Ubuntu mode with special pages
  delete mode 100644 gnome-initial-setup/pages/welcome/initial-setup-welcome.svg
  create mode 100644 gnome-initial-setup/pages/welcome/ubuntu-mascot.svg
 
-diff --git a/data/its/polkit.its b/data/its/polkit.its
-new file mode 100644
-index 0000000..c48ad3f
---- /dev/null
-+++ b/data/its/polkit.its
+Index: gnome-initial-setup/data/its/polkit.its
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/data/its/polkit.its	2024-09-16 10:21:02.802089678 +0200
 @@ -0,0 +1,8 @@
 +<?xml version="1.0"?>
 +<its:rules xmlns:its="http://www.w3.org/2005/11/its"
@@ -97,11 +96,10 @@ index 0000000..c48ad3f
 +                     translate="yes"/>
 +</its:rules>
 \ No newline at end of file
-diff --git a/data/its/polkit.loc b/data/its/polkit.loc
-new file mode 100644
-index 0000000..12c7bf0
---- /dev/null
-+++ b/data/its/polkit.loc
+Index: gnome-initial-setup/data/its/polkit.loc
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/data/its/polkit.loc	2024-09-16 10:21:02.802089678 +0200
 @@ -0,0 +1,6 @@
 +<?xml version="1.0"?>
 +<locatingRules>
@@ -110,11 +108,11 @@ index 0000000..12c7bf0
 +  </locatingRule>
 +</locatingRules>
 \ No newline at end of file
-diff --git a/gnome-initial-setup/gis-assistant.c b/gnome-initial-setup/gis-assistant.c
-index 68bf434..b141915 100644
---- a/gnome-initial-setup/gis-assistant.c
-+++ b/gnome-initial-setup/gis-assistant.c
-@@ -163,7 +163,8 @@ void
+Index: gnome-initial-setup/gnome-initial-setup/gis-assistant.c
+===================================================================
+--- gnome-initial-setup.orig/gnome-initial-setup/gis-assistant.c	2024-09-16 10:21:02.841089567 +0200
++++ gnome-initial-setup/gnome-initial-setup/gis-assistant.c	2024-09-16 10:21:02.803089675 +0200
+@@ -163,7 +163,8 @@
  gis_assistant_previous_page (GisAssistant *assistant)
  {
    g_return_if_fail (assistant->current_page != NULL);
@@ -124,7 +122,7 @@ index 68bf434..b141915 100644
  }
  
  static void
-@@ -245,6 +246,12 @@ update_applying_state (GisAssistant *assistant)
+@@ -245,6 +246,12 @@
      {
        applying = gis_page_get_applying (assistant->current_page);
        is_first_page = assistant->pages->data == assistant->current_page;
@@ -137,11 +135,11 @@ index 68bf434..b141915 100644
      }
    gtk_widget_set_sensitive (assistant->forward, !applying);
    gtk_widget_set_sensitive (assistant->done, !applying);
-diff --git a/gnome-initial-setup/gis-driver.c b/gnome-initial-setup/gis-driver.c
-index d172276..7e40f9d 100644
---- a/gnome-initial-setup/gis-driver.c
-+++ b/gnome-initial-setup/gis-driver.c
-@@ -105,6 +105,9 @@ struct _GisDriver {
+Index: gnome-initial-setup/gnome-initial-setup/gis-driver.c
+===================================================================
+--- gnome-initial-setup.orig/gnome-initial-setup/gis-driver.c	2024-09-16 10:21:02.841089567 +0200
++++ gnome-initial-setup/gnome-initial-setup/gis-driver.c	2024-09-16 10:21:02.804089672 +0200
+@@ -105,6 +105,9 @@
  
    const gchar *vendor_conf_file_path;
    GKeyFile *vendor_conf_file;
@@ -151,7 +149,7 @@ index d172276..7e40f9d 100644
  };
  
  G_DEFINE_TYPE (GisDriver, gis_driver, ADW_TYPE_APPLICATION)
-@@ -1030,6 +1033,33 @@ gis_driver_save_data (GisDriver  *driver,
+@@ -1030,6 +1033,33 @@
    return gis_assistant_save_data (driver->assistant, error);
  }
  
@@ -185,11 +183,11 @@ index d172276..7e40f9d 100644
  GisDriver *
  gis_driver_new (GisDriverMode mode)
  {
-diff --git a/gnome-initial-setup/gis-driver.h b/gnome-initial-setup/gis-driver.h
-index ca06391..19f5a28 100644
---- a/gnome-initial-setup/gis-driver.h
-+++ b/gnome-initial-setup/gis-driver.h
-@@ -125,6 +125,12 @@ gchar *gis_driver_conf_get_string (GisDriver *driver,
+Index: gnome-initial-setup/gnome-initial-setup/gis-driver.h
+===================================================================
+--- gnome-initial-setup.orig/gnome-initial-setup/gis-driver.h	2024-09-16 10:21:02.841089567 +0200
++++ gnome-initial-setup/gnome-initial-setup/gis-driver.h	2024-09-16 10:21:02.804089672 +0200
+@@ -125,6 +125,12 @@
                                     const gchar *group,
                                     const gchar *key);
  
@@ -202,11 +200,11 @@ index ca06391..19f5a28 100644
  GisDriver *gis_driver_new (GisDriverMode mode);
  
  G_END_DECLS
-diff --git a/gnome-initial-setup/gis-page.c b/gnome-initial-setup/gis-page.c
-index d8e2242..125b6aa 100644
---- a/gnome-initial-setup/gis-page.c
-+++ b/gnome-initial-setup/gis-page.c
-@@ -202,6 +202,12 @@ gis_page_real_apply (GisPage      *page,
+Index: gnome-initial-setup/gnome-initial-setup/gis-page.c
+===================================================================
+--- gnome-initial-setup.orig/gnome-initial-setup/gis-page.c	2024-09-16 10:21:02.841089567 +0200
++++ gnome-initial-setup/gnome-initial-setup/gis-page.c	2024-09-16 10:21:02.805089669 +0200
+@@ -202,6 +202,12 @@
    return FALSE;
  }
  
@@ -219,7 +217,7 @@ index d8e2242..125b6aa 100644
  static void
  gis_page_class_init (GisPageClass *klass)
  {
-@@ -214,6 +220,7 @@ gis_page_class_init (GisPageClass *klass)
+@@ -214,6 +220,7 @@
    object_class->set_property = gis_page_set_property;
  
    klass->apply = gis_page_real_apply;
@@ -227,7 +225,7 @@ index d8e2242..125b6aa 100644
  
    obj_props[PROP_DRIVER] =
      g_param_spec_object ("driver", "", "", GIS_TYPE_DRIVER,
-@@ -382,6 +389,14 @@ gis_page_apply_begin (GisPage                *page,
+@@ -382,6 +389,14 @@
    g_object_notify_by_pspec (G_OBJECT (page), obj_props[PROP_APPLYING]);
  }
  
@@ -242,11 +240,11 @@ index d8e2242..125b6aa 100644
  void
  gis_page_apply_complete (GisPage *page,
                           gboolean valid)
-diff --git a/gnome-initial-setup/gis-page.h b/gnome-initial-setup/gis-page.h
-index 742cc71..adb11e0 100644
---- a/gnome-initial-setup/gis-page.h
-+++ b/gnome-initial-setup/gis-page.h
-@@ -59,6 +59,7 @@ struct _GisPageClass
+Index: gnome-initial-setup/gnome-initial-setup/gis-page.h
+===================================================================
+--- gnome-initial-setup.orig/gnome-initial-setup/gis-page.h	2024-09-16 10:21:02.841089567 +0200
++++ gnome-initial-setup/gnome-initial-setup/gis-page.h	2024-09-16 10:21:02.805089669 +0200
+@@ -59,6 +59,7 @@
    void         (*locale_changed) (GisPage *page);
    gboolean     (*apply) (GisPage *page,
                           GCancellable *cancellable);
@@ -254,7 +252,7 @@ index 742cc71..adb11e0 100644
    gboolean     (*save_data) (GisPage  *page,
                               GError  **error);
    void         (*shown) (GisPage *page);
-@@ -83,6 +84,7 @@ void         gis_page_locale_changed (GisPage *page);
+@@ -83,6 +84,7 @@
  void         gis_page_apply_begin (GisPage *page, GisPageApplyCallback callback, gpointer user_data);
  void         gis_page_apply_cancel (GisPage *page);
  void         gis_page_apply_complete (GisPage *page, gboolean valid);
@@ -262,10 +260,10 @@ index 742cc71..adb11e0 100644
  gboolean     gis_page_get_applying (GisPage *page);
  gboolean     gis_page_save_data (GisPage  *page,
                                   GError  **error);
-diff --git a/gnome-initial-setup/gnome-initial-setup.c b/gnome-initial-setup/gnome-initial-setup.c
-index 7ca2bc2..d7afd23 100644
---- a/gnome-initial-setup/gnome-initial-setup.c
-+++ b/gnome-initial-setup/gnome-initial-setup.c
+Index: gnome-initial-setup/gnome-initial-setup/gnome-initial-setup.c
+===================================================================
+--- gnome-initial-setup.orig/gnome-initial-setup/gnome-initial-setup.c	2024-09-16 10:21:02.841089567 +0200
++++ gnome-initial-setup/gnome-initial-setup/gnome-initial-setup.c	2024-09-16 10:21:02.805089669 +0200
 @@ -40,12 +40,17 @@
  #include "pages/parental-controls/gis-parental-controls-page.h"
  #include "pages/password/gis-password-page.h"
@@ -284,7 +282,7 @@ index 7ca2bc2..d7afd23 100644
  static gboolean force_existing_user_mode;
  
  static GPtrArray *skipped_pages;
-@@ -78,6 +83,16 @@ static PageData page_table[] = {
+@@ -78,6 +83,16 @@
    { NULL },
  };
  
@@ -301,7 +299,7 @@ index 7ca2bc2..d7afd23 100644
  #undef PAGE
  
  static gboolean
-@@ -89,7 +104,9 @@ should_skip_page (const gchar  *page_id,
+@@ -89,7 +104,9 @@
    /* special case welcome. We only want to show it if language
     * is skipped
     */
@@ -312,7 +310,7 @@ index 7ca2bc2..d7afd23 100644
      return !should_skip_page ("language", skip_pages);
  
    /* check through our skip pages list for pages we don't want */
-@@ -188,6 +205,29 @@ destroy_page (gpointer data)
+@@ -188,6 +205,29 @@
      gis_assistant_remove_page (GIS_ASSISTANT (assistant), page);
  }
  
@@ -342,7 +340,7 @@ index 7ca2bc2..d7afd23 100644
  static void
  rebuild_pages_cb (GisDriver *driver)
  {
-@@ -200,7 +240,11 @@ rebuild_pages_cb (GisDriver *driver)
+@@ -200,7 +240,11 @@
  
    assistant = gis_driver_get_assistant (driver);
    current_page = gis_assistant_get_current_page (assistant);
@@ -355,7 +353,7 @@ index 7ca2bc2..d7afd23 100644
  
    g_ptr_array_free (skipped_pages, TRUE);
    skipped_pages = g_ptr_array_new_with_free_func (destroy_page);
-@@ -208,7 +252,7 @@ rebuild_pages_cb (GisDriver *driver)
+@@ -208,7 +252,7 @@
    if (current_page != NULL) {
      destroy_pages_after (assistant, current_page);
  
@@ -364,11 +362,11 @@ index 7ca2bc2..d7afd23 100644
        if (g_str_equal (page_data->page_id, GIS_PAGE_GET_CLASS (current_page)->page_id))
          break;
  
-diff --git a/gnome-initial-setup/meson.build b/gnome-initial-setup/meson.build
-index 57bda03..713d328 100644
---- a/gnome-initial-setup/meson.build
-+++ b/gnome-initial-setup/meson.build
-@@ -57,6 +57,9 @@ dependencies = [
+Index: gnome-initial-setup/gnome-initial-setup/meson.build
+===================================================================
+--- gnome-initial-setup.orig/gnome-initial-setup/meson.build	2024-09-16 10:21:02.841089567 +0200
++++ gnome-initial-setup/gnome-initial-setup/meson.build	2024-09-16 10:21:02.806089666 +0200
+@@ -57,6 +57,9 @@
      dependency ('krb5'),
      dependency ('libsecret-1', version: '>= 0.18.8'),
      dependency ('pwquality'),
@@ -378,20 +376,18 @@ index 57bda03..713d328 100644
      ibus_dep,
      libmalcontent_dep,
      libmalcontent_ui_dep,
-diff --git a/gnome-initial-setup/pages/apps/app-center.svg b/gnome-initial-setup/pages/apps/app-center.svg
-new file mode 100644
-index 0000000..a3cff0c
---- /dev/null
-+++ b/gnome-initial-setup/pages/apps/app-center.svg
+Index: gnome-initial-setup/gnome-initial-setup/pages/apps/app-center.svg
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/apps/app-center.svg	2024-09-16 10:21:02.806089666 +0200
 @@ -0,0 +1,3 @@
 +<svg width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
 +<path fill-rule="evenodd" clip-rule="evenodd" d="M45 0C34.8677 0 26.5401 7.86664 25.0049 18H13.5C6.05995 18 0 24.0599 0 31.5V76.5C0 83.94 6.05995 90 13.5 90H76.5C83.94 90 90 83.94 90 76.5V31.5C90 24.0599 83.94 18 76.5 18H64.9951C63.4599 7.86664 55.1323 0 45 0ZM45 4.5C52.5861 4.5 58.9764 10.2351 60.4336 18H29.5664C31.0236 10.2351 37.4139 4.5 45 4.5ZM40.3242 27H49.5967C51.4149 30.8441 53.1822 34.7414 54.8965 38.6895C56.6107 42.6375 58.3238 46.7887 60.0381 51.1523C60.9962 53.5194 61.9645 55.978 62.9385 58.5H65.25C68.9895 58.5 72 61.5105 72 65.25C72 68.0715 70.2816 70.4787 67.834 71.4902C68.9533 74.5273 70.0905 77.6666 71.2617 81H60.6621C59.9348 78.8701 59.1825 76.7674 58.4033 74.6895C58.0711 73.8036 57.7415 72.9048 57.4189 72H32.124C31.7984 72.9267 31.4663 73.8518 31.1309 74.7686L28.9512 81H18.7383C19.9105 77.6636 21.0371 74.521 22.1396 71.4814C19.7057 70.4638 18 68.0616 18 65.25C18 61.5105 21.0105 58.5 24.75 58.5H26.9648C27.9257 55.9778 28.8737 53.5195 29.8037 51.1523C31.5699 46.7887 33.3101 42.6375 35.0244 38.6895C36.7387 34.7414 38.506 30.8441 40.3242 27ZM44.7627 37.4414C43.5679 40.1946 42.1991 43.548 40.6406 47.4961C39.3433 50.896 37.9757 54.599 36.5625 58.5H52.9717C51.5509 54.5895 50.1575 50.864 48.8145 47.417C47.256 43.417 45.9055 40.0907 44.7627 37.4414ZM24.75 63C23.5035 63 22.5 64.0035 22.5 65.25C22.5 66.4965 23.5035 67.5 24.75 67.5H65.25C66.4965 67.5 67.5 66.4965 67.5 65.25C67.5 64.0035 66.4965 63 65.25 63H24.75Z" fill="#E95420"/>
 +</svg>
-diff --git a/gnome-initial-setup/pages/apps/apps.gresource.xml b/gnome-initial-setup/pages/apps/apps.gresource.xml
-new file mode 100644
-index 0000000..6313a06
---- /dev/null
-+++ b/gnome-initial-setup/pages/apps/apps.gresource.xml
+Index: gnome-initial-setup/gnome-initial-setup/pages/apps/apps.gresource.xml
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/apps/apps.gresource.xml	2024-09-16 10:21:02.807089663 +0200
 @@ -0,0 +1,9 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<gresources>
@@ -402,19 +398,17 @@ index 0000000..6313a06
 +  </gresource>
 +</gresources>
 +
-diff --git a/gnome-initial-setup/pages/apps/default-snap-icon.svg b/gnome-initial-setup/pages/apps/default-snap-icon.svg
-new file mode 100644
-index 0000000..0d8dd94
---- /dev/null
-+++ b/gnome-initial-setup/pages/apps/default-snap-icon.svg
+Index: gnome-initial-setup/gnome-initial-setup/pages/apps/default-snap-icon.svg
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/apps/default-snap-icon.svg	2024-09-16 10:21:02.808089660 +0200
 @@ -0,0 +1 @@
 +<svg width="96" height="96" xmlns="http://www.w3.org/2000/svg"><circle fill="#F7F7F7" cx="48" cy="48" r="48"/><path d="M55.71 53.294V32.766l14.248 6.28L55.71 53.293zM28.901 80.102L46.049 47.74l7.728 7.486-24.875 24.876zM19 19l35.502 12.8v22.702L19 19zm58.204 12.8L83 43.634 56.675 31.8h20.529z" fill="#CDCDCD"/></svg>
 \ No newline at end of file
-diff --git a/gnome-initial-setup/pages/apps/gis-apps-page.c b/gnome-initial-setup/pages/apps/gis-apps-page.c
-new file mode 100644
-index 0000000..719ed77
---- /dev/null
-+++ b/gnome-initial-setup/pages/apps/gis-apps-page.c
+Index: gnome-initial-setup/gnome-initial-setup/pages/apps/gis-apps-page.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/apps/gis-apps-page.c	2024-09-16 10:21:02.809089658 +0200
 @@ -0,0 +1,679 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
@@ -1095,11 +1089,10 @@ index 0000000..719ed77
 +                       "driver", driver,
 +                       NULL);
 +}
-diff --git a/gnome-initial-setup/pages/apps/gis-apps-page.h b/gnome-initial-setup/pages/apps/gis-apps-page.h
-new file mode 100644
-index 0000000..e451214
---- /dev/null
-+++ b/gnome-initial-setup/pages/apps/gis-apps-page.h
+Index: gnome-initial-setup/gnome-initial-setup/pages/apps/gis-apps-page.h
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/apps/gis-apps-page.h	2024-09-16 10:21:02.809089658 +0200
 @@ -0,0 +1,33 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
@@ -1134,11 +1127,10 @@ index 0000000..e451214
 +G_END_DECLS
 +
 +#endif /* __GIS_APPS_PAGE_H__ */
-diff --git a/gnome-initial-setup/pages/apps/gis-apps-page.ui b/gnome-initial-setup/pages/apps/gis-apps-page.ui
-new file mode 100644
-index 0000000..411aca7
---- /dev/null
-+++ b/gnome-initial-setup/pages/apps/gis-apps-page.ui
+Index: gnome-initial-setup/gnome-initial-setup/pages/apps/gis-apps-page.ui
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/apps/gis-apps-page.ui	2024-09-16 10:21:02.809089658 +0200
 @@ -0,0 +1,119 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
@@ -1259,11 +1251,10 @@ index 0000000..411aca7
 +
 +  </template>
 +</interface>
-diff --git a/gnome-initial-setup/pages/apps/meson.build b/gnome-initial-setup/pages/apps/meson.build
-new file mode 100644
-index 0000000..dec2b38
---- /dev/null
-+++ b/gnome-initial-setup/pages/apps/meson.build
+Index: gnome-initial-setup/gnome-initial-setup/pages/apps/meson.build
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/apps/meson.build	2024-09-16 10:21:02.810089655 +0200
 @@ -0,0 +1,10 @@
 +sources += gnome.compile_resources(
 +    'apps-resources',
@@ -1275,11 +1266,11 @@ index 0000000..dec2b38
 +    'gis-apps-page.c',
 +    'gis-apps-page.h',
 +)
-diff --git a/gnome-initial-setup/pages/meson.build b/gnome-initial-setup/pages/meson.build
-index 8d327f6..2ed2a5f 100644
---- a/gnome-initial-setup/pages/meson.build
-+++ b/gnome-initial-setup/pages/meson.build
-@@ -9,6 +9,9 @@ pages = [
+Index: gnome-initial-setup/gnome-initial-setup/pages/meson.build
+===================================================================
+--- gnome-initial-setup.orig/gnome-initial-setup/pages/meson.build	2024-09-16 10:21:02.841089567 +0200
++++ gnome-initial-setup/gnome-initial-setup/pages/meson.build	2024-09-16 10:21:02.810089655 +0200
+@@ -9,6 +9,9 @@
     'software',
     'summary',
     'welcome',
@@ -1289,11 +1280,11 @@ index 8d327f6..2ed2a5f 100644
  ]
  
  if libmalcontent_dep.found() and libmalcontent_ui_dep.found()
-diff --git a/gnome-initial-setup/pages/privacy/gis-privacy-page.c b/gnome-initial-setup/pages/privacy/gis-privacy-page.c
-index 1e3934e..8af750e 100644
---- a/gnome-initial-setup/pages/privacy/gis-privacy-page.c
-+++ b/gnome-initial-setup/pages/privacy/gis-privacy-page.c
-@@ -168,7 +168,7 @@ gis_privacy_page_apply (GisPage *gis_page,
+Index: gnome-initial-setup/gnome-initial-setup/pages/privacy/gis-privacy-page.c
+===================================================================
+--- gnome-initial-setup.orig/gnome-initial-setup/pages/privacy/gis-privacy-page.c	2024-09-16 10:21:02.841089567 +0200
++++ gnome-initial-setup/gnome-initial-setup/pages/privacy/gis-privacy-page.c	2024-09-16 10:21:02.811089652 +0200
+@@ -168,7 +168,7 @@
  static void
  gis_privacy_page_locale_changed (GisPage *page)
  {
@@ -1302,11 +1293,11 @@ index 1e3934e..8af750e 100644
  }
  
  static void
-diff --git a/gnome-initial-setup/pages/summary/gis-summary-page.c b/gnome-initial-setup/pages/summary/gis-summary-page.c
-index 5fed9ac..b9ecc4c 100644
---- a/gnome-initial-setup/pages/summary/gis-summary-page.c
-+++ b/gnome-initial-setup/pages/summary/gis-summary-page.c
-@@ -189,7 +189,7 @@ done_cb (GtkButton *button, GisSummaryPage *page)
+Index: gnome-initial-setup/gnome-initial-setup/pages/summary/gis-summary-page.c
+===================================================================
+--- gnome-initial-setup.orig/gnome-initial-setup/pages/summary/gis-summary-page.c	2024-09-16 10:21:02.841089567 +0200
++++ gnome-initial-setup/gnome-initial-setup/pages/summary/gis-summary-page.c	2024-09-16 10:21:02.811089652 +0200
+@@ -189,7 +189,7 @@
        log_user_in (page);
        break;
      case GIS_DRIVER_MODE_EXISTING_USER:
@@ -1315,27 +1306,24 @@ index 5fed9ac..b9ecc4c 100644
      default:
        break;
      }
-diff --git a/gnome-initial-setup/pages/ubuntu-pro/checkmark.svg b/gnome-initial-setup/pages/ubuntu-pro/checkmark.svg
-new file mode 100644
-index 0000000..a0c8602
---- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-pro/checkmark.svg
+Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/checkmark.svg
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/checkmark.svg	2024-09-16 10:21:02.812089649 +0200
 @@ -0,0 +1 @@
 +<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><g fill="none" fill-rule="nonzero"><path fill="#0e8420" d="M8 1a7 7 0 110 14A7 7 0 018 1zm2.83 3.502L6.863 9.884 5.174 8.096l-1.09 1.03 2.92 3.096 5.034-6.83-1.208-.89z"/><path fill="#fff" d="M10.83 4.502l1.208.89-5.033 6.83-2.922-3.096 1.091-1.03 1.689 1.789z"/></g></svg>
 \ No newline at end of file
-diff --git a/gnome-initial-setup/pages/ubuntu-pro/fail.svg b/gnome-initial-setup/pages/ubuntu-pro/fail.svg
-new file mode 100644
-index 0000000..e3c9a52
---- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-pro/fail.svg
+Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/fail.svg
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/fail.svg	2024-09-16 10:21:02.812089649 +0200
 @@ -0,0 +1 @@
 +<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16"><defs><filter id="darkreader-image-filter"><feColorMatrix type="matrix" values="-0.193 -0.490 -1.120 0.000 1.698 -0.965 0.293 -1.105 0.000 1.673 -0.946 -0.489 -0.296 0.000 1.630 0.000 0.000 0.000 1.000 0.000"/></filter></defs><image width="16" height="16" filter="url(#darkreader-image-filter)" xlink:href="data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Ccircle stroke='%23c7162b' stroke-width='1.5' fill='%23c7162b' cx='8' cy='8' r='6.25'/%3E%3Cpath fill='%23FFF' fill-rule='nonzero' d='M10.282 4.638l1.06 1.06L9.05 7.99l2.293 2.292-1.06 1.06L7.99 9.05 5.7 11.343l-1.06-1.06 2.29-2.293L4.64 5.7l1.06-1.06 2.291 2.29z'/%3E%3C/g%3E%3C/svg%3E"/></svg>
 \ No newline at end of file
-diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
-new file mode 100644
-index 0000000..c83635f
---- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
+Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-attach-page.ui	2024-09-16 10:21:02.813089646 +0200
 @@ -0,0 +1,186 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
@@ -1523,11 +1511,10 @@ index 0000000..c83635f
 +    </child>
 +  </template>
 +</interface>
-diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
-new file mode 100644
-index 0000000..a5d09eb
---- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
+Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-offer-page.ui	2024-09-16 10:21:02.813089646 +0200
 @@ -0,0 +1,186 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
@@ -1715,11 +1702,10 @@ index 0000000..a5d09eb
 +    </child>
 +  </template>
 +</interface>
-diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
-new file mode 100644
-index 0000000..ae03937
---- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
+Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.c	2024-09-16 10:21:02.815089641 +0200
 @@ -0,0 +1,1058 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
@@ -2779,11 +2765,10 @@ index 0000000..ae03937
 +                       "driver", driver,
 +                       NULL);
 +}
-diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.h b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.h
-new file mode 100644
-index 0000000..f90d0c2
---- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.h
+Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.h
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.h	2024-09-16 10:21:02.816089638 +0200
 @@ -0,0 +1,110 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
@@ -2895,11 +2880,10 @@ index 0000000..f90d0c2
 +G_END_DECLS
 +
 +#endif /* __GIS_UBUNTUPRO_PAGE_H__ */
-diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.ui
-new file mode 100644
-index 0000000..d03d133
---- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.ui
+Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.ui
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-page.ui	2024-09-16 10:21:02.817089635 +0200
 @@ -0,0 +1,24 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
@@ -2925,11 +2909,10 @@ index 0000000..d03d133
 +    </child>
 +  </template>
 +</interface>
-diff --git a/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui
-new file mode 100644
-index 0000000..e01d6b5
---- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui
+Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/gis-ubuntupro-services-page.ui	2024-09-16 10:21:02.817089635 +0200
 @@ -0,0 +1,107 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
@@ -3038,11 +3021,10 @@ index 0000000..e01d6b5
 +    </child>
 +  </template>
 +</interface>
-diff --git a/gnome-initial-setup/pages/ubuntu-pro/meson.build b/gnome-initial-setup/pages/ubuntu-pro/meson.build
-new file mode 100644
-index 0000000..f7b700a
---- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-pro/meson.build
+Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/meson.build
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/meson.build	2024-09-16 10:21:02.817089635 +0200
 @@ -0,0 +1,12 @@
 +sources += gnome.compile_resources(
 +    'ubuntupro-resources',
@@ -3056,11 +3038,10 @@ index 0000000..f7b700a
 +    'utils.c',
 +    'utils.h',
 +)
-diff --git a/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro-dark.svg b/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro-dark.svg
-new file mode 100644
-index 0000000..e33bf48
---- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro-dark.svg
+Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro-dark.svg
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro-dark.svg	2024-09-16 10:21:02.818089632 +0200
 @@ -0,0 +1,25 @@
 +<svg width="132" height="34" viewBox="0 0 132 34" fill="none" xmlns="http://www.w3.org/2000/svg">
 +<g clip-path="url(#clip0_1_7165)">
@@ -3087,19 +3068,17 @@ index 0000000..e33bf48
 +</clipPath>
 +</defs>
 +</svg>
-diff --git a/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro.svg b/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro.svg
-new file mode 100644
-index 0000000..d377e41
---- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro.svg
+Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro.svg
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/ubuntu-pro.svg	2024-09-16 10:21:02.818089632 +0200
 @@ -0,0 +1 @@
 +<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1444.23 360.27"><defs><style>.cls-1{fill:#e95420;}.cls-2{fill:#fff;}.cls-3{fill:#111;}</style></defs><rect class="cls-1" width="233.93" height="360.27"/><circle class="cls-2" cx="52.26" cy="238.51" r="24.44"/><circle class="cls-2" cx="154.06" cy="184.91" r="24.44"/><path class="cls-2" d="M107.39,301.42a59.52,59.52,0,0,1-40.6-31A35.22,35.22,0,0,1,45.89,273a80.08,80.08,0,0,0,74.65,49.8,35,35,0,0,1-7.16-20.44A60.26,60.26,0,0,1,107.39,301.42Z"/><circle class="cls-2" cx="148.55" cy="301.55" r="24.44"/><path class="cls-2" d="M182.56,292.58a79.94,79.94,0,0,0,4-93.83,35.16,35.16,0,0,1-13.74,16.09,60,60,0,0,1-2,59.53A35,35,0,0,1,182.56,292.58Z"/><path class="cls-2" d="M50.37,203.46c.62,0,1.24-.05,1.87-.05a35.36,35.36,0,0,1,7.37.78,35,35,0,0,1,11.16,4.5,59.63,59.63,0,0,1,48-25.68,36.52,36.52,0,0,1,.74-5.5,35.3,35.3,0,0,1,6.68-14.32A80.38,80.38,0,0,0,50.37,203.46Z"/><path class="cls-3" d="M347.78,331.73q-16.27,0-27.71-5a47.72,47.72,0,0,1-18.52-13.68,54.81,54.81,0,0,1-10.26-20.41,95.22,95.22,0,0,1-3.19-25.12V164.73h16V265.45a75.46,75.46,0,0,0,3.19,23.23,44.78,44.78,0,0,0,8.84,16.16,34.55,34.55,0,0,0,13.68,9.44,54.06,54.06,0,0,0,35.86,0,34.55,34.55,0,0,0,13.68-9.44,44.78,44.78,0,0,0,8.84-16.16,75.46,75.46,0,0,0,3.19-23.23V164.73h16V267.57a95.22,95.22,0,0,1-3.19,25.12A54.81,54.81,0,0,1,394,313.1a47.76,47.76,0,0,1-18.51,13.68Q364.06,331.73,347.78,331.73Z"/><path class="cls-3" d="M460.55,213.56q4-3.06,12.85-6.49a58,58,0,0,1,20.88-3.42,55.7,55.7,0,0,1,23.47,4.72,48.76,48.76,0,0,1,17.33,13.21,58.28,58.28,0,0,1,10.74,20.17,85.49,85.49,0,0,1,3.65,25.59A76.4,76.4,0,0,1,545.11,294,57.25,57.25,0,0,1,532.84,314,52.66,52.66,0,0,1,514,326.66,65.48,65.48,0,0,1,489.56,331q-16.28,0-26.89-2.12a137.63,137.63,0,0,1-17.45-4.48V148l15.33-2.83Zm0,100.25A68.84,68.84,0,0,0,471,316.05a127.35,127.35,0,0,0,18.28,1.06q19.81,0,31.85-12.86t12-36.91a84.07,84.07,0,0,0-2.13-19.23,44.87,44.87,0,0,0-6.84-15.8,34.25,34.25,0,0,0-12.38-10.73q-7.67-4-19-4a49.31,49.31,0,0,0-10.38,1.06,61.57,61.57,0,0,0-9.19,2.71,51,51,0,0,0-12.74,7.08Z"/><path class="cls-3" d="M673.56,324q-6.84,1.89-18.4,4.24a144.38,144.38,0,0,1-28.3,2.36q-13.68,0-22.88-4a37.07,37.07,0,0,1-14.86-11.32A45.88,45.88,0,0,1,581,297.53a98.64,98.64,0,0,1-2.47-22.88v-68.4h15.33V269.7a108.25,108.25,0,0,0,1.88,21.93q1.89,9,6.14,14.51a23.86,23.86,0,0,0,11,8,47.64,47.64,0,0,0,16.39,2.48,132.49,132.49,0,0,0,18.87-1.18c5.34-.79,8.73-1.5,10.14-2.13V206.25h15.33Z"/><path class="cls-3" d="M710.26,210.49q6.84-1.87,18.4-4.24a144.38,144.38,0,0,1,28.3-2.36q13.92,0,23.24,4a35.73,35.73,0,0,1,14.86,11.44,46.84,46.84,0,0,1,7.9,17.81A103.44,103.44,0,0,1,805.32,260v68.16H790V265A115.58,115.58,0,0,0,788.22,243a36.61,36.61,0,0,0-5.9-14.62,23,23,0,0,0-10.85-8.14q-6.72-2.47-16.87-2.47A128.49,128.49,0,0,0,735.85,219q-7.9,1.17-10.26,2.12V328.19H710.26Z"/><path class="cls-3" d="M855.39,206.25H904v13H855.39v64.87A65.79,65.79,0,0,0,857.16,301a23.36,23.36,0,0,0,5.07,10,16,16,0,0,0,8,4.72,42.53,42.53,0,0,0,10.38,1.18q9.66,0,15.56-2.24a67,67,0,0,0,9.2-4.13l3.78,12.74q-3.31,2.13-11.56,4.83a57.11,57.11,0,0,1-17.93,2.72q-11.32,0-19-3a27.48,27.48,0,0,1-12.26-9,36.72,36.72,0,0,1-6.49-15,104.2,104.2,0,0,1-1.88-21.23V170.4l15.33-2.83Z"/><path class="cls-3" d="M1023.33,324q-6.86,1.89-18.4,4.24a144.49,144.49,0,0,1-28.31,2.36q-13.68,0-22.88-4a37.14,37.14,0,0,1-14.86-11.32,45.87,45.87,0,0,1-8.13-17.69,98.62,98.62,0,0,1-2.48-22.88v-68.4H943.6V269.7a108.17,108.17,0,0,0,1.89,21.93q1.89,9,6.13,14.51a23.91,23.91,0,0,0,11,8A47.64,47.64,0,0,0,979,316.64a132.49,132.49,0,0,0,18.87-1.18q8-1.18,10.14-2.13V206.25h15.34Z"/><path class="cls-3" d="M1156.68,163.32q34.68,0,51.66,13.21t17,37.5q0,13.92-5,23.71a40.35,40.35,0,0,1-14.15,15.8q-9.21,6-22.53,8.73a151.33,151.33,0,0,1-30.07,2.71h-22.17v63.21h-16V167.8a115.14,115.14,0,0,1,19.93-3.42Q1146.77,163.32,1156.68,163.32Zm.71,13.92q-9,0-15.21.59t-10.73,1.06v72.17h20.28a163.68,163.68,0,0,0,23.47-1.53,52.38,52.38,0,0,0,17.93-5.66,28.63,28.63,0,0,0,11.44-11.44q4-7.31,4-18.63,0-10.85-4.37-17.93a32.14,32.14,0,0,0-11.56-11.2,50.62,50.62,0,0,0-16.39-5.78A106.64,106.64,0,0,0,1157.39,177.24Z"/><path class="cls-3" d="M1292.85,203.89a82.18,82.18,0,0,1,14.27,1.18,43.81,43.81,0,0,1,9.32,2.36l-3.07,13.21a34.1,34.1,0,0,0-7.66-2,87.42,87.42,0,0,0-15.22-1.06,71.62,71.62,0,0,0-15.92,1.42,44.62,44.62,0,0,0-7.9,2.35V328.19h-15.33V211.91a113,113,0,0,1,16.27-5.31Q1278,203.9,1292.85,203.89Z"/><path class="cls-3" d="M1438.5,267.34a78.87,78.87,0,0,1-4.13,26.18,58.25,58.25,0,0,1-11.56,20.05,52.56,52.56,0,0,1-17.57,12.85,56.86,56.86,0,0,1-44.81,0,52.6,52.6,0,0,1-17.58-12.85,58.39,58.39,0,0,1-11.55-20.05,85,85,0,0,1,0-52.36A59.72,59.72,0,0,1,1342.85,221a51.86,51.86,0,0,1,17.58-13,56.86,56.86,0,0,1,44.81,0,51.82,51.82,0,0,1,17.57,13,59.57,59.57,0,0,1,11.56,20.17A78.87,78.87,0,0,1,1438.5,267.34Zm-16.28,0q0-22.87-10.61-36.44t-28.78-13.57q-18.16,0-28.77,13.57t-10.62,36.44q0,22.88,10.62,36.32t28.77,13.45q18.17,0,28.78-13.45T1422.22,267.34Z"/></svg>
 \ No newline at end of file
-diff --git a/gnome-initial-setup/pages/ubuntu-pro/ubuntupro.gresource.xml b/gnome-initial-setup/pages/ubuntu-pro/ubuntupro.gresource.xml
-new file mode 100644
-index 0000000..ee8851d
---- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-pro/ubuntupro.gresource.xml
+Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/ubuntupro.gresource.xml
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/ubuntupro.gresource.xml	2024-09-16 10:21:02.819089629 +0200
 @@ -0,0 +1,16 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<gresources>
@@ -3117,11 +3096,10 @@ index 0000000..ee8851d
 +  </gresource>
 +</gresources>
 +
-diff --git a/gnome-initial-setup/pages/ubuntu-pro/utils.c b/gnome-initial-setup/pages/ubuntu-pro/utils.c
-new file mode 100644
-index 0000000..0441c91
---- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-pro/utils.c
+Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/utils.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/utils.c	2024-09-16 10:21:02.819089629 +0200
 @@ -0,0 +1,119 @@
 +#include <adwaita.h>
 +#include <libsoup/soup.h>
@@ -3242,11 +3220,10 @@ index 0000000..0441c91
 +  g_strlcat(str, append, len);
 +  g_strlcat(str, "\n", len);
 +}
-diff --git a/gnome-initial-setup/pages/ubuntu-pro/utils.h b/gnome-initial-setup/pages/ubuntu-pro/utils.h
-new file mode 100644
-index 0000000..ceefe72
---- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-pro/utils.h
+Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/utils.h
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-pro/utils.h	2024-09-16 10:21:02.820089627 +0200
 @@ -0,0 +1,7 @@
 +gboolean parse_ua_status(gchar**, gsize*);
 +gboolean get_ubuntu_advantage_attached(gboolean*);
@@ -3255,11 +3232,10 @@ index 0000000..ceefe72
 +gboolean is_ubuntupro_supported();
 +gboolean is_dark_theme(GtkWidget*);
 +void itemize(gchar*, const gchar*, gsize);
-diff --git a/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
-new file mode 100644
-index 0000000..a62da80
---- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
+Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.c	2024-09-16 10:21:02.821089624 +0200
 @@ -0,0 +1,376 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
@@ -3637,11 +3613,10 @@ index 0000000..a62da80
 +                       "driver", driver,
 +                       NULL);
 +}
-diff --git a/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.h b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.h
-new file mode 100644
-index 0000000..846eb9b
---- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.h
+Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.h
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.h	2024-09-16 10:21:02.821089624 +0200
 @@ -0,0 +1,33 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
@@ -3676,11 +3651,10 @@ index 0000000..846eb9b
 +G_END_DECLS
 +
 +#endif /* __GIS_UBUNTU_REPORT_PAGE_H__ */
-diff --git a/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui
-new file mode 100644
-index 0000000..56936d1
---- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui
+Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/gis-ubuntu-report-page.ui	2024-09-16 10:21:02.822089621 +0200
 @@ -0,0 +1,104 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<interface>
@@ -3786,11 +3760,10 @@ index 0000000..56936d1
 +    </child>
 +  </template>
 +</interface>
-diff --git a/gnome-initial-setup/pages/ubuntu-report/meson.build b/gnome-initial-setup/pages/ubuntu-report/meson.build
-new file mode 100644
-index 0000000..a0f949b
---- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-report/meson.build
+Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/meson.build
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/meson.build	2024-09-16 10:21:02.822089621 +0200
 @@ -0,0 +1,10 @@
 +sources += gnome.compile_resources(
 +    'ubuntu-report-resources',
@@ -3802,11 +3775,10 @@ index 0000000..a0f949b
 +    'gis-ubuntu-report-page.c',
 +    'gis-ubuntu-report-page.h',
 +)
-diff --git a/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.gresource.xml b/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.gresource.xml
-new file mode 100644
-index 0000000..6b28415
---- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.gresource.xml
+Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.gresource.xml
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.gresource.xml	2024-09-16 10:21:02.822089621 +0200
 @@ -0,0 +1,8 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<gresources>
@@ -3816,17 +3788,16 @@ index 0000000..6b28415
 +  </gresource>
 +</gresources>
 +
-diff --git a/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.svg b/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.svg
-new file mode 100644
-index 0000000..8c1d52c
---- /dev/null
-+++ b/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.svg
+Index: gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.svg
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/ubuntu-report/ubuntu-report.svg	2024-09-16 10:21:02.823089618 +0200
 @@ -0,0 +1 @@
 +<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="Layer_1" x="0px" y="0px" width="150px" height="150px" viewBox="0 0 400 400" style="enable-background:new 0 0 400 400;" xml:space="preserve"> <style type="text/css"> .st0{fill:#666666; fill-opacity:0.25;} </style> <g> <path class="st0" d="M301.4,372.4C271.7,390,237,400,200,400C89.5,400,0,310.5,0,200C0,89.5,89.5,0,200,0c110.5,0,200,89.5,200,200 c0,36.4-9.7,70.6-26.8,100l0,0L400,400l-100-26.8L301.4,372.4L301.4,372.4z"/> </g> </svg>
-diff --git a/gnome-initial-setup/pages/welcome/gis-welcome-page.c b/gnome-initial-setup/pages/welcome/gis-welcome-page.c
-index 1cad96e..a2c0751 100644
---- a/gnome-initial-setup/pages/welcome/gis-welcome-page.c
-+++ b/gnome-initial-setup/pages/welcome/gis-welcome-page.c
+Index: gnome-initial-setup/gnome-initial-setup/pages/welcome/gis-welcome-page.c
+===================================================================
+--- gnome-initial-setup.orig/gnome-initial-setup/pages/welcome/gis-welcome-page.c	2024-09-16 10:21:02.841089567 +0200
++++ gnome-initial-setup/gnome-initial-setup/pages/welcome/gis-welcome-page.c	2024-09-16 10:21:02.824089615 +0200
 @@ -28,6 +28,8 @@
  #include "gis-welcome-page.h"
  #include "gis-assistant.h"
@@ -3836,7 +3807,7 @@ index 1cad96e..a2c0751 100644
  
  struct _GisWelcomePage
  {
-@@ -36,7 +38,8 @@ struct _GisWelcomePage
+@@ -36,7 +38,8 @@
  
  typedef struct
  {
@@ -3846,7 +3817,7 @@ index 1cad96e..a2c0751 100644
  } GisWelcomePagePrivate;
  
  G_DEFINE_TYPE_WITH_PRIVATE (GisWelcomePage, gis_welcome_page, GIS_TYPE_PAGE)
-@@ -47,9 +50,11 @@ update_welcome_title (GisWelcomePage *page)
+@@ -47,9 +50,11 @@
    GisWelcomePagePrivate *priv = gis_welcome_page_get_instance_private (page);
    g_autofree char *name = g_get_os_info (G_OS_INFO_KEY_PRETTY_NAME);
    g_autofree char *text = NULL;
@@ -3859,7 +3830,7 @@ index 1cad96e..a2c0751 100644
  
    /* Translators: This is meant to be a warm, engaging welcome message,
     * like greeting somebody at the door. If the exclamation mark is not
-@@ -61,18 +66,32 @@ update_welcome_title (GisWelcomePage *page)
+@@ -61,18 +66,32 @@
     */
    text = g_strdup_printf (_("Welcome to %s !"), name);
  
@@ -3893,7 +3864,7 @@ index 1cad96e..a2c0751 100644
    gis_page_set_complete (GIS_PAGE (page), TRUE);
  }
  
-@@ -94,7 +113,8 @@ gis_welcome_page_class_init (GisWelcomePageClass *klass)
+@@ -94,7 +113,8 @@
  
    gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass), "/org/gnome/initial-setup/gis-welcome-page.ui");
  
@@ -3903,7 +3874,7 @@ index 1cad96e..a2c0751 100644
    gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), start_setup);
  
    page_class->page_id = PAGE_ID;
-@@ -104,6 +124,7 @@ gis_welcome_page_class_init (GisWelcomePageClass *klass)
+@@ -104,6 +124,7 @@
  static void
  gis_welcome_page_init (GisWelcomePage *page)
  {
@@ -3911,10 +3882,10 @@ index 1cad96e..a2c0751 100644
    gtk_widget_init_template (GTK_WIDGET (page));
  
    gis_add_style_from_resource ("/org/gnome/initial-setup/gis-welcome-page.css");
-diff --git a/gnome-initial-setup/pages/welcome/gis-welcome-page.css b/gnome-initial-setup/pages/welcome/gis-welcome-page.css
-index 0abdd60..d995e10 100644
---- a/gnome-initial-setup/pages/welcome/gis-welcome-page.css
-+++ b/gnome-initial-setup/pages/welcome/gis-welcome-page.css
+Index: gnome-initial-setup/gnome-initial-setup/pages/welcome/gis-welcome-page.css
+===================================================================
+--- gnome-initial-setup.orig/gnome-initial-setup/pages/welcome/gis-welcome-page.css	2024-09-16 10:21:02.841089567 +0200
++++ gnome-initial-setup/gnome-initial-setup/pages/welcome/gis-welcome-page.css	2024-09-16 10:21:02.824089615 +0200
 @@ -6,3 +6,7 @@
  .welcome-status-page {
    padding: 30px;
@@ -3923,10 +3894,10 @@ index 0abdd60..d995e10 100644
 +:link, :visited {
 +  text-decoration: none;
 +}
-diff --git a/gnome-initial-setup/pages/welcome/gis-welcome-page.ui b/gnome-initial-setup/pages/welcome/gis-welcome-page.ui
-index dd62662..92192c4 100644
---- a/gnome-initial-setup/pages/welcome/gis-welcome-page.ui
-+++ b/gnome-initial-setup/pages/welcome/gis-welcome-page.ui
+Index: gnome-initial-setup/gnome-initial-setup/pages/welcome/gis-welcome-page.ui
+===================================================================
+--- gnome-initial-setup.orig/gnome-initial-setup/pages/welcome/gis-welcome-page.ui	2024-09-16 10:21:02.841089567 +0200
++++ gnome-initial-setup/gnome-initial-setup/pages/welcome/gis-welcome-page.ui	2024-09-16 10:21:02.824089615 +0200
 @@ -1,52 +1,40 @@
 -<?xml version="1.0"?>
 +<?xml version="1.0" encoding="UTF-8"?>
@@ -4002,11 +3973,10 @@ index dd62662..92192c4 100644
        </object>
      </child>
    </template>
-diff --git a/gnome-initial-setup/pages/welcome/initial-setup-welcome.svg b/gnome-initial-setup/pages/welcome/initial-setup-welcome.svg
-deleted file mode 100644
-index 988dcea..0000000
---- a/gnome-initial-setup/pages/welcome/initial-setup-welcome.svg
-+++ /dev/null
+Index: gnome-initial-setup/gnome-initial-setup/pages/welcome/initial-setup-welcome.svg
+===================================================================
+--- gnome-initial-setup.orig/gnome-initial-setup/pages/welcome/initial-setup-welcome.svg	2024-09-16 10:21:02.841089567 +0200
++++ /dev/null	1970-01-01 00:00:00.000000000 +0000
 @@ -1,1833 +0,0 @@
 -<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 -<svg
@@ -5841,212 +5811,149 @@ index 988dcea..0000000
 -     x="1872"
 -     y="411.02975" />
 -</svg>
-diff --git a/gnome-initial-setup/pages/welcome/ubuntu-mascot.svg b/gnome-initial-setup/pages/welcome/ubuntu-mascot.svg
-new file mode 100644
-index 0000000..77b1420
---- /dev/null
-+++ b/gnome-initial-setup/pages/welcome/ubuntu-mascot.svg
-@@ -0,0 +1,196 @@
-+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-+<svg
-+   width="560"
-+   height="560"
-+   viewBox="0 0 560 560"
-+   fill="none"
-+   version="1.1"
-+   id="svg80"
-+   sodipodi:docname="ubuntu-mascot.svg"
-+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
-+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-+   xmlns="http://www.w3.org/2000/svg"
-+   xmlns:svg="http://www.w3.org/2000/svg">
-+  <defs
-+     id="defs84" />
-+  <sodipodi:namedview
-+     id="namedview82"
-+     pagecolor="#ffffff"
-+     bordercolor="#666666"
-+     borderopacity="1.0"
-+     inkscape:showpageshadow="2"
-+     inkscape:pageopacity="0.0"
-+     inkscape:pagecheckerboard="0"
-+     inkscape:deskcolor="#d1d1d1"
-+     showgrid="false"
-+     inkscape:zoom="1.0477247"
-+     inkscape:cx="481.5196"
-+     inkscape:cy="246.24788"
-+     inkscape:window-width="1920"
-+     inkscape:window-height="1011"
-+     inkscape:window-x="0"
-+     inkscape:window-y="0"
-+     inkscape:window-maximized="1"
-+     inkscape:current-layer="svg80" />
-+  <g
-+     id="g406"
-+     transform="matrix(0.85846338,0,0,0.85846338,-106.80454,-79.43708)">
-+    <path
-+       d="m 305.307,307.365 11.863,-1.022 c 0,0 -9.262,-9.463 -18.268,-4.554 0,0 4.674,3.485 6.405,5.576 z"
-+       fill="#e95420"
-+       id="path2" />
-+    <path
-+       d="m 351.992,290.267 c 0.57,0.372 1.341,0.209 1.713,-0.363 4.213,-6.484 12.917,-8.331 19.401,-4.119 6.485,4.213 8.332,12.916 4.12,19.401 -2.041,3.142 -5.184,5.3 -8.848,6.078 -1.481,0.314 -2.973,0.376 -4.436,0.218 l -2.14,2.143 c 0.424,0.096 0.847,0.194 1.277,0.257 1.908,0.277 3.871,0.217 5.813,-0.196 4.312,-0.915 8.008,-3.455 10.41,-7.15 4.957,-7.63 2.783,-17.87 -4.846,-22.828 -7.632,-4.96 -17.871,-2.783 -22.827,4.846 -0.373,0.574 -0.21,1.341 0.363,1.713 z"
-+       fill="#e95420"
-+       id="path4" />
-+    <path
-+       d="m 532.346,313.686 c 1.942,0.413 3.905,0.473 5.812,0.196 0.43,-0.063 0.854,-0.161 1.277,-0.257 l -2.14,-2.143 c -1.462,0.158 -2.954,0.096 -4.435,-0.218 -3.664,-0.778 -6.807,-2.936 -8.848,-6.078 -4.213,-6.485 -2.366,-15.188 4.119,-19.401 6.485,-4.212 15.189,-2.365 19.402,4.119 0.372,0.572 1.142,0.735 1.713,0.363 0.573,-0.372 0.736,-1.139 0.363,-1.713 -4.956,-7.629 -15.196,-9.806 -22.828,-4.846 -7.628,4.958 -9.803,15.198 -4.846,22.828 2.402,3.695 6.099,6.235 10.411,7.15 z"
-+       fill="#e95420"
-+       id="path6" />
-+    <path
-+       d="m 698.317,493.576 c 5.507,-4.719 10.194,-10.521 13.231,-17.642 0.661,-2.481 1.171,-4.897 1.57,-7.264 l -22.953,6.855 c -0.08,0.024 -0.161,0.027 -0.241,0.035 -0.881,2.122 -1.97,4.161 -3.287,6.074 -0.359,0.574 -9.043,14.163 -29.904,23.624 -6.694,3.035 -13.608,5.149 -20.607,6.542 28.577,-0.933 65.896,-6.352 91.087,-25.782 15.903,-12.267 25.264,-28.815 27.824,-49.184 5.646,-44.908 -23.191,-68.557 -30.329,-73.668 l -3.432,17.179 c 10.841,12.807 17.397,29.35 17.397,47.404 0,28.054 -13.822,50.337 -40.356,65.827 z"
-+       fill="#e95420"
-+       id="path8" />
-+    <path
-+       d="m 322.37,336.732 c 0.481,1.009 1.253,2.709 2.168,4.996 3.89,-4.164 7.688,-7.699 11.116,-10.594 -4.073,2.025 -8.556,3.973 -13.284,5.598 z"
-+       fill="#e95420"
-+       id="path10" />
-+    <path
-+       d="m 288.159,336.188 c 6.169,-4.598 13.571,-8.538 21.331,-11.87 -0.397,-2.509 0.866,-5.075 3.286,-6.192 2.64,-1.219 5.705,-0.279 7.267,2.069 22.63,-8.047 44.769,-11.368 45.108,-11.417 l 0.888,-0.13 c 0,-0.192 -0.006,-0.389 -0.046,-0.61 -0.498,-2.785 -2.272,-2.851 -4.524,-2.627 -10.731,1.064 -21.467,2.084 -32.201,3.129 -7.294,0.71 -17.432,0.846 -25.338,2.571 -0.823,-1.12 -1.729,-2.231 -2.724,-3.312 -7.584,-8.241 -24.222,-12.883 -21.406,-7.859 1.24,2.213 7.759,18.492 8.359,36.248 z m 11.743,-24.098 c -1.397,0.127 -7.067,1.209 -10.573,7.417 -1.353,-6.26 -3.846,-13.821 -5.071,-17.076 4.254,0.892 12.523,4.485 15.644,9.659 z"
-+       fill="#e95420"
-+       id="path12" />
-+    <path
-+       d="m 300.29,457.079 c 11.022,-11.264 20.46,-25.087 25.755,-41.805 7.463,-25.62 2.198,-49.672 -0.675,-63.722 -0.576,-1.874 -1.155,-3.611 -1.713,-5.167 -14.945,17.05 -30.266,43.741 -29.56,81.228 -0.009,0.262 -0.328,13.348 6.193,29.466 z"
-+       fill="#e95420"
-+       id="path14" />
-+    <path
-+       d="m 260.604,487.556 c 0.384,-0.287 0.76,-0.582 1.13,-0.885 7.187,-5.9 11.309,-14.61 11.309,-23.899 0,-17.039 -13.862,-30.901 -30.901,-30.901 -17.04,0 -30.902,13.862 -30.902,30.901 0,6.29 1.878,12.343 5.43,17.501 0.113,0.181 8.763,13.665 29.01,22.799 19.013,8.574 39.891,9.692 59.406,7.299 -8.185,-7.327 -16.836,-19.433 -37.667,-10.14 l -7.957,-11.894 c 0,0 0.374,-0.235 1.025,-0.65 0.042,-0.042 0.068,-0.094 0.117,-0.131 z"
-+       fill="#e95420"
-+       id="path16" />
-+    <path
-+       d="m 602.336,301.789 c -9.006,-4.909 -18.268,4.554 -18.268,4.554 l 11.863,1.022 c 1.73,-2.091 6.405,-5.576 6.405,-5.576 z"
-+       fill="#e95420"
-+       id="path18" />
-+    <path
-+       d="m 685.827,442.868 24.318,-7.261 c -1.558,-4.052 -3.511,-7.843 -5.77,-11.376 l -29.925,8.936 c 4.491,2.338 8.369,5.672 11.377,9.701 z"
-+       fill="#e95420"
-+       id="path20" />
-+    <path
-+       d="m 540.292,312.002 c 10.571,8.336 42.72,31.229 70.6,25.63 -5.842,-4.241 -12.779,-7.892 -20.036,-11.015 -1.559,2.355 -4.629,3.301 -7.274,2.08 -2.424,-1.119 -3.687,-3.693 -3.283,-6.206 -16.302,-5.788 -32.387,-9.104 -40.007,-10.489 z"
-+       fill="#e95420"
-+       id="path22" />
-+    <path
-+       d="m 691.899,456.738 21.822,-6.515 c -0.491,-4.331 -1.43,-8.422 -2.734,-12.282 l -23.681,7.071 c 2.227,3.523 3.814,7.481 4.593,11.726 z"
-+       fill="#e95420"
-+       id="path24" />
-+    <path
-+       d="m 601.875,340.971 c -7.012,0 -14.028,-1.383 -20.635,-3.459 -0.499,1.028 -1.491,3.174 -2.678,6.236 8.103,9.05 16.391,20.879 22.371,35.644 13.098,-1.64 24.815,-1.349 35.252,0.221 -17.706,-8.264 -22.955,-24.351 -23.145,-39.945 -3.678,0.886 -7.417,1.303 -11.165,1.303 z"
-+       fill="#e95420"
-+       id="path26" />
-+    <path
-+       d="m 601.852,381.783 c 4.952,13.036 8.095,28.251 7.765,45.807 0.008,0.234 0.376,14.291 -6.777,31.393 8.864,8.693 18.61,15.797 27.958,21.498 -3.287,-5.243 -5.08,-11.349 -5.08,-17.709 0,-18.405 14.973,-33.378 33.378,-33.378 4.189,0 8.184,0.809 11.882,2.225 l 31.448,-9.391 c -1.32,-1.991 -4.227,-6.033 -8.856,-10.845 l -16.741,4.429 c -0.107,0.029 -0.213,0.042 -0.318,0.042 -0.548,0 -1.05,-0.367 -1.196,-0.922 -0.175,-0.661 0.219,-1.339 0.88,-1.514 l 15.361,-4.064 c -1.701,-1.664 -3.604,-3.395 -5.7,-5.143 -8.012,-6.361 -16.467,-11.153 -23.548,-14.562 -15.32,-6.728 -35.276,-10.911 -60.456,-7.866 z"
-+       fill="#e95420"
-+       id="path28" />
-+    <path
-+       d="m 600.947,457.079 c 6.522,-16.118 6.202,-29.204 6.194,-29.466 0.706,-37.487 -14.615,-64.178 -29.561,-81.228 -0.557,1.556 -1.136,3.293 -1.712,5.167 -2.873,14.05 -8.138,38.102 -0.676,63.722 5.296,16.718 14.734,30.541 25.755,41.805 z"
-+       fill="#e95420"
-+       id="path30" />
-+    <path
-+       d="m 535.245,308.038 c -0.04,0.221 -0.047,0.418 -0.046,0.61 l 0.888,0.13 c 0.338,0.049 22.478,3.37 45.107,11.417 1.562,-2.348 4.628,-3.288 7.268,-2.069 2.42,1.117 3.683,3.683 3.286,6.192 7.76,3.332 15.162,7.272 21.331,11.87 0.599,-17.756 7.118,-34.035 8.359,-36.248 2.816,-5.024 -13.822,-0.382 -21.406,7.859 -0.996,1.081 -1.901,2.192 -2.724,3.312 -7.906,-1.725 -18.044,-1.861 -25.339,-2.571 -10.733,-1.045 -21.469,-2.065 -32.201,-3.129 -2.251,-0.224 -4.025,-0.158 -4.523,2.627 z m 81.735,-5.607 c -1.225,3.255 -3.718,10.816 -5.071,17.076 -3.506,-6.208 -9.176,-7.29 -10.573,-7.417 3.121,-5.174 11.389,-8.767 15.644,-9.659 z"
-+       fill="#e95420"
-+       id="path32" />
-+    <path
-+       d="m 596.151,510.371 c 19.515,2.393 40.393,1.275 59.406,-7.299 20.248,-9.134 28.897,-22.618 29.011,-22.799 3.552,-5.158 5.429,-11.211 5.429,-17.501 0,-17.039 -13.862,-30.901 -30.901,-30.901 -17.04,0 -30.902,13.862 -30.902,30.901 0,9.289 4.122,17.999 11.309,23.899 0.37,0.303 0.747,0.598 1.13,0.885 0.05,0.037 0.076,0.089 0.118,0.131 0.651,0.415 1.025,0.65 1.025,0.65 l -7.957,11.894 c -20.832,-9.293 -29.482,2.813 -37.668,10.14 z"
-+       fill="#e95420"
-+       id="path34" />
-+    <path
-+       d="m 692.474,462.772 c 0,3.405 -0.51,6.744 -1.497,9.925 l 22.55,-6.734 c 0.605,-4.629 0.727,-9.036 0.428,-13.225 l -21.677,6.472 c 0.125,1.171 0.196,2.358 0.196,3.562 z"
-+       fill="#e95420"
-+       id="path36" />
-+    <path
-+       d="m 576.699,341.728 c 0.916,-2.287 1.688,-3.987 2.169,-4.996 -4.728,-1.625 -9.211,-3.573 -13.285,-5.598 3.428,2.895 7.226,6.43 11.116,10.594 z"
-+       fill="#e95420"
-+       id="path38" />
-+    <path
-+       d="m 439.176,334.696 c 2.321,0 4.202,-1.881 4.202,-4.202 0,-2.32 -1.881,-4.202 -4.202,-4.202 -2.321,0 -4.202,1.882 -4.202,4.202 0,2.321 1.881,4.202 4.202,4.202 z"
-+       fill="#e95420"
-+       id="path40" />
-+    <path
-+       d="m 440.44,324.595 c 0.685,0.147 1.329,0.406 1.919,0.772 1.892,-2.721 4.945,-4.354 8.252,-4.414 0.018,-0.318 0.061,-0.635 0.127,-0.946 0.193,-0.9 0.586,-1.742 1.148,-2.463 -5.285,-0.418 -10.42,2.309 -13.034,6.924 0.107,-0.007 0.214,-0.008 0.319,-0.008 0.425,0 0.849,0.044 1.269,0.135 z"
-+       fill="#e95420"
-+       id="path42" />
-+    <path
-+       d="m 695.861,565.68 c 0.008,0.003 0.016,0.006 0.024,0.008 l -0.007,-0.003 z"
-+       fill="#e95420"
-+       id="path44" />
-+    <path
-+       d="m 449.686,341.476 c -0.347,-0.038 -0.692,-0.094 -1.03,-0.168 h -0.002 v 0.002 c -3.028,-0.649 -5.557,-2.582 -6.979,-5.324 -1.12,0.51 -2.381,0.665 -3.593,0.441 1.72,4.226 5.37,7.295 9.85,8.256 0.983,0.211 1.984,0.313 2.984,0.306 -0.771,-1.014 -1.201,-2.238 -1.23,-3.513 z"
-+       fill="#e95420"
-+       id="path46" />
-+    <path
-+       d="m 616.938,546.678 c 0.033,0.006 0.066,0.012 0.099,0.018 l -0.057,-0.014 z"
-+       fill="#e95420"
-+       id="path48" />
-+    <path
-+       d="m 456.678,325.481 c 2.321,0 4.202,-1.882 4.202,-4.203 0,-2.32 -1.881,-4.202 -4.202,-4.202 -2.321,0 -4.202,1.882 -4.202,4.202 0,2.321 1.881,4.203 4.202,4.203 z"
-+       fill="#e95420"
-+       id="path50" />
-+    <path
-+       d="m 455.732,345.536 c 2.321,0 4.202,-1.882 4.202,-4.202 0,-2.321 -1.881,-4.202 -4.202,-4.202 -2.321,0 -4.202,1.881 -4.202,4.202 0,2.32 1.881,4.202 4.202,4.202 z"
-+       fill="#e95420"
-+       id="path52" />
-+    <path
-+       d="m 775.425,427.749 c 0,-36.727 -18.071,-69.295 -45.77,-89.339 l -4.416,22.098 c 2.556,1.702 10.641,7.56 18.253,18.149 8.292,11.534 17.452,31.044 14.003,58.486 -2.646,21.05 -12.327,38.154 -28.774,50.839 -28.75,22.173 -72.817,26.444 -102.504,26.444 -18.362,0 -31.226,-1.633 -31.558,-1.679 -0.135,-0.017 -0.253,-0.07 -0.369,-0.126 -14.922,-1.976 -28.989,-5.917 -40.794,-10.115 -0.644,-0.231 -0.98,-0.939 -0.751,-1.582 0.229,-0.647 0.938,-0.979 1.581,-0.753 11.17,3.974 24.391,7.725 38.428,9.749 l -21.15,-16.387 c 12.355,-10.524 19.486,-18.873 23.603,-24.874 1.825,-3.078 3.381,-6.132 4.691,-9.102 -7.766,-7.809 -14.796,-16.856 -20.265,-27.238 -0.006,0.17 -0.009,0.327 -0.017,0.503 1.081,4.038 1.666,8.279 1.666,12.658 0,26.97 -21.864,48.834 -48.834,48.834 -26.97,0 -48.834,-21.864 -48.834,-48.834 0,-21.753 14.227,-40.175 33.88,-46.492 -27.257,-74.639 -66.725,-222.277 -66.725,-222.277 -0.144,-0.464 -0.301,0 -0.301,0 0,0 -39.468,147.638 -66.725,222.277 19.654,6.317 33.881,24.739 33.881,46.492 0,26.97 -21.864,48.834 -48.834,48.834 -26.971,0 -48.834,-21.864 -48.834,-48.834 0,-4.379 0.585,-8.62 1.666,-12.658 -0.009,-0.176 -0.011,-0.333 -0.018,-0.503 -5.469,10.382 -12.499,19.429 -20.265,27.238 1.311,2.97 2.867,6.024 4.692,9.102 4.117,6.001 11.247,14.35 23.603,24.874 l -21.151,16.387 c 14.038,-2.024 27.258,-5.775 38.428,-9.749 0.644,-0.226 1.352,0.106 1.582,0.753 0.229,0.643 -0.107,1.351 -0.751,1.582 -11.805,4.198 -25.873,8.139 -40.794,10.115 -0.116,0.056 -0.235,0.109 -0.369,0.126 -0.332,0.046 -13.196,1.679 -31.558,1.679 -29.687,0 -73.754,-4.271 -102.505,-26.444 -16.446,-12.685 -26.127,-29.789 -28.773,-50.839 -3.45,-27.442 5.71,-46.952 14.002,-58.486 7.613,-10.589 15.698,-16.447 18.253,-18.149 l -4.415,-22.098 c -27.699,20.044 -45.771,52.612 -45.771,89.339 0,18.433 4.554,35.821 12.586,51.107 l -0.008,-0.003 47.277,90.559 c 20.65,-23.189 130.574,-41.552 264.801,-41.565 h 0.301 c 134.227,0.013 244.152,18.376 264.801,41.565 l 47.278,-90.559 -0.009,0.003 c 8.033,-15.286 12.586,-32.674 12.586,-51.107 z M 451.857,352.771 v 133.587 c 5.539,0.613 9.869,5.327 9.869,11.063 0,6.113 -4.98,10.674 -11.094,10.674 -6.133,0 -11.121,-4.561 -11.121,-10.674 0,-5.728 4.324,-10.435 9.869,-11.059 V 352.771 c -11.405,-0.645 -20.461,-10.071 -20.461,-21.637 0,-11.984 9.715,-21.7 21.7,-21.7 11.984,0 21.7,9.716 21.7,21.7 0,11.567 -9.057,20.992 -20.462,21.637 z"
-+       fill="#e95420"
-+       id="path54" />
-+    <path
-+       d="m 459.906,326.427 c 1.134,2.137 1.479,4.604 0.971,6.977 -0.249,1.161 -0.689,2.256 -1.307,3.256 0.988,0.811 1.686,1.902 2.011,3.129 1.306,-1.647 2.226,-3.594 2.669,-5.663 0.773,-3.609 0.051,-7.396 -1.981,-10.467 -0.484,1.141 -1.306,2.104 -2.363,2.768 z"
-+       fill="#e95420"
-+       id="path56" />
-+    <path
-+       d="m 320.939,322.491 c 0.404,2.513 -0.86,5.087 -3.284,6.206 -2.644,1.221 -5.714,0.275 -7.274,-2.08 -7.257,3.123 -14.193,6.774 -20.035,11.015 27.88,5.599 60.029,-17.294 70.6,-25.63 -7.621,1.385 -23.705,4.701 -40.007,10.489 z"
-+       fill="#e95420"
-+       id="path58" />
-+    <path
-+       d="m 461.58,339.792 h 0.002 l -10e-4,-0.003 -0.001,0.001 z"
-+       fill="#e95420"
-+       id="path60" />
-+    <path
-+       d="m 242.142,429.394 c 18.405,0 33.378,14.973 33.378,33.378 0,6.36 -1.794,12.466 -5.081,17.709 9.349,-5.701 19.095,-12.805 27.959,-21.498 -7.154,-17.102 -6.786,-31.159 -6.777,-31.393 -0.331,-17.556 2.812,-32.771 7.764,-45.807 -25.18,-3.045 -45.135,1.138 -60.455,7.866 -7.082,3.409 -15.537,8.201 -23.548,14.562 -2.096,1.748 -3.999,3.479 -5.701,5.143 l 15.362,4.064 c 0.661,0.175 1.055,0.853 0.88,1.514 -0.147,0.555 -0.648,0.922 -1.196,0.922 -0.105,0 -0.211,-0.013 -0.318,-0.042 l -16.742,-4.429 c -4.628,4.812 -7.535,8.854 -8.856,10.845 l 31.449,9.391 c 3.697,-1.416 7.693,-2.225 11.882,-2.225 z"
-+       fill="#e95420"
-+       id="path62" />
-+    <path
-+       d="m 213.932,445.012 -23.682,-7.071 c -1.303,3.86 -2.242,7.951 -2.733,12.282 l 21.821,6.515 c 0.78,-4.245 2.367,-8.203 4.594,-11.726 z"
-+       fill="#e95420"
-+       id="path64" />
-+    <path
-+       d="m 226.788,433.167 -29.925,-8.936 c -2.26,3.533 -4.212,7.324 -5.771,11.376 l 24.319,7.261 c 3.008,-4.029 6.886,-7.363 11.377,-9.701 z"
-+       fill="#e95420"
-+       id="path66" />
-+    <path
-+       d="m 300.304,379.392 c 5.981,-14.765 14.268,-26.594 22.371,-35.644 -1.186,-3.062 -2.179,-5.208 -2.677,-6.236 -6.608,2.076 -13.624,3.459 -20.635,3.459 -3.748,0 -7.488,-0.417 -11.166,-1.303 -0.19,15.594 -5.439,31.681 -23.144,39.945 10.437,-1.57 22.154,-1.861 35.251,-0.221 z"
-+       fill="#e95420"
-+       id="path68" />
-+    <path
-+       d="m 450.769,538.726 h -0.301 c -142.622,0 -261.416,21.684 -261.416,48.465 v 9.676 c 0.01,-0.018 0.024,-0.034 0.034,-0.052 v 20.877 c 0.036,-0.055 0.076,-0.11 0.113,-0.166 -0.026,0.221 -0.113,0.439 -0.113,0.661 0,21.107 118.911,38.22 261.533,38.22 142.622,0 261.533,-17.113 261.533,-38.22 0,-0.222 -0.088,-0.44 -0.113,-0.661 0.036,0.056 0.077,0.111 0.113,0.166 v -20.877 c 0.01,0.018 0.023,0.034 0.033,0.052 v -9.676 c 0,-26.781 -118.794,-48.465 -261.416,-48.465 z M 657.56,571.52 c 6.133,0 11.121,4.981 11.121,11.134 0,6.114 -4.988,11.094 -11.121,11.094 -6.114,0 -11.094,-4.98 -11.094,-11.094 0,-6.153 4.98,-11.134 11.094,-11.134 z M 450.632,554.778 c 6.114,0 11.094,4.981 11.094,11.134 0,6.114 -4.98,10.675 -11.094,10.675 -6.133,0 -11.121,-4.561 -11.121,-10.675 0,-6.153 4.988,-11.134 11.121,-11.134 z M 244.175,571.52 c 6.113,0 11.094,4.981 11.094,11.134 0,6.114 -4.981,11.094 -11.094,11.094 -6.133,0 -11.121,-4.98 -11.121,-11.094 0,-6.153 4.988,-11.134 11.121,-11.134 z m 206.692,72.751 c -131.725,0 -224.671,-14.503 -246.151,-26.093 21.467,-11.615 114.409,-26.159 246.151,-26.159 131.743,0 224.685,14.544 246.151,26.159 -21.479,11.59 -114.425,26.093 -246.151,26.093 z"
-+       fill="#e95420"
-+       id="path70" />
-+    <path
-+       d="m 205.353,565.688 c 0.007,-0.002 0.016,-0.005 0.023,-0.008 l -0.016,0.005 z"
-+       fill="#e95420"
-+       id="path72" />
-+    <path
-+       d="m 284.201,546.696 c 0.033,-0.006 0.065,-0.012 0.098,-0.018 l -0.041,0.004 z"
-+       fill="#e95420"
-+       id="path74" />
-+    <path
-+       d="m 210.261,472.697 c -0.987,-3.181 -1.497,-6.52 -1.497,-9.925 0,-1.204 0.071,-2.391 0.196,-3.562 l -21.677,-6.472 c -0.299,4.189 -0.177,8.596 0.427,13.225 z"
-+       fill="#e95420"
-+       id="path76" />
-+    <path
-+       d="m 146.2,436.834 c 2.561,20.369 11.922,36.917 27.825,49.184 25.191,19.43 62.51,24.849 91.086,25.782 -6.998,-1.393 -13.912,-3.507 -20.606,-6.542 -20.862,-9.461 -29.545,-23.05 -29.905,-23.624 -1.317,-1.913 -2.405,-3.952 -3.286,-6.074 -0.081,-0.008 -0.161,-0.011 -0.241,-0.035 l -22.954,-6.855 c 0.4,2.367 0.91,4.783 1.57,7.264 3.037,7.121 7.725,12.923 13.231,17.642 -26.533,-15.49 -40.355,-37.774 -40.355,-65.827 0,-18.054 6.556,-34.597 17.397,-47.404 l -3.433,-17.179 c -7.137,5.111 -35.975,28.76 -30.329,73.668 z"
-+       fill="#e95420"
-+       id="path78" />
+Index: gnome-initial-setup/gnome-initial-setup/pages/welcome/ubuntu-mascot.svg
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gnome-initial-setup/gnome-initial-setup/pages/welcome/ubuntu-mascot.svg	2024-09-16 10:51:58.567948252 +0200
+@@ -0,0 +1,133 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 560 560">
++  <defs>
++    <style>
++      .cls-1 {
++        fill: #e95420;
++      }
++
++      .cls-2 {
++        fill: #e85420;
++      }
++
++      .cls-3 {
++        fill: #ea6639;
++      }
++
++      .cls-3, .cls-4, .cls-5, .cls-6 {
++        stroke: #e95420;
++        stroke-miterlimit: 10;
++      }
++
++      .cls-4 {
++        stroke-width: 2px;
++      }
++
++      .cls-4, .cls-7, .cls-5, .cls-6 {
++        fill: none;
++      }
++
++      .cls-4, .cls-6 {
++        stroke-linecap: round;
++      }
++
++      .cls-5 {
++        stroke-width: 1.9px;
++      }
++
++      .cls-6 {
++        stroke-width: 2.8px;
++      }
++
++      .cls-8 {
++        display: none;
++      }
++
++      .cls-9 {
++        fill: #15152d;
++      }
++    </style>
++  </defs>
++  <!-- Generator: Adobe Illustrator 28.7.1, SVG Export Plug-In . SVG Version: 1.2.0 Build 142)  -->
++  <g>
++    <g id="Layer_1">
++      <g id="blue_background" class="cls-8">
++        <rect class="cls-7" x="16.7" y="-5.6" width="593.9" height="598.3"/>
++        <rect class="cls-9" x="-305.9" y="-268.3" width="1232.4" height="1132.2"/>
++      </g>
++      <g>
++        <g id="inner_circle">
++          <path class="cls-6" d="M278.5,287.4"/>
++          <path class="cls-1" d="M353.8,456.8c-.4,0-.7-.2-.9-.6l-18.8-39.1c-17.2,7-35.7,10.7-54.9,10.8-18.6.1-36.7-3.3-53.7-9.8l-18,37.5c-.2.5-.8.7-1.3.5-.5-.2-.7-.8-.5-1.3l17.9-37.3c-3.2-1.3-6.4-2.7-9.5-4.2l-12.7,22c-.3.5-.9.6-1.4.4-.5-.3-.6-.9-.4-1.4l12.6-21.9c-3.3-1.6-6.5-3.4-9.6-5.3l-22,35.4c-.3.5-.9.6-1.4.3-.5-.3-.6-.9-.3-1.4l22-35.4c-1.8-1.1-3.6-2.3-5.4-3.5-1-.7-2-1.4-3-2.1l-14.3,19.7c-.3.4-.9.5-1.4.2-.4-.3-.5-.9-.2-1.4l14.3-19.7c-2.6-1.9-5.1-3.9-7.5-5.9l-27.7,30.7c-.4.4-1,.4-1.4,0-.4-.4-.4-1,0-1.4l27.7-30.7c-2.5-2.2-4.9-4.4-7.3-6.7l-17.2,17c-.4.4-1,.4-1.4,0-.4-.4-.4-1,0-1.4l17.2-17c-2.1-2.1-4.1-4.3-6.1-6.6l-31.8,26.4c-.4.4-1,.3-1.4-.1-.4-.4-.3-1,.1-1.4l31.7-26.4c-2.2-2.6-4.4-5.4-6.4-8.2l-19.5,14.4c-.4.3-1.1.2-1.4-.2-.3-.4-.2-1.1.2-1.4l19.5-14.4c-1.8-2.6-3.6-5.2-5.2-7.9l-35.7,20.9c-.5.3-1.1.1-1.4-.4-.3-.5-.1-1.1.4-1.4l35.7-20.9c-1.7-2.8-3.3-5.7-4.8-8.7l-21.8,10.1c-.5.2-1.1,0-1.3-.5s0-1.1.5-1.3l21.7-10.1c-1.5-3-2.8-6-4.1-9.1l-38.5,14.9c-.5.2-1.1,0-1.3-.6-.2-.5,0-1.1.6-1.3l38.5-14.9c-1.2-3-2.3-6.1-3.3-9.2l-22.7,6.7c-.5.2-1.1-.1-1.2-.7s.1-1.1.7-1.2l22.7-6.7c-1-3.3-1.9-6.6-2.7-10l-40.9,7.8c-.5.1-1.1-.3-1.2-.8-.1-.5.3-1.1.8-1.2l40.9-7.8c-.7-3-1.2-6.1-1.7-9.1l-23.8,2.9c-.5,0-1-.3-1.1-.9,0-.5.3-1,.9-1.1l23.7-2.9c-.5-3.6-.9-7.3-1.1-11l-41.3,1.2c-.6,0-1-.4-1-1,0-.5.4-1,1-1l41.2-1.2c-.1-2.3-.2-4.5-.2-6.8h0c0-1,0-1.9,0-2.9l-23.5-1.2c-.5,0-1-.5-.9-1,0-.5.5-1,1-.9l23.4,1.2c0-3.7.3-7,.6-10.1l-41-5.6c-.5,0-.9-.6-.9-1.1,0-.5.6-.9,1.1-.9l41,5.6c.3-3.1.8-6.2,1.4-9.5l-23.2-4.1c-.5,0-.9-.6-.8-1.2,0-.5.6-.9,1.2-.8l23.2,4.1c.7-3.4,1.5-6.9,2.4-10.6l-40-12c-.5-.2-.8-.7-.7-1.2.2-.5.7-.8,1.2-.7l39.9,11.9c.9-3.1,1.8-6.2,3-9.3l-22.2-9.6c-.5-.2-.7-.8-.5-1.3.2-.5.8-.7,1.3-.5l22.1,9.5c1.3-3.5,2.8-7.1,4.5-10.7l-37.3-18.6c-.5-.2-.7-.8-.4-1.3s.8-.7,1.3-.4l37.2,18.6c1.5-3.1,3.1-6.1,4.8-9.1l-20.4-12.5c-.5-.3-.6-.9-.3-1.4.3-.5.9-.6,1.4-.3l20.4,12.5c1.8-3,3.6-5.9,5.6-8.7l-33.8-24.9c-.4-.3-.5-.9-.2-1.4.3-.4.9-.5,1.4-.2l33.7,24.8c2-2.9,4.2-5.7,6.5-8.5l-17.4-14.9c-.4-.4-.5-1-.1-1.4s1-.5,1.4-.1l17.4,14.8c2.2-2.6,4.5-5.1,6.9-7.6l-29.4-29.6c-.4-.4-.4-1,0-1.4.4-.4,1-.4,1.4,0l29.3,29.5c2.6-2.6,5.3-5.1,8.1-7.6l-15.5-18c-.4-.4-.3-1,.1-1.4.4-.4,1-.3,1.4.1l15.5,18.1c2.6-2.2,5.2-4.2,7.9-6.2l-23.9-34.1c-.3-.4-.2-1.1.2-1.4.4-.3,1.1-.2,1.4.2l23.9,34c3.1-2.2,6.3-4.3,9.6-6.3l-12.1-21c-.3-.5-.1-1.1.4-1.4.5-.3,1.1-.1,1.4.4l12.1,21c3.1-1.8,6.2-3.5,9.5-5.1l-4.2-9.1-13.3-28.8c-.2-.5,0-1.1.5-1.3.5-.2,1.1,0,1.3.5l17.5,37.9c19.4-9.1,40.3-13.8,61.9-13.9.2,0,.4,0,.6,0,21.8,0,42.6,4.8,61.3,13.4l4.2-9.3,13.6-29c.2-.5.8-.7,1.3-.5s.7.8.5,1.3l-13.6,29-4.2,9.3c3.2,1.5,6.4,3.2,9.6,5l12-21.8c.3-.5.9-.7,1.3-.4s.7.9.4,1.3l-12,21.8c3.3,1.9,6.5,4,9.7,6.2l24.5-34.7c.3-.4.9-.6,1.4-.2.4.3.6.9.2,1.4l-24.5,34.7c2.7,2,5.4,4,8,6.2l16.5-18.7c.4-.4,1-.4,1.4,0,.4.4.5,1,0,1.4l-16.4,18.7c2.8,2.4,5.5,4.9,8.2,7.5l29.8-30c.4-.4,1-.4,1.4,0,.4.4.4,1,0,1.4l-29.8,30c2.4,2.4,4.7,5,7,7.6l18.2-15.9c.4-.4,1-.3,1.4,0s.3,1,0,1.4l-18.2,16c2.3,2.7,4.5,5.5,6.5,8.4l33.9-25.4c.4-.3,1.1-.2,1.4.2.3.4.2,1.1-.2,1.4l-33.9,25.4c2,2.8,3.9,5.7,5.7,8.7l21.3-12.9c.5-.3,1.1-.1,1.4.3.3.5.1,1.1-.3,1.4l-21.3,12.9c1.7,2.9,3.3,5.9,4.8,9l37.9-19.4c.5-.2,1.1,0,1.3.4.2.5,0,1.1-.4,1.3l-37.9,19.4c1.7,3.5,3.2,7,4.6,10.7l23.4-10c.5-.2,1.1,0,1.3.5.2.5,0,1.1-.5,1.3l-23.5,10c1.1,3,2.1,6.1,3,9.2l40.7-12.9c.5-.2,1.1.1,1.2.6s-.1,1.1-.6,1.2l-40.8,12.9c1,3.5,1.8,7,2.6,10.6l24.9-4.5c.5-.1,1.1.3,1.2.8s-.3,1.1-.8,1.2l-24.9,4.5c.6,3.2,1.1,6.3,1.5,9.6l42.1-5.9c.6,0,1,.3,1.1.8,0,.5-.3,1-.8,1.1l-42.2,5.9c.4,3.3.6,6.7.7,10l24.9-1s0,0,0,0c.5,0,1,.4,1,1,0,.5-.4,1-1,1l-24.9,1c0,1,0,2,0,3,0,2.2,0,4.4-.1,6.6l42.3,1c.5,0,1,.5,1,1,0,.5-.5,1-1,1h0l-42.4-1c-.2,3.7-.5,7.4-1,11l24.8,3.1c.5,0,.9.6.9,1.1,0,.5-.6.9-1.1.9l-24.8-3.1c-.4,3.1-1,6.2-1.6,9.2l41.5,7.5c.5,0,.9.6.8,1.2,0,.5-.6.9-1.2.8l-41.6-7.5c-.7,3.4-1.6,6.7-2.6,10l24.1,6.8c.5.1.8.7.7,1.2-.1.5-.7.8-1.2.7l-24.2-6.8c-1,3.1-2,6.2-3.2,9.2l39.7,14.9c.5.2.8.8.6,1.3-.2.5-.8.8-1.3.6l-39.7-14.9c-1.3,3.1-2.6,6.2-4.1,9.2l22.9,11c.5.2.7.8.5,1.3-.2.5-.8.7-1.3.5l-22.9-11c-1.5,2.9-3,5.8-4.7,8.6l37,20.9c.5.3.6.9.4,1.4-.3.5-.9.6-1.4.4l-37-20.9c-1.6,2.7-3.4,5.3-5.2,7.9l20.7,14c.5.3.6.9.3,1.4-.3.5-.9.6-1.4.3l-20.8-14c-2,2.8-4.1,5.5-6.4,8.2l32.8,26.7c.4.3.5,1,.1,1.4s-1,.5-1.4.1l-32.9-26.7c-1.9,2.3-3.9,4.5-6,6.6l17.9,17.1c.4.4.4,1,0,1.4-.4.4-1,.4-1.4,0l-17.9-17.1h0c-2.3,2.4-4.7,4.6-7.1,6.8l28.3,31.6c.4.4.3,1,0,1.4-.4.4-1,.3-1.4,0l-28.3-31.6c-2.5,2.1-5,4.1-7.6,6.1l15,19.3c.3.4.3,1.1-.2,1.4-.4.3-1.1.3-1.4-.2l-15-19.3c-2.7,2-5.5,3.9-8.3,5.7l22.9,35.6c.3.5.2,1.1-.3,1.4s-1.1.2-1.4-.3l-22.9-35.6c-2.9,1.8-5.8,3.4-8.7,5l12.8,21.4c.3.5.1,1.1-.3,1.4-.5.3-1.1.1-1.4-.3l-12.9-21.5c-3,1.5-6,2.9-9.1,4.2l18.8,39c.2.5,0,1.1-.5,1.3-.1,0-.3,0-.4,0ZM226,416.3c16.6,6.4,34.6,9.7,53.2,9.7,27.7-.1,53.7-8.1,75.7-21.7,0-.1.2-.2.3-.3.1,0,.3-.1.4-.1,3.1-1.9,6.1-4,9-6.1,0-.2.2-.4.3-.5.2-.1.4-.2.6-.2,2.8-2.1,5.5-4.3,8.2-6.6,0-.1.1-.3.3-.4.1-.1.3-.2.4-.2,2.7-2.3,5.3-4.8,7.8-7.3,0-.2.1-.4.3-.5.1-.1.3-.2.5-.3,2.3-2.3,4.4-4.7,6.5-7.2,0-.2,0-.3.2-.5.1-.2.3-.3.5-.3,2.4-2.9,4.8-5.9,7-9,0,0,0-.1,0-.2,0,0,.1-.1.2-.2,2-2.9,3.9-5.8,5.8-8.8,0-.2,0-.4.1-.6.1-.2.3-.3.5-.4,3.8-6.4,7.1-13.1,9.9-20.1,0-.2,0-.4,0-.6,0-.2.2-.4.4-.5,1.3-3.3,2.4-6.6,3.5-10,0-.2,0-.3,0-.5,0-.2.2-.3.3-.5,1.1-3.5,2-7.2,2.8-10.8,0-.1,0-.3,0-.4,0-.2.1-.3.2-.5.7-3.3,1.3-6.6,1.8-10,0-.2-.1-.4,0-.6,0-.2.1-.4.2-.5.5-3.9.9-7.8,1.1-11.8,0-.1-.1-.3-.1-.5,0-.2,0-.4.2-.5.1-2.3.1-4.7.1-7,0-1.3,0-2.5,0-3.7,0,0,0-.1,0-.2,0,0,0-.2,0-.2-.1-3.8-.4-7.5-.8-11.3,0,0,0-.2,0-.3,0-.1,0-.3,0-.4-8.4-72.5-70.4-128.9-145-128.7-21.7,0-42.5,4.8-62,14.1-8,3.9-15.5,8.3-22.2,13.2-6.6,4.8-12.9,10.2-18.8,16.1-5.9,6-11.2,12.4-15.7,18.9-4.5,6.3-8.5,13.2-12,20.5,0,.1,0,.3-.1.4s-.1.2-.2.3c-3.7,7.9-6.5,15.5-8.5,23-2.3,8.4-3.7,16.2-4.5,23.7-.5,4.6-.8,9.6-.8,15.6,0,2.5,0,5,.2,7.4,0,.1,0,.2,0,.4,0,.1,0,.2,0,.3.5,7.9,1.6,15.6,3.3,23.3,0,0,0,.1,0,.2,0,0,0,0,0,.1.9,3.8,1.9,7.6,3.1,11.4,0,0,0,.2.1.2,0,0,0,.1,0,.2,1.1,3.5,2.3,6.9,3.7,10.4,0,0,.2.2.2.3,0,.1,0,.2,0,.4,2.9,7.1,6.3,13.8,10.1,20.2.2,0,.4.2.5.4.1.2.2.4.1.6,1.8,2.9,3.7,5.8,5.7,8.6,0,0,.2.1.3.2,0,.1.1.2.2.3,2.2,3.1,4.5,6,6.9,8.9.2,0,.4.2.6.3.1.2.2.4.2.6,2.1,2.4,4.2,4.7,6.4,6.9.3,0,.5,0,.7.3.2.2.3.5.3.7,2.4,2.4,5,4.8,7.6,7.1.2,0,.5,0,.7.3.2.2.3.4.3.6,2.6,2.2,5.2,4.3,7.9,6.2.2,0,.5,0,.7.2.2.2.3.4.4.6,2.9,2.1,5.8,4,8.9,5.9.2,0,.5,0,.7.1.2.1.3.3.4.5,6.8,4.1,13.9,7.6,21.2,10.5.3-.1.6-.1.8,0,.2.1.4.3.5.5Z"/>
++        </g>
++        <g id="outer_circle_copy">
++          <path class="cls-1" d="M313.9,504.2c-.5,0-.9-.3-1-.8,0-.5.3-1.1.8-1.2,36.9-6.9,77.1-25,105.2-47.5-1.7-3.1-2.5-6.4-2.5-9.9,0-11.2,9.1-20.3,20.3-20.3s7.5,1,10.6,2.9c32.8-37.6,52.2-85.6,54.5-135.4-7.4-.2-13.3-6.3-13.3-13.7s5.4-12.9,12.3-13.6c-3.4-44.5-20.9-88.3-49.4-123.4-3.3,2.4-7.4,3.8-11.8,3.8-11.2,0-20.3-9.1-20.3-20.3s1.5-8.7,4-12.1c-27.8-23.6-65.7-41.3-104.5-48.8-.8,20.1-17.3,36.1-37.6,36.1s-37.6-16.8-37.6-37.5c0,0,0,0,0,0-43,6.2-80.3,24.4-114,55.6,1.6,1.9,2.6,4.3,2.6,7,0,6-4.9,10.9-10.9,10.9-2.6,0-4.9-1-6.8-2.5-20.9,23.4-36.9,51.3-46.3,81,7.2,2.5,12.3,9.3,12.3,17.3s-8.2,18.3-18.3,18.3-1.5,0-2.2-.1c-1.5,10.3-2.3,20.9-2.3,31.6,0,37.8,9.6,75,27.8,107.7,2.4-1.4,5.2-2.1,8.1-2.1,9.1,0,16.5,7.4,16.5,16.5s-2.4,9.7-6,12.7c37.2,48.4,82.1,75.9,137.2,83.9.5,0,.9.6.8,1.1,0,.5-.6.9-1.1.8-28.6-4.2-55.1-13.9-78.8-28.9-21.8-13.8-41.9-32.6-59.7-55.8-2.6,1.6-5.6,2.6-8.9,2.6-9.1,0-16.5-7.4-16.5-16.5s2.5-10.1,6.7-13.2c-18.4-33-28.1-70.6-28.1-108.8s.8-21.6,2.3-32c-8.1-1.9-14.1-9.2-14.1-17.8s8.2-18.3,18.3-18.3,2.8.2,4.1.5c9.5-30,25.6-58.2,46.8-81.8-1.7-1.9-2.7-4.4-2.7-7,0-6,4.9-10.9,10.9-10.9s5,.9,6.9,2.5c34-31.6,71.7-49.9,115.1-56.2.1,0,.3,0,.4,0,1-19.9,17.4-35.7,37.5-35.7s37.3,16.6,37.6,37c39.7,7.6,77.2,25.1,105.7,49.3,3.7-4.1,9.1-6.6,15-6.6,11.2,0,20.3,9.1,20.3,20.3s-2.7,11.5-6.9,15.2c28.7,35.5,46.4,79.6,49.8,124.6,7.3.3,13.1,6.3,13.1,13.7s-5.3,12.8-12.1,13.6c-2.3,50.1-21.8,98.6-54.9,136.6,5.1,3.9,8.1,9.8,8.1,16.2,0,11.2-9.1,20.3-20.4,20.3s-12.9-3.2-16.7-8.7c-28.3,22.6-68.8,40.9-105.9,47.8,0,0-.1,0-.2,0ZM421.3,454.8c3.4,5.2,9.1,8.4,15.4,8.4,10.1,0,18.4-8.2,18.4-18.3s-3.1-11.9-8.4-15.4c-2.9-1.9-6.4-2.9-10.1-2.9-10.1,0-18.3,8.2-18.3,18.3s.8,6.4,2.5,9.3c0,0,.1.1.2.2.1.1.2.3.2.5ZM93.7,389.2c-2.8,0-5.6.8-7.9,2.3-4.2,2.8-6.7,7.3-6.7,12.2,0,8,6.5,14.5,14.5,14.5s14.5-6.5,14.5-14.5-6.5-14.5-14.5-14.5ZM502.3,266.7c-6.5,0-11.7,5.3-11.7,11.7s5.3,11.7,11.7,11.7,11.7-5.3,11.7-11.7-5.3-11.7-11.7-11.7ZM62.3,215.6c-9,0-16.3,7.3-16.3,16.3s7.3,16.3,16.3,16.3,16.3-7.3,16.3-16.3-4.6-13.3-11.1-15.4c-.2.2-.6.3-.9.2-.3,0-.6-.3-.7-.6-1.2-.3-2.4-.4-3.7-.4ZM439.7,106.6c-10.1,0-18.3,8.2-18.3,18.3s8.2,18.3,18.3,18.3,8.2-1.5,11.3-3.9c0,0,0,0,0,0,0,0,0,0,0,0,4.2-3.4,6.8-8.5,6.8-14.3,0-10.1-8.2-18.3-18.3-18.3ZM121.4,116.3c-4.9,0-8.9,4-8.9,8.9s4,8.8,8.9,8.9c4.9,0,8.9-4,8.9-8.9s-4-8.9-8.9-8.9ZM245.8,64.5c1,18.7,16.6,33.7,35.6,33.7s34.5-14.9,35.5-33.5c-3.1,4.3-14.1,17.2-36.7,17.2-.2,0-20.6-.7-34.4-17.4ZM281.2,47.9c-.6,0-1.3,0-1.9.1-7,.8-12.7,6.5-13.6,13.5-.6,4.9,1,9.6,4.4,13.1,3.5,3.5,8.3,5.2,13.3,4.6,7-.8,12.7-6.5,13.5-13.5h0c.6-4.9-1-9.7-4.4-13.1-3-3-7-4.7-11.2-4.7ZM298.9,66c-.7,5.4-3.9,10.2-8.4,12.9,15.9-3.2,23.4-13.2,25.3-15.9,0,0,0-.1,0-.2-8.3-8.4-17.7-12.3-24.9-14.1,1.1.7,2.2,1.6,3.2,2.6,3.9,3.9,5.7,9.3,5,14.8ZM246.2,61.8c7.7,10.2,18.1,14.7,25.3,16.6-1-.7-1.9-1.4-2.8-2.3-3.9-3.9-5.7-9.3-5-14.7.8-5.9,4.6-10.9,9.7-13.5-14.3,2.5-24.7,11.6-27.2,14ZM281.2,45.2c6.8.3,22.6,2.6,35.8,16.1-.7-19.1-16.4-34.4-35.6-34.4s-33.8,14.2-35.5,32.3c4.5-4,17.2-13.9,34.2-14.1h1s0,0,0,0Z"/>
++          <g>
++            <path class="cls-1" d="M292,499.9l-2.9-13.2-10.5-1.6,11.7-2.2,1.9-12.7,2.1,12.7,10.9,2.2-9.6,1.6h0l-3.6,13.2Z"/>
++            <path class="cls-1" d="M291.9,502l-3.3-14.8-13.1-2,14.2-2.7,2.3-15.5,2.6,15.5,13.2,2.7-12,2-4.1,14.9ZM281.6,485.1l7.9,1.2,2.5,11.6,3.1-11.5,7.2-1.2-8.6-1.7-1.6-9.9-1.5,9.9-9.2,1.7Z"/>
++          </g>
++          <path class="cls-1" d="M277.4,535c-19.3,0-35.2-14.4-37.1-33.6-.1-1.2-.2-2.5-.2-3.8,0-20.6,16.8-37.4,37.4-37.4s37.4,16.8,37.4,37.4,0,.8,0,1.2c0,.4,0,.7,0,1-1.2,19.8-17.7,35.2-37.4,35.2ZM277.5,462.2c-19.5,0-35.4,15.9-35.4,35.4s0,2.4.2,3.6c1.8,18.1,16.9,31.8,35.1,31.8s34.2-14.6,35.4-33.3c0-.3,0-.7,0-1.1,0-.4,0-.7,0-1,0-19.5-15.9-35.4-35.4-35.4Z"/>
++          <g>
++            <path class="cls-1" d="M273.4,515.6c-.1,0-.2,0-.3,0-.2,0-.4-.2-.6-.2-.6-.2-1.1-.4-2.4-1.1h-.1c0-.1-.2-.2-.3-.3-.6-.4-1.9-1.2-3.2-2.6-1.3-1.4-1.9-2.2-2.5-3.4-.2-.4,0-1,.4-1.2.4-.2,1,0,1.2.4.6,1,1.1,1.8,2.3,3,1.2,1.3,2.3,1.9,2.8,2.3.2,0,.3.2.4.2,1.2.6,1.6.8,2.2,1,.2,0,.4.1.6.2.5.2.7.7.5,1.2-.1.4-.5.6-.8.6Z"/>
++            <path class="cls-1" d="M279.8,516.5c-.2,0-.4,0-.6,0-.2,0-.3,0-.5,0-.5,0-.9-.4-.9-.9s.4-.9.9-.9.4,0,.5,0c.5,0,1.1,0,2-.1h.5c.6-.2,1.2-.3,1.4-.5.4-.3,1-.1,1.3.3.3.4.1,1-.3,1.3-.5.3-1.2.5-2,.6h-.6c-.7.2-1.3.2-1.8.2Z"/>
++            <path class="cls-1" d="M277.6,521.8c-12,0-21.8-9.7-21.8-21.7s9.8-21.8,21.8-21.8,4.4.3,6.5.9c1.8.5,3.2,1.2,4.1,1.7.2,0,.3.2.5.2l1.1.6c6.4,4.3,8.7,11.4,8.8,11.7.6,2,.9,4.2.9,6.5,0,12-9.8,21.8-21.8,21.8ZM277.6,480.1c-11,0-20,9-20,20s9,19.9,20,19.9,20-9,20-20-.3-4.1-.9-5.9c0,0-2.2-6.9-8-10.7l-1-.6c0,0-.2-.1-.4-.2-.8-.4-2.1-1.1-3.7-1.6-1.9-.6-3.9-.9-5.9-.9Z"/>
++            <path class="cls-1" d="M262.9,503.7c-.4,0-.8-.3-.9-.8-.3-2-.3-3.6.1-5.4.4-2.1,1.2-5.3,4-8.3,1.6-1.8,2.3-2.3,3.4-2.8.5-.2,1,0,1.2.4.2.5,0,1-.4,1.2-.8.4-1.4.7-2.8,2.4-2.8,3.1-3.4,6.3-3.6,7.5-.3,1.6-.3,3,0,4.8,0,.5-.3,1-.8,1,0,0,0,0-.1,0Z"/>
++          </g>
++          <path class="cls-4" d="M302.9,501.6"/>
++          <path class="cls-4" d="M284,490.9"/>
++          <path class="cls-4" d="M267.2,483.1"/>
++          <path class="cls-4" d="M248.3,472.5"/>
++          <path class="cls-4" d="M287.3,458.1"/>
++          <path class="cls-4" d="M279.7,479.2"/>
++          <path class="cls-4" d="M270.8,495.5"/>
++          <path class="cls-4" d="M264.1,514.7"/>
++        </g>
++        <g id="solid_orange">
++          <g>
++            <circle class="cls-2" cx="62.3" cy="231.9" r="16.8"/>
++            <path class="cls-1" d="M62.3,249.2c-9.5,0-17.3-7.8-17.3-17.3s7.8-17.3,17.3-17.3,17.3,7.8,17.3,17.3-7.8,17.3-17.3,17.3ZM62.3,215.6c-9,0-16.3,7.3-16.3,16.3s7.3,16.3,16.3,16.3,16.3-7.3,16.3-16.3-7.3-16.3-16.3-16.3Z"/>
++          </g>
++          <g>
++            <path class="cls-2" d="M458.8,124.9c0,10.6-8.6,19.1-19.1,19.1s-19.1-8.6-19.1-19.1"/>
++            <path class="cls-1" d="M439.7,144.5c-10.8,0-19.6-8.8-19.6-19.6h1c0,10.3,8.3,18.6,18.6,18.6s18.6-8.3,18.6-18.6h1c0,10.8-8.8,19.6-19.6,19.6Z"/>
++          </g>
++          <g>
++            <path class="cls-2" d="M436.5,425.1c10.9,0,19.7,8.8,19.7,19.7s-8.8,19.7-19.7,19.7"/>
++            <path class="cls-1" d="M436.5,465v-1c10.6,0,19.2-8.6,19.2-19.2s-8.6-19.2-19.2-19.2v-1c11.1,0,20.2,9.1,20.2,20.2s-9.1,20.2-20.2,20.2Z"/>
++          </g>
++          <g>
++            <polygon class="cls-2" points="379.4 226.2 404.5 232.3 378.8 238.5 379.4 226.2"/>
++            <path class="cls-1" d="M378.3,239.2l.7-13.6,27.7,6.7-28.4,6.8ZM379.9,226.9l-.5,11,23-5.6-22.5-5.5Z"/>
++          </g>
++          <g>
++            <polygon class="cls-2" points="373.5 251.2 378.1 271 377.7 286.7 374.3 307.3 368.5 323.2 359.2 338.7 345.4 353.7 333.2 363.1 305.7 375.6 279.7 379.4 257.1 377.1 240.9 371.4 228.8 365.3 216.1 356.7 240.2 328.8 243.1 330.8 247.4 333.6 255.6 337.9 261 340.2 267.6 341.9 275 343 281.7 343.2 288.6 342.7 295.3 341.5 301.1 339.8 308.7 336.7 315.5 332.6 321.7 327.8 326.9 322.6 331.3 317.4 335.4 310.5 339.6 301.8 341.5 295.3 342.7 289.2 342.8 283.6 342.9 276.3 342.1 269.5 341.8 264.6 348.9 264.4 359.4 261.8 368.3 256.4 373.5 251.2"/>
++            <path class="cls-1" d="M279.7,380h0s-22.7-2.3-22.7-2.3l-16.2-5.7-12.2-6.1-13.2-8.9,24.8-28.7,3.3,2.3,4.3,2.8,8.2,4.3,5.4,2.3,6.5,1.7,7.3,1.1,6.6.2,6.8-.5,6.6-1.2,5.7-1.7,7.6-3.1,6.7-4.1,6.2-4.8,5.2-5.2,4.4-5.2,4.1-6.8,4.2-8.7,1.9-6.4,1.2-6.1.2-12.8-.8-6.7-.3-5.4,7.6-.2,10.4-2.6,8.8-5.3,5.8-5.8,4.8,20.7h0c0,0-.4,15.8-.4,15.8l-3.4,20.7-5.8,16-9.4,15.7-13.8,15-12.4,9.5-27.6,12.5-26.1,3.8ZM257.2,376.7l22.5,2.3,25.9-3.8,27.4-12.4,12.2-9.4,13.7-14.9,9.3-15.5,5.8-15.8,3.4-20.5.4-15.6-4.4-18.9-4.7,4.6-9,5.5-10.6,2.6-6.6.2.3,4.4.8,6.8-.2,13-1.2,6.2-1.9,6.5-4.2,8.8-4.1,6.9-4.4,5.3-5.2,5.2-6.2,4.8-6.8,4.1-7.7,3.1-5.8,1.7-6.8,1.2-7,.5-6.8-.2-7.5-1.1-6.7-1.7-5.5-2.3-8.2-4.3-4.3-2.8-2.5-1.8-23.4,27.1,12.2,8.3,12,6.1,16.1,5.7Z"/>
++          </g>
++          <g>
++            <circle class="cls-2" cx="346.5" cy="231.2" r="5.8"/>
++            <path class="cls-1" d="M346.5,237.5c-3.5,0-6.3-2.8-6.3-6.3s2.8-6.3,6.3-6.3,6.3,2.8,6.3,6.3-2.8,6.3-6.3,6.3ZM346.5,226c-2.9,0-5.3,2.4-5.3,5.3s2.4,5.3,5.3,5.3,5.3-2.4,5.3-5.3-2.4-5.3-5.3-5.3Z"/>
++          </g>
++        </g>
++        <g id="COF">
++          <g>
++            <circle class="cls-1" cx="276.2" cy="63.4" r="1.9"/>
++            <circle class="cls-1" cx="284.1" cy="59.2" r="1.9"/>
++            <path class="cls-1" d="M280.4,68.4c-1.4-.3-2.5-1.2-3.1-2.4-.5.2-1.1.3-1.6.2.8,1.9,2.4,3.3,4.4,3.8s.9,0,1.3,0c-.3-.5-.5-1-.6-1.6,0,0-.2,0-.4,0h0Z"/>
++            <circle class="cls-1" cx="283.6" cy="68.4" r="1.9"/>
++            <path class="cls-1" d="M286.3,67.7c.6-.8,1-1.6,1.2-2.6.3-1.6,0-3.4-.9-4.8-.2.5-.6,1-1.1,1.3.5,1,.7,2.1.4,3.2-.1.5-.3,1-.6,1.5.5.3.8.8,1,1.4h0Z"/>
++            <path class="cls-1" d="M276,60.7h.1c.2,0,.4,0,.6,0,.3,0,.6.2.9.4.9-1.2,2.2-2,3.7-2,0,0,0-.3.1-.4.1-.4.3-.8.5-1.1-2.4-.4-4.7.8-5.9,3Z"/>
++          </g>
++        </g>
++        <g id="bird">
++          <path class="cls-1" d="M306.8,424.1l-23.6-47.3,18.5-2.4,22.4,44.8-3.8,1.9-21-42.1-9.5,1.2,21,41.9-3.8,1.9ZM185.6,394.2l-20.7-20.7,59.8-60.1,85.1-87.8c2.4-17.5,17.5-31,35.7-31s32.6,13,35.5,30l30.9,7.2-31.6,8.4c-1,3.7-2.6,7.1-4.7,10.3l-.2.2c-.1.2-.2.4-.4.6-6.7,9.6-17.7,15.3-29.5,15.3-19.4,0-35.2-15.4-36-34.6l-81.8,84.3-56.8,57.1,14.5,14.5,53.5-60,3.2,2.8-56.5,63.4ZM345.5,198.9c-17.5,0-31.8,14.3-31.8,31.8s14.3,31.8,31.8,31.8,20.2-5.1,26.1-13.6l.2-.2c.1-.2.2-.4.4-.6,3.4-5.1,5.2-11.1,5.2-17.4,0-17.5-14.3-31.8-31.8-31.8ZM381.9,229.2l-.4,6.3,12.9-3.4-12.5-2.9Z"/>
++          <path class="cls-5" d="M284.9,351.2"/>
++          <path class="cls-1" d="M199.8,340.6c-13.2-17.4-20.2-38.2-20.2-60.1,0-54.9,44.7-99.6,99.6-99.6s39,5.8,55.4,16.8l-1.6,2.3c-15.9-10.7-34.5-16.4-53.8-16.4-53.4,0-96.8,43.4-96.8,96.8s6.8,41.5,19.6,58.5l-2.2,1.7Z"/>
++          <path class="cls-1" d="M279.1,380.9c-23.2,0-45.8-8.1-63.7-22.8l2.7-3.3c17.1,14.1,38.8,21.8,60.9,21.8,53,0,96.1-43.1,96.1-96.1s-1.5-20.2-4.6-29.5l4-1.3c3.2,9.8,4.8,20.2,4.8,30.9,0,55.3-45,100.3-100.3,100.3Z"/>
++          <path class="cls-1" d="M226.4,315.2c-6.6-10.2-10.2-22.1-10.2-34.5,0-35.1,28.5-63.6,63.6-63.6s22.8,3.1,32.6,8.9l-1,1.7c-9.5-5.7-20.4-8.7-31.6-8.7-34,0-61.6,27.6-61.6,61.6s3.4,23.6,9.8,33.5l-1.7,1.1Z"/>
++          <path class="cls-1" d="M279.8,343.8c-15.1,0-29.7-5.4-41.2-15.2l.7-.8c11.3,9.7,25.7,15,40.6,15,34.2,0,62.1-27.9,62.1-62.1s-.7-10.9-2.2-16.5l1-.3c1.5,5.6,2.2,11.1,2.2,16.7,0,34.8-28.3,63.1-63.1,63.1Z"/>
++          <path class="cls-3" d="M227.5,314.4"/>
++        </g>
++      </g>
++    </g>
 +  </g>
 +</svg>
-diff --git a/gnome-initial-setup/pages/welcome/welcome.gresource.xml b/gnome-initial-setup/pages/welcome/welcome.gresource.xml
-index 67a960f..41b35a5 100644
---- a/gnome-initial-setup/pages/welcome/welcome.gresource.xml
-+++ b/gnome-initial-setup/pages/welcome/welcome.gresource.xml
+\ No newline at end of file
+Index: gnome-initial-setup/gnome-initial-setup/pages/welcome/welcome.gresource.xml
+===================================================================
+--- gnome-initial-setup.orig/gnome-initial-setup/pages/welcome/welcome.gresource.xml	2024-09-16 10:21:02.841089567 +0200
++++ gnome-initial-setup/gnome-initial-setup/pages/welcome/welcome.gresource.xml	2024-09-16 10:21:02.829089601 +0200
 @@ -2,7 +2,7 @@
  <gresources>
    <gresource prefix="/org/gnome/initial-setup">
@@ -6056,11 +5963,11 @@ index 67a960f..41b35a5 100644
      <file>gis-welcome-page.css</file>
    </gresource>
  </gresources>
-diff --git a/po/POTFILES.in b/po/POTFILES.in
-index 977cfda..a7d7146 100644
---- a/po/POTFILES.in
-+++ b/po/POTFILES.in
-@@ -44,3 +44,13 @@ gnome-initial-setup/pages/timezone/gis-timezone-page.ui
+Index: gnome-initial-setup/po/POTFILES.in
+===================================================================
+--- gnome-initial-setup.orig/po/POTFILES.in	2024-09-16 10:21:02.841089567 +0200
++++ gnome-initial-setup/po/POTFILES.in	2024-09-16 10:21:02.829089601 +0200
+@@ -44,3 +44,13 @@
  gnome-initial-setup/pages/welcome/gis-welcome-page.c
  gnome-initial-setup/pages/welcome/gis-welcome-page.ui
  po/EXTRA_STRINGS.sh
