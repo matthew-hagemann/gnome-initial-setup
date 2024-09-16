@@ -1,3 +1,9 @@
+gnome-initial-setup (47.0-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Sebastien Bacher <seb128@ubuntu.com>  Mon, 16 Sep 2024 15:31:26 +0200
+
 gnome-initial-setup (47~rc-1ubuntu3) oracular; urgency=medium
 
   * Fix some issues in the svg from the previous upload
