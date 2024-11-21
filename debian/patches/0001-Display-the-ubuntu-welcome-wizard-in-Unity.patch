@@ -21,7 +21,7 @@ index f3d0df7..38f86cf 100644
  AutostartCondition=unless-exists gnome-initial-setup-done
  X-GNOME-HiddenUnderSystemd=@systemd_hidden@
 diff --git a/gnome-initial-setup/gnome-initial-setup.c b/gnome-initial-setup/gnome-initial-setup.c
-index d7afd23..b526038 100644
+index a050aa0..2d2f0a8 100644
 --- a/gnome-initial-setup/gnome-initial-setup.c
 +++ b/gnome-initial-setup/gnome-initial-setup.c
 @@ -93,6 +93,16 @@ static PageData ubuntu_page_table[] = {
