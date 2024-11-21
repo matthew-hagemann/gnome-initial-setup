@@ -1,4 +1,4 @@
-gnome-initial-setup (47.1-1ubuntu1) UNRELEASED; urgency=medium
+gnome-initial-setup (47.1-1ubuntu1) plucky; urgency=medium
 
   * Remove debian/source/include-binaries.
     The 0001-Add*.patch that it was including no longer has binary content,
