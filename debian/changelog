@@ -1,3 +1,15 @@
+gnome-initial-setup (47.1-1ubuntu1) UNRELEASED; urgency=medium
+
+  * Merge with Debian
+
+ -- Nathan Pratta Teodosio <nteodosio@ubuntu.com>  Thu, 21 Nov 2024 09:23:34 +0100
+
+gnome-initial-setup (47.1-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Thu, 17 Oct 2024 14:51:41 -0400
+
 gnome-initial-setup (47.0-1ubuntu1) oracular; urgency=medium
 
   * New upstream version
