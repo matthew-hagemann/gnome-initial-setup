@@ -1,3 +1,15 @@
+gnome-initial-setup (47.2-1) unstable; urgency=medium
+
+  [ Jeremy Bícha ]
+  * New upstream release
+  * Remove patch that re-enabled "existing user" mode.
+    The current pages are not useful to most users (Closes: #1080154)
+
+  [ Dandan Zhang ]
+  * Build parental controls feature for loong64 (Closes: #1058679)
+
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Mon, 25 Nov 2024 12:59:33 -0500
+
 gnome-initial-setup (47.1-1ubuntu1) plucky; urgency=medium
 
   * Remove debian/source/include-binaries.
