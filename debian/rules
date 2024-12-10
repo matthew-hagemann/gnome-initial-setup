@@ -37,5 +37,3 @@ else
 	dh_gencontrol -- -Vlogo:Depends='desktop-base' \
 	-Vmalcontent:Recommends='malcontent [amd64 arm64 armel armhf i386 mips64el ppc64el riscv64 s390x hppa loong64 powerpc ppc64 x32]'
 endif
-
-override_dh_gnome_clean:
