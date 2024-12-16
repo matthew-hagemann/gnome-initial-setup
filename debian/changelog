@@ -1,3 +1,11 @@
+gnome-initial-setup (47.2-1ubuntu2) UNRELEASED; urgency=medium
+
+  * debian/patches/launchpad_translations_export.patch:
+    - export the current translations from launchpad and include them in
+      the source since we are opting out from langpacks there.
+
+ -- Sebastien Bacher <seb128@ubuntu.com>  Tue, 10 Dec 2024 12:49:35 +0100
+
 gnome-initial-setup (47.2-1ubuntu1) plucky; urgency=medium
 
   * Merge with Debian. Remaining changes:
