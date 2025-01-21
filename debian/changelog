@@ -1,3 +1,14 @@
+gnome-initial-setup (47.2-2) unstable; urgency=medium
+
+  [ Jeremy Bícha ]
+  * Stop using dh-sequence-gnome
+  * Opt into Salsa CI
+
+  [ Simon McVittie ]
+  * Remove polkitd .pkla configuration file (Closes: #1093067)
+
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Tue, 21 Jan 2025 11:46:56 -0500
+
 gnome-initial-setup (47.2-1) unstable; urgency=medium
 
   [ Jeremy Bícha ]
