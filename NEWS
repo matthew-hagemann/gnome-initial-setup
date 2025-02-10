@@ -1,25 +1,22 @@
-47.2
-----
+48.beta
+-------
 
-* Previously, the timezone page would list duplicate entries for some cities,
-  and selecting the wrong one would crash Initial Setup. In this release these
-  problematic entries are not shown. (#219, Yao Wei (魏銘廷))
+On the network page, the Tab key now navigates between the network list and
+other widgets, rather than between each network in the list in turn. (Lukáš
+Tyrychtr)
 
-* Previous versions would crash on startup when run with GTK 4.17, which has
-  made it a fatal error to use certain functions before gtk_init() has been
-  called. This crash is fixed in this release. (#223)
+As a result of the change above, Gtk ≥ 4.17 is now required.
 
 Translation updates:
 
-- Catalan (Jordi Mas i Hernandez)
 - Dutch (Nathan Follens)
-- English (United Kingdom) (Andi Chandler)
-- French (Vincent Chatelain)
-- Friulian (Fabio Tomat)
-- Hebrew (Yaron Shahrabani)
-- Indonesian (Andika Triwidada)
+- French (Guillaume Bernard)
+- Interlingua (Emilio Sepúlveda)
 - Lithuanian (Aurimas Černius)
+- Romanian (Daniel Șerbănescu)
 - Serbian (Марко Костић)
+- Thai (Aefgh Threenine)
+- Turkish (Sabri Ünal)
 
 47.1
 ----
@@ -1787,7 +1784,7 @@ Translation updates:
   Italian
   Latvian
 
-  
+
 3.14.0
 
  * Fix skip button showing up on the last page
@@ -1832,7 +1829,7 @@ Translation updates:
   Swedish
   Tamil
   Telugu
- 
+
 3.13.5
 
  * language: Don't dim distro logo
@@ -1851,7 +1848,7 @@ Translation updates:
   German
   Gujarati
   Ukrainian
-  
+
 
 3.13.4
 
@@ -1921,7 +1918,7 @@ Translation updates:
    Russian
    Tajik
    Traditional Chinese
-   Ukrainian   
+   Ukrainian
 
 3.11.91
 
