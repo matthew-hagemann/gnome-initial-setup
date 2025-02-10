@@ -12,4 +12,3 @@ Do-not-skip-g-i-s-first-login-mode-after-user-creation.patch
 Adding-EULA-page-for-OEMs.patch
 Allow-setting-hostname-to-local-account-page.patch
 Skip-privacy-page-in-user-creation-setup.patch
-launchpad_translations_export.patch

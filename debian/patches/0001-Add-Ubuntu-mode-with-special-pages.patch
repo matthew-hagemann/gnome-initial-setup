@@ -365,7 +365,7 @@ index 3de1705..a050aa0 100644
          break;
  
 diff --git a/gnome-initial-setup/meson.build b/gnome-initial-setup/meson.build
-index 57bda03..713d328 100644
+index 8cb9eac..2306a06 100644
 --- a/gnome-initial-setup/meson.build
 +++ b/gnome-initial-setup/meson.build
 @@ -57,6 +57,9 @@ dependencies = [

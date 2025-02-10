@@ -52,7 +52,7 @@ index 2d2f0a8..02a5021 100644
    PAGE (privacy,  FALSE),
    PAGE (timezone, TRUE),
 diff --git a/gnome-initial-setup/meson.build b/gnome-initial-setup/meson.build
-index 713d328..1916226 100644
+index 2306a06..0466a57 100644
 --- a/gnome-initial-setup/meson.build
 +++ b/gnome-initial-setup/meson.build
 @@ -60,6 +60,7 @@ dependencies = [
