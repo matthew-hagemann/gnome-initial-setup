@@ -1,8 +1,10 @@
-gnome-initial-setup (48~beta-0ubuntu1) UNRELEASED; urgency=medium
+gnome-initial-setup (48~beta-0ubuntu1) plucky; urgency=medium
 
   * New upstream release
+  * Bump minimum gtk4
+  * Remove launchpad translations export patch for now
 
- -- Jeremy Bícha <jbicha@ubuntu.com>  Mon, 10 Feb 2025 13:19:22 -0500
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Mon, 10 Feb 2025 14:49:06 -0500
 
 gnome-initial-setup (47.2-1ubuntu2) plucky; urgency=medium
 
