@@ -1,8 +1,9 @@
-gnome-initial-setup (48~beta-1) UNRELEASED; urgency=medium
+gnome-initial-setup (48~beta-1) unstable; urgency=medium
 
   * New upstream release
+  * Bump minimum gtk4
 
- -- Jeremy Bícha <jbicha@ubuntu.com>  Wed, 05 Feb 2025 15:32:17 -0500
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Wed, 12 Feb 2025 18:07:57 -0500
 
 gnome-initial-setup (47.2-2) unstable; urgency=medium
 
