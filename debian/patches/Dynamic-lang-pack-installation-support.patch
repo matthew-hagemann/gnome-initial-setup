@@ -24,14 +24,15 @@ while GIS attempts to install language packs. If language pack installation
 fails, a warning is shown to the user and the locale is set.
 ---
  data/20-gnome-initial-setup.rules.in               |  10 +
- gnome-initial-setup/gis-pkexec.c                   |  47 +++++
+ gnome-initial-setup/gis-pkexec.c                   |  48 +++++
  gnome-initial-setup/gis-pkexec.h                   |   4 +
  .../pages/language/cc-language-chooser.c           | 230 +++++++++++++++++++--
  .../pages/language/gis-language-page.c             |  22 +-
- 5 files changed, 292 insertions(+), 21 deletions(-)
+ 5 files changed, 293 insertions(+), 21 deletions(-)
+ mode change 100644 => 100755 gnome-initial-setup/gis-pkexec.c
 
 diff --git a/data/20-gnome-initial-setup.rules.in b/data/20-gnome-initial-setup.rules.in
-index 02fd21d..f0faf42 100644
+index 02fd21d..d769020 100644
 --- a/data/20-gnome-initial-setup.rules.in
 +++ b/data/20-gnome-initial-setup.rules.in
 @@ -5,6 +5,16 @@
@@ -43,7 +44,7 @@ index 02fd21d..f0faf42 100644
 +        return undefined;
 +
 +    if (action.id === 'org.freedesktop.policykit.exec' &&
-+        action.lookup('program') === '/usr/bin/apt') {
++        action.lookup('program') === '/usr/bin/apt-get') {
 +        return 'yes';
 +    }
 +});
@@ -52,7 +53,9 @@ index 02fd21d..f0faf42 100644
      if (subject.user !== 'gnome-initial-setup')
          return undefined;
 diff --git a/gnome-initial-setup/gis-pkexec.c b/gnome-initial-setup/gis-pkexec.c
-index 9e1bfa9..3409682 100644
+old mode 100644
+new mode 100755
+index 9e1bfa9..69bdfbf
 --- a/gnome-initial-setup/gis-pkexec.c
 +++ b/gnome-initial-setup/gis-pkexec.c
 @@ -24,6 +24,7 @@
@@ -63,12 +66,12 @@ index 9e1bfa9..3409682 100644
  
  gboolean
  gis_pkexec (const gchar  *command,
-@@ -57,3 +58,49 @@ gis_pkexec (const gchar  *command,
+@@ -57,3 +58,50 @@ gis_pkexec (const gchar  *command,
  
    return TRUE;
  }
 +
-+gboolean apt_install(GPtrArray *packages, GError **error) {
++gboolean apt_get_install(GPtrArray *packages, GError **error) {
 +  g_autoptr(GSubprocessLauncher) launcher = NULL;
 +  g_autoptr(GSubprocess) process = NULL;
 +
@@ -84,7 +87,7 @@ index 9e1bfa9..3409682 100644
 +  gchar **argv = g_new(gchar *, total);
 +  int pos = 0;
 +  argv[pos++] = "/usr/bin/pkexec";
-+  argv[pos++] = "apt";
++  argv[pos++] = "apt-get";
 +  argv[pos++] = "install";
 +  argv[pos++] = "-y";
 +  for (int i = 0; i < packages->len; i++)
@@ -97,6 +100,7 @@ index 9e1bfa9..3409682 100644
 +  g_subprocess_launcher_setenv(launcher, "DEBCONF_NONINTERACTIVE_SEEN", "true", TRUE);
 +  g_subprocess_launcher_setenv(launcher, "DEBIAN_FRONTEND", "noninteractive", TRUE);
 +
++  gis_pkexec("apt-get", "update", NULL, NULL);
 +  process =
 +      g_subprocess_launcher_spawnv(launcher, (const gchar *const *)argv, error);
 +  g_free(argv);
@@ -107,14 +111,14 @@ index 9e1bfa9..3409682 100644
 +  }
 +
 +  if (!g_subprocess_wait_check(process, NULL, error)) {
-+    g_prefix_error(error, "apt install failed: ");
++    g_prefix_error(error, "apt-get install failed: ");
 +    return FALSE;
 +  }
 +
 +  return TRUE;
 +}
 diff --git a/gnome-initial-setup/gis-pkexec.h b/gnome-initial-setup/gis-pkexec.h
-index ff5a88c..74cdeb2 100644
+index ff5a88c..ad57d99 100644
 --- a/gnome-initial-setup/gis-pkexec.h
 +++ b/gnome-initial-setup/gis-pkexec.h
 @@ -36,6 +36,10 @@ gis_pkexec (const gchar  *command,
@@ -122,14 +126,14 @@ index ff5a88c..74cdeb2 100644
              GError      **error);
  
 +gboolean
-+apt_install (GPtrArray *packages, 
++apt_get_install (GPtrArray *packages, 
 +                 GError **error);
 +
  G_END_DECLS
  
  #endif /* __GIS_PKEXEC_H__ */
 diff --git a/gnome-initial-setup/pages/language/cc-language-chooser.c b/gnome-initial-setup/pages/language/cc-language-chooser.c
-index 61756be..c7e0553 100644
+index 61756be..520e7db 100644
 --- a/gnome-initial-setup/pages/language/cc-language-chooser.c
 +++ b/gnome-initial-setup/pages/language/cc-language-chooser.c
 @@ -21,6 +21,8 @@
@@ -350,7 +354,7 @@ index 61756be..c7e0553 100644
 +     return TRUE;
 +  }
 +
-+  if (!apt_install(packages_array, &error)) {
++  if (!apt_get_install(packages_array, &error)) {
 +     g_printerr("Error installing language support: %s\n", error->message);
 +     g_clear_error(&error);
 +     return FALSE;
