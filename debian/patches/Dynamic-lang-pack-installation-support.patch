@@ -19,16 +19,21 @@ be installed via check-language-support -l and to use that output to install
 outstanding lang packs via a g_task.
 
 Added a spinner to the language chooser for when a language's packs are being
-installed. Language chooser and next button are both set to sensitive FALSE
-while GIS attempts to install language packs. If language pack installation
-fails, a warning is shown to the user and the locale is set.
+installed. All other rows and next button are set to sensitive FALSE while
+GIS attempts to install language packs. If language pack installation fails,
+a warning is shown to the user and the locale is set. While waiting the user
+has the option to cancel the installation of additional lang packs.
+
+
+Additional PR style updates
 ---
  data/20-gnome-initial-setup.rules.in               |  10 +
- gnome-initial-setup/gis-pkexec.c                   |  49 +++++
+ gnome-initial-setup/gis-pkexec.c                   |  49 ++++
  gnome-initial-setup/gis-pkexec.h                   |   4 +
- .../pages/language/cc-language-chooser.c           | 212 +++++++++++++++++++--
- .../pages/language/gis-language-page.c             |  22 ++-
- 5 files changed, 281 insertions(+), 16 deletions(-)
+ .../pages/language/cc-language-chooser.c           | 278 +++++++++++++++++++--
+ .../pages/language/cc-language-chooser.h           |   1 +
+ .../pages/language/gis-language-page.c             |  23 +-
+ 6 files changed, 346 insertions(+), 19 deletions(-)
  mode change 100644 => 100755 gnome-initial-setup/gis-pkexec.c
  mode change 100644 => 100755 gnome-initial-setup/pages/language/cc-language-chooser.c
 
@@ -144,7 +149,7 @@ index ff5a88c..ad57d99 100644
 diff --git a/gnome-initial-setup/pages/language/cc-language-chooser.c b/gnome-initial-setup/pages/language/cc-language-chooser.c
 old mode 100644
 new mode 100755
-index 61756be..05732ba
+index 61756be..16ea6b7
 --- a/gnome-initial-setup/pages/language/cc-language-chooser.c
 +++ b/gnome-initial-setup/pages/language/cc-language-chooser.c
 @@ -21,6 +21,8 @@
@@ -165,15 +170,32 @@ index 61756be..05732ba
  #include <libgnome-desktop/gnome-languages.h>
  
  #include "cc-common-language.h"
-@@ -41,7 +45,6 @@ struct _CcLanguageChooserPrivate
+@@ -41,12 +45,14 @@ struct _CcLanguageChooserPrivate
  {
          GtkWidget *filter_entry;
          GtkWidget *language_list;
 -
          GtkWidget *no_results;
          GtkWidget *more_item;
+-
++        
++        gboolean waiting_for_sync;
+         gboolean showing_extra;
+         gchar *language;
++
++        GCancellable *install_cancellable;
+ };
+ typedef struct _CcLanguageChooserPrivate CcLanguageChooserPrivate;
+ G_DEFINE_TYPE_WITH_PRIVATE (CcLanguageChooser, cc_language_chooser, GTK_TYPE_BOX);
+@@ -55,6 +61,7 @@ enum {
+         PROP_0,
+         PROP_LANGUAGE,
+         PROP_SHOWING_EXTRA,
++        PROP_WAITING_FOR_SYNC,
+         PROP_LAST,
+ };
  
-@@ -69,7 +72,10 @@ static guint signals[LAST_SIGNAL] = { 0 };
+@@ -69,7 +76,11 @@ static guint signals[LAST_SIGNAL] = { 0 };
  
  typedef struct {
          GtkWidget *box;
@@ -181,10 +203,31 @@ index 61756be..05732ba
          GtkWidget *checkmark;
 +        GtkWidget *spinner;
 +        GtkWidget *status_label;
++        GtkWidget *cancel_button;
  
          gchar *locale_id;
          gchar *locale_name;
-@@ -155,8 +161,18 @@ language_widget_new (const char *locale_id,
+@@ -113,8 +124,18 @@ language_widget_free (gpointer data)
+         g_free (widget);
+ }
+ 
++static void
++on_cancel_button_clicked (GtkButton          *button,
++                          CcLanguageChooser  *chooser)
++{
++    CcLanguageChooserPrivate *priv = cc_language_chooser_get_instance_private (chooser);
++    if (priv->install_cancellable)
++        g_cancellable_cancel (priv->install_cancellable);
++}
++
+ static GtkWidget *
+-language_widget_new (const char *locale_id,
++language_widget_new (CcLanguageChooser *chooser,
++                     const char *locale_id,
+                      gboolean    is_extra)
+ {
+ 	GtkWidget *label;
+@@ -155,8 +176,22 @@ language_widget_new (const char *locale_id,
          gtk_label_set_xalign (GTK_LABEL (label), 0);
          gtk_box_append (GTK_BOX (widget->box), label);
  
@@ -198,13 +241,28 @@ index 61756be..05732ba
 +        gtk_widget_set_name(widget->status_label, "status");
 +        gtk_widget_add_css_class(widget->status_label, "dim-label");
 +
++        widget->cancel_button = gtk_button_new_with_label (_("Cancel"));
++        gtk_widget_set_visible (widget->cancel_button, FALSE);
++
 +        gtk_stack_set_visible_child_name(GTK_STACK(widget->status_stack), "check");
 +        gtk_box_append(GTK_BOX(widget->box), widget->status_stack);
++        gtk_box_append (GTK_BOX (widget->box), widget->cancel_button);
 +        gtk_box_append(GTK_BOX(widget->box), widget->status_label);
  
          if (country_name) {
                  label = gtk_label_new (country_name);
-@@ -188,7 +204,9 @@ language_widget_new (const char *locale_id,
+@@ -179,6 +214,10 @@ language_widget_new (const char *locale_id,
+         g_object_set_data_full (G_OBJECT (widget->box), "language-widget", widget,
+                                 language_widget_free);
+ 
++        g_signal_connect (widget->cancel_button, "clicked",
++                          G_CALLBACK (on_cancel_button_clicked),
++                          chooser);
++
+         g_free (language);
+         g_free (language_name);
+         g_free (country);
+@@ -188,11 +227,16 @@ language_widget_new (const char *locale_id,
  }
  
  static void
@@ -215,7 +273,14 @@ index 61756be..05732ba
  {
          CcLanguageChooserPrivate *priv = cc_language_chooser_get_instance_private (chooser);
          GtkWidget *row;
-@@ -206,8 +224,26 @@ sync_all_checkmarks (CcLanguageChooser *chooser)
+ 
++        priv->waiting_for_sync = waiting;
++        g_object_notify_by_pspec (G_OBJECT (chooser), obj_props[PROP_WAITING_FOR_SYNC]);
++
+         row = gtk_widget_get_first_child (priv->language_list);
+         while (row) {
+                 LanguageWidget *widget;
+@@ -206,8 +250,35 @@ sync_all_checkmarks (CcLanguageChooser *chooser)
                          return;
  
                  should_be_visible = g_str_equal (widget->locale_id, priv->language);
@@ -224,9 +289,11 @@ index 61756be..05732ba
 +                            gtk_stack_set_visible_child_name(GTK_STACK(widget->status_stack), "spinner");
 +                            gtk_spinner_start(GTK_SPINNER(widget->spinner));
 +                            gtk_label_set_text(GTK_LABEL(widget->status_label), _("Downloading language packs..."));
++                            gtk_widget_set_visible (widget->cancel_button, TRUE);
 +                    } else {
 +                            gtk_spinner_stop(GTK_SPINNER(widget->spinner));
 +                            gtk_stack_set_visible_child_name(GTK_STACK(widget->status_stack), "check");
++                            gtk_widget_set_visible (widget->cancel_button, FALSE);
 +                            if (error_message) {
 +                                    gtk_label_set_text(GTK_LABEL(widget->status_label), error_message);
 +                            } else {
@@ -236,14 +303,30 @@ index 61756be..05732ba
 +                } else {
 +                        gtk_stack_set_visible_child_name(GTK_STACK(widget->status_stack), "check");
 +                        gtk_label_set_text(GTK_LABEL(widget->status_label), "");
-+                } 
++                        gtk_widget_set_visible (widget->cancel_button, FALSE);
++                }
++
++                if (waiting && !should_be_visible) {
++                    gtk_widget_set_sensitive (GTK_WIDGET(row), FALSE);
++                } else {
++                    gtk_widget_set_sensitive (GTK_WIDGET(row), TRUE);
++                }
 +                        
                  gtk_widget_set_opacity (widget->checkmark, should_be_visible ? 1.0 : 0.0);
 -
                  row = gtk_widget_get_next_sibling (row);
          }
  }
-@@ -290,13 +326,54 @@ add_languages (CcLanguageChooser  *chooser,
+@@ -257,7 +328,7 @@ add_one_language (CcLanguageChooser *chooser,
+ 		return;
+ 	}
+ 
+-	widget = language_widget_new (locale_id, !is_initial);
++	widget = language_widget_new (chooser, locale_id, !is_initial);
+         if (widget)
+                 gtk_list_box_append (GTK_LIST_BOX (priv->language_list), widget);
+ }
+@@ -290,13 +361,54 @@ add_languages (CcLanguageChooser  *chooser,
          gtk_list_box_set_placeholder (GTK_LIST_BOX (priv->language_list), priv->no_results);
  }
  
@@ -299,7 +382,7 @@ index 61756be..05732ba
          initial = cc_common_language_get_initial_languages ();
          add_languages (chooser, locale_ids, initial);
  }
-@@ -395,21 +472,126 @@ show_more (CcLanguageChooser *chooser)
+@@ -395,21 +507,138 @@ show_more (CcLanguageChooser *chooser)
          g_object_notify_by_pspec (G_OBJECT (chooser), obj_props[PROP_SHOWING_EXTRA]);
  }
  
@@ -372,6 +455,11 @@ index 61756be..05732ba
 +  const gchar *locale = task_data;
 +  g_autoptr (GError) error = NULL;
 +
++  if (g_cancellable_set_error_if_cancelled (cancellable, &error)) {
++    g_task_return_error (task, g_steal_pointer(&error));
++    return;
++  }
++
 +  if (!install_language_support (locale, &error)) {
 +    g_task_return_error (task, g_steal_pointer (&error));
 +    return;
@@ -389,13 +477,16 @@ index 61756be..05732ba
 +  g_autoptr (GError) error = NULL;
 +
 +  if (!g_task_propagate_boolean (G_TASK(res), &error)) {
-+    g_warning ("Installation failed: %s", error->message);
-+    sync_all_checkmarks (chooser, false, _("Unable to download additional language packs"));
++    if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
++      sync_all_checkmarks (chooser, false, NULL);
++      sync_all_checkmarks (chooser, false, _("Canceled additional downloads"));
++    } else {
++      g_warning ("Installation failed: %s", error->message);
++      sync_all_checkmarks (chooser, false, _("Unable to download additional language packs"));
++    }
 +  } else {
 +    sync_all_checkmarks (chooser, false, NULL);
 +  } 
-+
-+  gtk_widget_set_sensitive (GTK_WIDGET(chooser), TRUE);
 +}
 +
  static void
@@ -420,10 +511,14 @@ index 61756be..05732ba
 +                locale_for_install = g_strndup(new_locale_id, suffix - new_locale_id);
 +        else
 +                locale_for_install = g_strdup (new_locale_id);
++
++        g_clear_object (&priv->install_cancellable);
++        priv->install_cancellable = g_cancellable_new ();
  
 -        sync_all_checkmarks (chooser);
-+        g_autoptr (GTask) task = g_task_new (chooser, NULL, installation_task_done, chooser);
++        g_autoptr (GTask) task = g_task_new (chooser, priv->install_cancellable, installation_task_done, chooser);
 +        g_task_set_task_data (task, locale_for_install, g_free);
++        g_task_set_return_on_cancel(task, TRUE);
 +        g_task_run_in_thread (task, installation_task_async);
  
 -        g_object_notify_by_pspec (G_OBJECT (chooser), obj_props[PROP_LANGUAGE]);
@@ -431,7 +526,17 @@ index 61756be..05732ba
  }
  
  static gboolean
-@@ -441,10 +623,12 @@ row_activated (GtkListBox        *box,
+@@ -431,6 +660,9 @@ row_activated (GtkListBox        *box,
+         GtkWidget *child;
+         LanguageWidget *widget;
+ 
++        if (priv->install_cancellable)
++            g_cancellable_cancel (priv->install_cancellable);
++
+         if (row == NULL)
+                 return;
+ 
+@@ -441,10 +673,11 @@ row_activated (GtkListBox        *box,
                  widget = get_language_widget (child);
                  if (widget == NULL)
                          return;
@@ -441,13 +546,12 @@ index 61756be..05732ba
 +                if (g_strcmp0 (priv->language, widget->locale_id) == 0) {
 +			            g_idle_add (confirm_choice, chooser);
 +                } else {
-+                        gtk_widget_set_sensitive(GTK_WIDGET(chooser), FALSE);
                          set_locale_id (chooser, widget->locale_id);
 +                }
          }
  }
  
-@@ -477,7 +661,7 @@ cc_language_chooser_constructed (GObject *object)
+@@ -477,7 +710,7 @@ cc_language_chooser_constructed (GObject *object)
          if (priv->language == NULL)
                  priv->language = cc_common_language_get_current_language ();
  
@@ -456,8 +560,42 @@ index 61756be..05732ba
  }
  
  static void
+@@ -559,6 +792,10 @@ cc_language_chooser_class_init (CcLanguageChooserClass *klass)
+                 g_param_spec_string ("showing-extra", "", "", "",
+                                      G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+ 
++        obj_props[PROP_WAITING_FOR_SYNC] =
++                g_param_spec_boolean ("waiting-for-sync", "", "", FALSE,
++                                        G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
++
+         g_object_class_install_properties (object_class, PROP_LAST, obj_props);
+ }
+ 
+@@ -595,3 +832,10 @@ cc_language_chooser_get_showing_extra (CcLanguageChooser *chooser)
+         CcLanguageChooserPrivate *priv = cc_language_chooser_get_instance_private (chooser);
+         return priv->showing_extra;
+ }
++
++gboolean
++cc_language_chooser_get_waiting_for_sync (CcLanguageChooser *chooser)
++{
++        CcLanguageChooserPrivate *priv = cc_language_chooser_get_instance_private (chooser);
++        return priv->waiting_for_sync;
++}
+diff --git a/gnome-initial-setup/pages/language/cc-language-chooser.h b/gnome-initial-setup/pages/language/cc-language-chooser.h
+index 749af78..91b06da 100644
+--- a/gnome-initial-setup/pages/language/cc-language-chooser.h
++++ b/gnome-initial-setup/pages/language/cc-language-chooser.h
+@@ -57,6 +57,7 @@ const gchar * cc_language_chooser_get_language (CcLanguageChooser *chooser);
+ void          cc_language_chooser_set_language (CcLanguageChooser *chooser,
+                                                 const gchar        *language);
+ gboolean      cc_language_chooser_get_showing_extra (CcLanguageChooser *chooser);
++gboolean      cc_language_chooser_get_waiting_for_sync (CcLanguageChooser *chooser);
+ 
+ G_END_DECLS
+ 
 diff --git a/gnome-initial-setup/pages/language/gis-language-page.c b/gnome-initial-setup/pages/language/gis-language-page.c
-index fe5fed9..98013ae 100644
+index fe5fed9..1c72674 100644
 --- a/gnome-initial-setup/pages/language/gis-language-page.c
 +++ b/gnome-initial-setup/pages/language/gis-language-page.c
 @@ -24,6 +24,8 @@
@@ -474,20 +612,20 @@ index fe5fed9..98013ae 100644
  G_DEFINE_TYPE_WITH_PRIVATE (GisLanguagePage, gis_language_page, GIS_TYPE_PAGE);
  
 +static void
-+language_chooser_sensitive_changed (GObject      *object,
-+                                    GParamSpec   *pspec,
-+                                    gpointer      user_data)
++language_chooser_waiting_for_sync_changed (GObject      *object,
++                                            GParamSpec   *pspec,
++                                            gpointer      user_data)
 +{
 +  GisLanguagePage *page = GIS_LANGUAGE_PAGE (user_data);
 +  GisLanguagePagePrivate *priv = gis_language_page_get_instance_private (page);
-+  gboolean complete = gtk_widget_get_sensitive (priv->language_chooser);
++  gboolean complete = !cc_language_chooser_get_waiting_for_sync(CC_LANGUAGE_CHOOSER(priv->language_chooser));
 +  gis_page_set_complete (GIS_PAGE (page), complete);
 +}
 +
  static void
  set_localed_locale (GisLanguagePage *self)
  {
-@@ -250,8 +263,13 @@ gis_language_page_constructed (GObject *object)
+@@ -250,8 +263,14 @@ gis_language_page_constructed (GObject *object)
                          object);
        g_object_unref (bus);
      }
@@ -495,11 +633,12 @@ index fe5fed9..98013ae 100644
 -  gis_page_set_complete (GIS_PAGE (page), TRUE);
 +  
 +  /* Block the user from advancing until the language chooser has completed
-+  *  updating the locale.
++  * updating the locale.
 +  */
-+  gis_page_set_complete (GIS_PAGE (page), gtk_widget_get_sensitive (priv->language_chooser));
-+  g_signal_connect (priv->language_chooser, "notify::sensitive",
-+                    G_CALLBACK (language_chooser_sensitive_changed), page);
++
++  gis_page_set_complete (GIS_PAGE (page), !cc_language_chooser_get_waiting_for_sync(CC_LANGUAGE_CHOOSER(priv->language_chooser)));
++  g_signal_connect (priv->language_chooser, "notify::waiting-for-sync",
++                    G_CALLBACK (language_chooser_waiting_for_sync_changed), page);
    gtk_widget_set_visible (GTK_WIDGET (page), TRUE);
  }
  
