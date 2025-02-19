@@ -24,16 +24,15 @@ GIS attempts to install language packs. If language pack installation fails,
 a warning is shown to the user and the locale is set. While waiting the user
 has the option to cancel the installation of additional lang packs.
 
-
 Additional PR style updates
 ---
  data/20-gnome-initial-setup.rules.in               |  10 +
- gnome-initial-setup/gis-pkexec.c                   |  49 ++++
- gnome-initial-setup/gis-pkexec.h                   |   4 +
- .../pages/language/cc-language-chooser.c           | 278 +++++++++++++++++++--
+ gnome-initial-setup/gis-pkexec.c                   |  56 ++++
+ gnome-initial-setup/gis-pkexec.h                   |   5 +
+ .../pages/language/cc-language-chooser.c           | 281 +++++++++++++++++++--
  .../pages/language/cc-language-chooser.h           |   1 +
- .../pages/language/gis-language-page.c             |  23 +-
- 6 files changed, 346 insertions(+), 19 deletions(-)
+ .../pages/language/gis-language-page.c             |  24 +-
+ 6 files changed, 358 insertions(+), 19 deletions(-)
  mode change 100644 => 100755 gnome-initial-setup/gis-pkexec.c
  mode change 100644 => 100755 gnome-initial-setup/pages/language/cc-language-chooser.c
 
@@ -61,7 +60,7 @@ index 02fd21d..d769020 100644
 diff --git a/gnome-initial-setup/gis-pkexec.c b/gnome-initial-setup/gis-pkexec.c
 old mode 100644
 new mode 100755
-index 9e1bfa9..e2d2b9b
+index 9e1bfa9..014ba52
 --- a/gnome-initial-setup/gis-pkexec.c
 +++ b/gnome-initial-setup/gis-pkexec.c
 @@ -24,6 +24,7 @@
@@ -81,12 +80,12 @@ index 9e1bfa9..e2d2b9b
    process = g_subprocess_launcher_spawnv (launcher, argv, error);
  
    if (!process) {
-@@ -57,3 +60,49 @@ gis_pkexec (const gchar  *command,
+@@ -57,3 +60,56 @@ gis_pkexec (const gchar  *command,
  
    return TRUE;
  }
 +
-+gboolean apt_get_install(GPtrArray *packages, GError **error) {
++gboolean apt_get_install(GPtrArray *packages, GError **error, GCancellable *cancellable) {
 +  g_autoptr(GSubprocessLauncher) launcher = NULL;
 +  g_autoptr(GSubprocess) process = NULL;
 +
@@ -100,12 +99,12 @@ index 9e1bfa9..e2d2b9b
 +  g_autoptr (GPtrArray) argv = g_ptr_array_new_null_terminated (total, g_free, TRUE);
 +
 +  g_ptr_array_add (argv, g_strdup ("/usr/bin/pkexec"));
-+  g_ptr_array_add (argv, g_strdup ("apt-get"));
++  g_ptr_array_add (argv, g_strdup ("/usr/bin/apt-get"));
 +  g_ptr_array_add (argv, g_strdup ("install"));
 +  g_ptr_array_add (argv, g_strdup ("-y"));
-+  for (int i = 0; i < packages->len; i++) {
-+    gchar *pkg = g_ptr_array_index (packages, i);
-+    g_ptr_array_add (argv, g_strdup (pkg));
++
++  while (packages->len) {
++    g_ptr_array_add (argv, g_ptr_array_steal_index_fast (packages, 0));
 +  }
 +
 +  launcher = g_subprocess_launcher_new (G_SUBPROCESS_FLAGS_NONE);
@@ -114,7 +113,9 @@ index 9e1bfa9..e2d2b9b
 +  g_subprocess_launcher_setenv (launcher, "DEBCONF_NONINTERACTIVE_SEEN", "true", TRUE);
 +  g_subprocess_launcher_setenv (launcher, "DEBIAN_FRONTEND", "noninteractive", TRUE);
 +
-+  gis_pkexec ("apt-get", "update", NULL, NULL);
++  if (!gis_pkexec ("/usr/bin/apt-get", "update", NULL, error))
++    FALSE;
++
 +  process =
 +      g_subprocess_launcher_spawnv (launcher, (const gchar *const *) argv->pdata, error);
 +
@@ -129,19 +130,25 @@ index 9e1bfa9..e2d2b9b
 +    return FALSE;
 +  }
 +
++  if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
++    g_prefix_error_literal (error, "User canceled subprocess: ");
++    return FALSE;
++  }
++
 +  return TRUE;
 +}
 diff --git a/gnome-initial-setup/gis-pkexec.h b/gnome-initial-setup/gis-pkexec.h
-index ff5a88c..ad57d99 100644
+index ff5a88c..7c31eab 100644
 --- a/gnome-initial-setup/gis-pkexec.h
 +++ b/gnome-initial-setup/gis-pkexec.h
-@@ -36,6 +36,10 @@ gis_pkexec (const gchar  *command,
+@@ -36,6 +36,11 @@ gis_pkexec (const gchar  *command,
              const gchar  *user,
              GError      **error);
  
 +gboolean
 +apt_get_install (GPtrArray *packages, 
-+                 GError **error);
++                 GError **error,
++                 GCancellable *cancellable);
 +
  G_END_DECLS
  
@@ -149,7 +156,7 @@ index ff5a88c..ad57d99 100644
 diff --git a/gnome-initial-setup/pages/language/cc-language-chooser.c b/gnome-initial-setup/pages/language/cc-language-chooser.c
 old mode 100644
 new mode 100755
-index 61756be..16ea6b7
+index 61756be..37fb73c
 --- a/gnome-initial-setup/pages/language/cc-language-chooser.c
 +++ b/gnome-initial-setup/pages/language/cc-language-chooser.c
 @@ -21,6 +21,8 @@
@@ -207,7 +214,7 @@ index 61756be..16ea6b7
  
          gchar *locale_id;
          gchar *locale_name;
-@@ -113,8 +124,18 @@ language_widget_free (gpointer data)
+@@ -113,8 +124,17 @@ language_widget_free (gpointer data)
          g_free (widget);
  }
  
@@ -216,8 +223,7 @@ index 61756be..16ea6b7
 +                          CcLanguageChooser  *chooser)
 +{
 +    CcLanguageChooserPrivate *priv = cc_language_chooser_get_instance_private (chooser);
-+    if (priv->install_cancellable)
-+        g_cancellable_cancel (priv->install_cancellable);
++    g_cancellable_cancel (priv->install_cancellable);
 +}
 +
  static GtkWidget *
@@ -227,7 +233,7 @@ index 61756be..16ea6b7
                       gboolean    is_extra)
  {
  	GtkWidget *label;
-@@ -155,8 +176,22 @@ language_widget_new (const char *locale_id,
+@@ -155,8 +175,22 @@ language_widget_new (const char *locale_id,
          gtk_label_set_xalign (GTK_LABEL (label), 0);
          gtk_box_append (GTK_BOX (widget->box), label);
  
@@ -251,7 +257,7 @@ index 61756be..16ea6b7
  
          if (country_name) {
                  label = gtk_label_new (country_name);
-@@ -179,6 +214,10 @@ language_widget_new (const char *locale_id,
+@@ -179,6 +213,10 @@ language_widget_new (const char *locale_id,
          g_object_set_data_full (G_OBJECT (widget->box), "language-widget", widget,
                                  language_widget_free);
  
@@ -262,7 +268,7 @@ index 61756be..16ea6b7
          g_free (language);
          g_free (language_name);
          g_free (country);
-@@ -188,11 +227,16 @@ language_widget_new (const char *locale_id,
+@@ -188,11 +226,16 @@ language_widget_new (const char *locale_id,
  }
  
  static void
@@ -280,7 +286,7 @@ index 61756be..16ea6b7
          row = gtk_widget_get_first_child (priv->language_list);
          while (row) {
                  LanguageWidget *widget;
-@@ -206,8 +250,35 @@ sync_all_checkmarks (CcLanguageChooser *chooser)
+@@ -206,8 +249,35 @@ sync_all_checkmarks (CcLanguageChooser *chooser)
                          return;
  
                  should_be_visible = g_str_equal (widget->locale_id, priv->language);
@@ -317,7 +323,7 @@ index 61756be..16ea6b7
                  row = gtk_widget_get_next_sibling (row);
          }
  }
-@@ -257,7 +328,7 @@ add_one_language (CcLanguageChooser *chooser,
+@@ -257,7 +327,7 @@ add_one_language (CcLanguageChooser *chooser,
  		return;
  	}
  
@@ -326,11 +332,11 @@ index 61756be..16ea6b7
          if (widget)
                  gtk_list_box_append (GTK_LIST_BOX (priv->language_list), widget);
  }
-@@ -290,13 +361,54 @@ add_languages (CcLanguageChooser  *chooser,
+@@ -290,13 +360,54 @@ add_languages (CcLanguageChooser  *chooser,
          gtk_list_box_set_placeholder (GTK_LIST_BOX (priv->language_list), priv->no_results);
  }
  
-+gchar **
++static GStrv
 +parse_language_list(void)
 +{
 +    const gchar *filepath = LANGUAGE_LIST_PATH;
@@ -382,65 +388,72 @@ index 61756be..16ea6b7
          initial = cc_common_language_get_initial_languages ();
          add_languages (chooser, locale_ids, initial);
  }
-@@ -395,21 +507,138 @@ show_more (CcLanguageChooser *chooser)
+@@ -395,21 +506,143 @@ show_more (CcLanguageChooser *chooser)
          g_object_notify_by_pspec (G_OBJECT (chooser), obj_props[PROP_SHOWING_EXTRA]);
  }
  
-+static gchar *
-+get_lang_support_output(const gchar *locale)
++static GPtrArray *
++get_lang_support_packages_for_locale(const gchar *locale, GError **error, GCancellable *cancellable)
 +{
-+  g_autoptr(GSubprocess) subprocess = NULL;
-+  g_autoptr(GError) error = NULL;
++  g_autoptr (GSubprocess) subprocess = NULL;
++  g_autoptr (GError) local_error = NULL;
 +  g_autofree gchar *stdout_buf = NULL;
 +  g_autofree gchar *stderr_buf = NULL;
 +
 +  subprocess = g_subprocess_new(
 +    G_SUBPROCESS_FLAGS_STDOUT_PIPE | G_SUBPROCESS_FLAGS_STDERR_PIPE,
-+    &error,
++    &local_error,
 +    "/usr/bin/check-language-support",
 +    "-l",
 +    locale,
 +    NULL
 +  );
 +
-+  if (!g_subprocess_communicate_utf8(subprocess, NULL, NULL, &stdout_buf, &stderr_buf, &error)) {
-+      g_warning("Failed to communicate with subprocess: %s", error->message);
-+      return NULL;
++  if (local_error) {
++    g_propagate_error (error, g_steal_pointer(&local_error));
++    return NULL;
 +  }
++
++  if (!g_subprocess_communicate_utf8 (subprocess, NULL, cancellable, &stdout_buf, &stderr_buf, error)) {
++    g_prefix_error_literal (&local_error, "Failed to communicate with check-language-support: ");
++    g_propagate_error (error, g_steal_pointer (&local_error));
++    return NULL;
++  }
++
++  if (!g_subprocess_wait_check(subprocess, cancellable, error))
++    return NULL;
 +
 +  if (stderr_buf && *stderr_buf != '\0') {
-+    g_warning("check-language-support stderr: %s", stderr_buf);
++    g_warning ("check-language-support stderr: %s", stderr_buf);
 +  }
 +
-+  return g_steal_pointer (&stdout_buf);
++  if (!stdout_buf || *stdout_buf == '\0') {
++    return g_ptr_array_new_with_free_func (g_free);
++  }
++
++  g_auto (GStrv) packages_split = g_strsplit (g_strstrip (stdout_buf), " ", -1);
++  return g_ptr_array_new_take_null_terminated ((gpointer *) g_steal_pointer (&packages_split), g_free);
 +}
 +
-+gboolean
-+install_language_support(const gchar *locale, GError **error) {
-+  g_autofree gchar *packages_str = get_lang_support_output(locale);
++static gboolean
++install_language_support(const gchar *locale, GError **error, GCancellable *cancellable)
++{
++  g_autoptr (GError) local_error = NULL;
++  g_autoptr (GPtrArray) packages_array = get_lang_support_packages_for_locale(locale, &local_error, cancellable);
 +
-+  if (!packages_str || *packages_str == '\0') {
-+     g_warning("No packages to install for locale: %s", locale);
-+     return TRUE;
++  if (local_error) {
++    g_propagate_error (error, g_steal_pointer(&local_error));
++    return FALSE;
 +  }
 +
-+  g_auto (GStrv) packages_split = g_strsplit(packages_str, " ", -1);
-+  g_autoptr (GPtrArray) packages_array = g_ptr_array_new_with_free_func(g_free);
-+
-+  for (int i = 0; packages_split[i] != NULL; i++) {
-+     gchar *trimmed = g_strstrip(packages_split[i]);
-+     if (*trimmed != '\0')
-+       g_ptr_array_add (packages_array, g_strdup(trimmed));
++  if (!packages_array || packages_array->len == 0) {
++    g_warning ("No valid packages to install for locale: %s", locale);
++    return TRUE;
 +  }
 +
-+  if (packages_array->len == 0) {
-+     g_warning ("No valid packages to install for locale: %s", locale);
-+     return TRUE;
-+  }
-+
-+  if (!apt_get_install (packages_array, error)) {
-+     g_prefix_error_literal (error, "Error installing language support: ");
-+     return FALSE;
++  if (!apt_get_install (packages_array, error, cancellable)) {
++    g_prefix_error_literal (error, "Error installing language support: ");
++    return FALSE;
 +  }
 +
 +  return TRUE;
@@ -460,7 +473,7 @@ index 61756be..16ea6b7
 +    return;
 +  }
 +
-+  if (!install_language_support (locale, &error)) {
++  if (!install_language_support (locale, &error, cancellable)) {
 +    g_task_return_error (task, g_steal_pointer (&error));
 +    return;
 +  }
@@ -478,14 +491,14 @@ index 61756be..16ea6b7
 +
 +  if (!g_task_propagate_boolean (G_TASK(res), &error)) {
 +    if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
-+      sync_all_checkmarks (chooser, false, NULL);
-+      sync_all_checkmarks (chooser, false, _("Canceled additional downloads"));
++      sync_all_checkmarks (chooser, FALSE, _("Canceled additional downloads"));
 +    } else {
 +      g_warning ("Installation failed: %s", error->message);
-+      sync_all_checkmarks (chooser, false, _("Unable to download additional language packs"));
++      sync_all_checkmarks (chooser, FALSE, _("Unable to download additional language packs"));
 +    }
 +  } else {
-+    sync_all_checkmarks (chooser, false, NULL);
++    g_object_notify_by_pspec (G_OBJECT(chooser), obj_props[PROP_LANGUAGE]);
++    sync_all_checkmarks (chooser, FALSE, NULL);
 +  } 
 +}
 +
@@ -503,7 +516,7 @@ index 61756be..16ea6b7
 -        priv->language = g_strdup (new_locale_id);
 +        g_set_str (&priv->language, new_locale_id);
 +
-+        sync_all_checkmarks (chooser, true, NULL);
++        sync_all_checkmarks (chooser, TRUE, NULL);
 +
 +        gchar *locale_for_install = NULL;
 +        char *suffix = strchr(new_locale_id, '.');
@@ -511,32 +524,29 @@ index 61756be..16ea6b7
 +                locale_for_install = g_strndup(new_locale_id, suffix - new_locale_id);
 +        else
 +                locale_for_install = g_strdup (new_locale_id);
-+
+ 
+-        sync_all_checkmarks (chooser);
 +        g_clear_object (&priv->install_cancellable);
 +        priv->install_cancellable = g_cancellable_new ();
  
--        sync_all_checkmarks (chooser);
+-        g_object_notify_by_pspec (G_OBJECT (chooser), obj_props[PROP_LANGUAGE]);
 +        g_autoptr (GTask) task = g_task_new (chooser, priv->install_cancellable, installation_task_done, chooser);
 +        g_task_set_task_data (task, locale_for_install, g_free);
 +        g_task_set_return_on_cancel(task, TRUE);
 +        g_task_run_in_thread (task, installation_task_async);
- 
--        g_object_notify_by_pspec (G_OBJECT (chooser), obj_props[PROP_LANGUAGE]);
-+        g_object_notify_by_pspec (G_OBJECT(chooser), obj_props[PROP_LANGUAGE]);
  }
  
  static gboolean
-@@ -431,6 +660,9 @@ row_activated (GtkListBox        *box,
+@@ -431,6 +664,8 @@ row_activated (GtkListBox        *box,
          GtkWidget *child;
          LanguageWidget *widget;
  
-+        if (priv->install_cancellable)
-+            g_cancellable_cancel (priv->install_cancellable);
++        g_cancellable_cancel (priv->install_cancellable);
 +
          if (row == NULL)
                  return;
  
-@@ -441,10 +673,11 @@ row_activated (GtkListBox        *box,
+@@ -441,10 +676,11 @@ row_activated (GtkListBox        *box,
                  widget = get_language_widget (child);
                  if (widget == NULL)
                          return;
@@ -551,16 +561,16 @@ index 61756be..16ea6b7
          }
  }
  
-@@ -477,7 +710,7 @@ cc_language_chooser_constructed (GObject *object)
+@@ -477,7 +713,7 @@ cc_language_chooser_constructed (GObject *object)
          if (priv->language == NULL)
                  priv->language = cc_common_language_get_current_language ();
  
 -        sync_all_checkmarks (chooser);
-+        sync_all_checkmarks (chooser, false, NULL);
++        sync_all_checkmarks (chooser, FALSE, NULL);
  }
  
  static void
-@@ -559,6 +792,10 @@ cc_language_chooser_class_init (CcLanguageChooserClass *klass)
+@@ -559,6 +795,10 @@ cc_language_chooser_class_init (CcLanguageChooserClass *klass)
                  g_param_spec_string ("showing-extra", "", "", "",
                                       G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
  
@@ -571,7 +581,7 @@ index 61756be..16ea6b7
          g_object_class_install_properties (object_class, PROP_LAST, obj_props);
  }
  
-@@ -595,3 +832,10 @@ cc_language_chooser_get_showing_extra (CcLanguageChooser *chooser)
+@@ -595,3 +835,10 @@ cc_language_chooser_get_showing_extra (CcLanguageChooser *chooser)
          CcLanguageChooserPrivate *priv = cc_language_chooser_get_instance_private (chooser);
          return priv->showing_extra;
  }
@@ -595,19 +605,20 @@ index 749af78..91b06da 100644
  G_END_DECLS
  
 diff --git a/gnome-initial-setup/pages/language/gis-language-page.c b/gnome-initial-setup/pages/language/gis-language-page.c
-index fe5fed9..1c72674 100644
+index fe5fed9..4c85791 100644
 --- a/gnome-initial-setup/pages/language/gis-language-page.c
 +++ b/gnome-initial-setup/pages/language/gis-language-page.c
-@@ -24,6 +24,8 @@
+@@ -24,6 +24,9 @@
  
  /* Language page {{{1 */
  
++#include "glib-object.h"
 +#include "glib.h"
 +#include <unistd.h>
  #define PAGE_ID "language"
  
  #define GNOME_SYSTEM_LOCALE_DIR "org.gnome.system.locale"
-@@ -56,6 +58,17 @@ typedef struct _GisLanguagePagePrivate GisLanguagePagePrivate;
+@@ -56,6 +59,17 @@ typedef struct _GisLanguagePagePrivate GisLanguagePagePrivate;
  
  G_DEFINE_TYPE_WITH_PRIVATE (GisLanguagePage, gis_language_page, GIS_TYPE_PAGE);
  
@@ -625,7 +636,7 @@ index fe5fed9..1c72674 100644
  static void
  set_localed_locale (GisLanguagePage *self)
  {
-@@ -250,8 +263,14 @@ gis_language_page_constructed (GObject *object)
+@@ -250,8 +264,14 @@ gis_language_page_constructed (GObject *object)
                          object);
        g_object_unref (bus);
      }
@@ -637,8 +648,8 @@ index fe5fed9..1c72674 100644
 +  */
 +
 +  gis_page_set_complete (GIS_PAGE (page), !cc_language_chooser_get_waiting_for_sync(CC_LANGUAGE_CHOOSER(priv->language_chooser)));
-+  g_signal_connect (priv->language_chooser, "notify::waiting-for-sync",
-+                    G_CALLBACK (language_chooser_waiting_for_sync_changed), page);
++  g_signal_connect_object (priv->language_chooser, "notify::waiting-for-sync",
++                    G_CALLBACK (language_chooser_waiting_for_sync_changed), page, 0);
    gtk_widget_set_visible (GTK_WIDGET (page), TRUE);
  }
  
