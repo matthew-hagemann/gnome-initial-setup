@@ -60,6 +60,7 @@ Depends: ${shlibs:Depends},
 Recommends: accountsservice,
             geoclue-2.0 (>= 2.6.0),
             gnome-keyring,
+            language-selector-common,
             ${malcontent:Recommends}
 Suggests: gdm3,
 Description: Initial GNOME system setup helper
