@@ -12,7 +12,7 @@ dynamically installing language packs for the user during setup.
 
 Added parse_language_list function to parse the static list of languages in
 /usr/share/language-selector/data/languagelist which is now used to populate
-the language chooser.
+the language chooser. Gnome lang packs are used as a fallback.
 
 Added the ability for GIS to determine what outstanding language packs need to
 be installed via check-language-support -l and to use that output to install
@@ -25,14 +25,17 @@ a warning is shown to the user and the locale is set. While waiting the user
 has the option to cancel the installation of additional lang packs.
 
 Additional PR style updates
+
+
+PR code styple cleanup
 ---
  data/20-gnome-initial-setup.rules.in               |  10 +
  gnome-initial-setup/gis-pkexec.c                   |  56 ++++
  gnome-initial-setup/gis-pkexec.h                   |   5 +
- .../pages/language/cc-language-chooser.c           | 281 +++++++++++++++++++--
+ .../pages/language/cc-language-chooser.c           | 285 +++++++++++++++++++--
  .../pages/language/cc-language-chooser.h           |   1 +
  .../pages/language/gis-language-page.c             |  24 +-
- 6 files changed, 358 insertions(+), 19 deletions(-)
+ 6 files changed, 362 insertions(+), 19 deletions(-)
  mode change 100644 => 100755 gnome-initial-setup/gis-pkexec.c
  mode change 100644 => 100755 gnome-initial-setup/pages/language/cc-language-chooser.c
 
@@ -156,7 +159,7 @@ index ff5a88c..7c31eab 100644
 diff --git a/gnome-initial-setup/pages/language/cc-language-chooser.c b/gnome-initial-setup/pages/language/cc-language-chooser.c
 old mode 100644
 new mode 100755
-index 61756be..37fb73c
+index 61756be..dff3e6d
 --- a/gnome-initial-setup/pages/language/cc-language-chooser.c
 +++ b/gnome-initial-setup/pages/language/cc-language-chooser.c
 @@ -21,6 +21,8 @@
@@ -332,7 +335,7 @@ index 61756be..37fb73c
          if (widget)
                  gtk_list_box_append (GTK_LIST_BOX (priv->language_list), widget);
  }
-@@ -290,13 +360,54 @@ add_languages (CcLanguageChooser  *chooser,
+@@ -290,13 +360,58 @@ add_languages (CcLanguageChooser  *chooser,
          gtk_list_box_set_placeholder (GTK_LIST_BOX (priv->language_list), priv->no_results);
  }
  
@@ -381,14 +384,18 @@ index 61756be..37fb73c
  
 -        locale_ids = gnome_get_all_locales ();
 +        /* Make use of the static language list in 
-+         * /usr/share/language-selector/data/languagelist
++         * /usr/share/language-selector/data/languagelist. If not present, fall
++         * back to using gnome_get_all_locales().
 +         */
-+        locale_ids = parse_language_list();
++        if (!(locale_ids = parse_language_list ())) {
++                g_warn_if_reached ();
++                locale_ids = gnome_get_all_locales ();
++        }
 +
          initial = cc_common_language_get_initial_languages ();
          add_languages (chooser, locale_ids, initial);
  }
-@@ -395,21 +506,143 @@ show_more (CcLanguageChooser *chooser)
+@@ -395,21 +510,143 @@ show_more (CcLanguageChooser *chooser)
          g_object_notify_by_pspec (G_OBJECT (chooser), obj_props[PROP_SHOWING_EXTRA]);
  }
  
@@ -537,7 +544,7 @@ index 61756be..37fb73c
  }
  
  static gboolean
-@@ -431,6 +664,8 @@ row_activated (GtkListBox        *box,
+@@ -431,6 +668,8 @@ row_activated (GtkListBox        *box,
          GtkWidget *child;
          LanguageWidget *widget;
  
@@ -546,7 +553,7 @@ index 61756be..37fb73c
          if (row == NULL)
                  return;
  
-@@ -441,10 +676,11 @@ row_activated (GtkListBox        *box,
+@@ -441,10 +680,11 @@ row_activated (GtkListBox        *box,
                  widget = get_language_widget (child);
                  if (widget == NULL)
                          return;
@@ -561,7 +568,7 @@ index 61756be..37fb73c
          }
  }
  
-@@ -477,7 +713,7 @@ cc_language_chooser_constructed (GObject *object)
+@@ -477,7 +717,7 @@ cc_language_chooser_constructed (GObject *object)
          if (priv->language == NULL)
                  priv->language = cc_common_language_get_current_language ();
  
@@ -570,7 +577,7 @@ index 61756be..37fb73c
  }
  
  static void
-@@ -559,6 +795,10 @@ cc_language_chooser_class_init (CcLanguageChooserClass *klass)
+@@ -559,6 +799,10 @@ cc_language_chooser_class_init (CcLanguageChooserClass *klass)
                  g_param_spec_string ("showing-extra", "", "", "",
                                       G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
  
@@ -581,7 +588,7 @@ index 61756be..37fb73c
          g_object_class_install_properties (object_class, PROP_LAST, obj_props);
  }
  
-@@ -595,3 +835,10 @@ cc_language_chooser_get_showing_extra (CcLanguageChooser *chooser)
+@@ -595,3 +839,10 @@ cc_language_chooser_get_showing_extra (CcLanguageChooser *chooser)
          CcLanguageChooserPrivate *priv = cc_language_chooser_get_instance_private (chooser);
          return priv->showing_extra;
  }
