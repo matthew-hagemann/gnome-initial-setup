@@ -1,18 +1,20 @@
 gnome-initial-setup (48~beta-0ubuntu2) UNRELEASED; urgency=medium
 
   * debian/patches/Dynamic-lang-pack-installation-support.patch
-    - Adding a polkit rule to allow the gnome initial setup user to run pkexec 
-      if the program it is running is apt 
-    - Adding a function apt_get_install that takes in a list of packages and 
+    - Adding a polkit rule to allow the gnome initial setup user to run pkexec
+      if the program it is running is apt-get.
+    - Adding a function apt_get_install that takes in a list of packages and
       attempts to install them.
-    - Added parse_language_list function to parse the static list of languages 
-      in /usr/share/language-selector/data/languagelist which is now used to 
+    - Added parse_language_list function to parse the static list of languages
+      in /usr/share/language-selector/data/languagelist which is now used to
       populate the language chooser.
-    - Added the ability for GIS to determine what outstanding language packs 
-      need to be installed via check-language-support -l and to use that output 
-      to install outstanding lang packs via a g_task.
+    - Added the ability to g-i-s to determine what outstanding language packs
+      need to be installed via check-language-support -l and to use that output
+      to install outstanding lang packs via an async GTask.
     - Added a spinner to the language chooser for when a language has been
-      selected and packs are being installed
+      selected and packs are being installed.
+    - Added a Cancel button to be able to cancel the request.
+  * debian/control: Add language-selector-common to Reccommends
 
  -- Matthew Hagemann <matt.hagemann@canonical.com>  Fri, 14 Feb 2025 14:42:29 +0200
 
