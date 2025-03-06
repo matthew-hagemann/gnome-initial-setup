@@ -41,9 +41,9 @@ everytime it is called to install a lang pack.
  gnome-initial-setup/gis-pkexec.h                   |   6 +
  .../pages/language/cc-language-chooser.c           |  47 ++++-
  .../pages/software/gis-software-page.c             |   2 +-
- .../pages/summary/gis-summary-page.c               | 232 +++++++++++++++++++--
+ .../pages/summary/gis-summary-page.c               | 228 +++++++++++++++++++--
  .../pages/summary/gis-summary-page.ui              |  53 ++++-
- 8 files changed, 386 insertions(+), 30 deletions(-)
+ 8 files changed, 382 insertions(+), 30 deletions(-)
 
 diff --git a/data/20-gnome-initial-setup.rules.in b/data/20-gnome-initial-setup.rules.in
 index 02fd21d..d769020 100644
@@ -289,7 +289,7 @@ index 0e2278f..6892365 100644
              g_warning ("%s failed: %s", program, error->message);
          }
 diff --git a/gnome-initial-setup/pages/summary/gis-summary-page.c b/gnome-initial-setup/pages/summary/gis-summary-page.c
-index ba9e1fb..0a2974e 100644
+index ba9e1fb..f6864b2 100644
 --- a/gnome-initial-setup/pages/summary/gis-summary-page.c
 +++ b/gnome-initial-setup/pages/summary/gis-summary-page.c
 @@ -21,6 +21,9 @@
@@ -319,7 +319,7 @@ index ba9e1fb..0a2974e 100644
  };
  typedef struct _GisSummaryPagePrivate GisSummaryPagePrivate;
  
-@@ -195,32 +204,128 @@ done_cb (GtkButton *button, GisSummaryPage *page)
+@@ -195,32 +204,122 @@ done_cb (GtkButton *button, GisSummaryPage *page)
      }
  }
  
@@ -412,10 +412,10 @@ index ba9e1fb..0a2974e 100644
 -      adw_message_dialog_add_response (ADW_MESSAGE_DIALOG (dialog), "close", _("Close"));
 -      /* FIXME: Provide some more options for debugging or recovery */
 +static gboolean
-+check_network_connection(void)
++check_network_connection (void)
 +{
-+    g_autoptr (GNetworkMonitor) monitor = g_network_monitor_get_default();
-+    return g_network_monitor_get_network_available(monitor);
++    g_autoptr (GNetworkMonitor) monitor = g_network_monitor_get_default ();
++    return g_network_monitor_get_network_available (monitor);
 +}
  
 -      gtk_window_present (GTK_WINDOW (dialog));
@@ -429,12 +429,6 @@ index ba9e1fb..0a2974e 100644
 +        const gchar *locale = task_data;
 +        g_autoptr (GError) error = NULL;
 +        
-+        /* Skip installation attempt if there is no active connection. */
-+        if (!check_network_connection()) {
-+                g_task_return_boolean(task, TRUE);
-+                return;
-+        }
-+
 +        if (g_cancellable_set_error_if_cancelled (cancellable, &error)) {
 +                g_task_return_error (task, g_steal_pointer(&error));
 +                return;
@@ -464,11 +458,11 @@ index ba9e1fb..0a2974e 100644
 +        }
  
 -  gtk_widget_grab_focus (priv->start_button);
-+        gtk_stack_set_visible_child(GTK_STACK(priv->status_stack), priv->start_button);
++        gtk_stack_set_visible_child (GTK_STACK (priv->status_stack), priv->start_button);
  }
  
  static void
-@@ -248,6 +353,89 @@ update_distro_name (GisSummaryPage *page)
+@@ -248,6 +347,91 @@ update_distro_name (GisSummaryPage *page)
    g_free (text);
  }
  
@@ -483,8 +477,8 @@ index ba9e1fb..0a2974e 100644
 +
 +        if (g_task_propagate_boolean (G_TASK (res), &error)) {
 +                update_status_stack (page, NULL);
-+                update_distro_name(page);
-+                adw_status_page_set_title(priv->status_page, _("All done!"));
++                update_distro_name (page);
++                adw_status_page_set_title (priv->status_page, _("All done!"));
 +                return;
 +        }
 +
@@ -507,13 +501,6 @@ index ba9e1fb..0a2974e 100644
 +  GisSummaryPagePrivate *priv = gis_summary_page_get_instance_private (summary);
 +  g_autoptr(GError) local_error = NULL;
 +
-+  adw_status_page_set_description(priv->status_page, "");
-+
-+  adw_status_page_set_title(priv->status_page, _("Nearly done"));
-+
-+  gtk_stack_set_visible_child_name(GTK_STACK(priv->status_stack), "spinner_box");
-+  gtk_spinner_start (GTK_SPINNER (priv->spinner));
-+
 +  if (!gis_driver_save_data (GIS_PAGE (page)->driver, &local_error))
 +    {
 +      g_warning ("Error saving data: %s", local_error->message);
@@ -532,17 +519,26 @@ index ba9e1fb..0a2974e 100644
 +                                   &priv->user_account,
 +                                   &priv->user_password);
 +
-+  g_cancellable_cancel (priv->install_cancellable);
-+  priv->install_cancellable = g_cancellable_new ();
++  /* Skip installation attempt if there is no active connection. */
++  if (check_network_connection ()) {
++    adw_status_page_set_description (priv->status_page, "");
++    adw_status_page_set_title (priv->status_page, _("Nearly done"));
++    gtk_stack_set_visible_child_name (GTK_STACK(priv->status_stack), "spinner_box");
++    gtk_spinner_start (GTK_SPINNER (priv->spinner));
 +
-+  g_autoptr (GTask) task = g_task_new (page, priv->install_cancellable,
++
++    g_cancellable_cancel (priv->install_cancellable);
++    priv->install_cancellable = g_cancellable_new ();
++
++    g_autoptr (GTask) task = g_task_new (page, priv->install_cancellable,
 +                                             installation_task_done, page);
 +
-+  GisDriver *driver = GIS_PAGE(page)->driver;
-+  const char *locale = gis_driver_get_user_language(driver);
-+  g_task_set_task_data (task, g_strdup (locale), g_free);
-+  g_task_set_return_on_cancel (task, TRUE);
-+  g_task_run_in_thread (task, installation_task_async);
++    GisDriver *driver = GIS_PAGE(page)->driver;
++    const char *locale = gis_driver_get_user_language(driver);
++    g_task_set_task_data (task, g_strdup (locale), g_free);
++    g_task_set_return_on_cancel (task, TRUE);
++    g_task_run_in_thread (task, installation_task_async);
++  }
 +}
 +
 +static void
@@ -558,7 +554,7 @@ index ba9e1fb..0a2974e 100644
  static void
  gis_summary_page_constructed (GObject *object)
  {
-@@ -268,6 +456,7 @@ gis_summary_page_constructed (GObject *object)
+@@ -268,6 +452,7 @@ gis_summary_page_constructed (GObject *object)
  
    update_distro_name (page);
    g_signal_connect (priv->start_button, "clicked", G_CALLBACK (done_cb), page);
@@ -566,7 +562,7 @@ index ba9e1fb..0a2974e 100644
  
    gis_page_set_complete (GIS_PAGE (page), TRUE);
  
-@@ -291,6 +480,9 @@ gis_summary_page_class_init (GisSummaryPageClass *klass)
+@@ -291,6 +476,9 @@ gis_summary_page_class_init (GisSummaryPageClass *klass)
  
    gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisSummaryPage, start_button);
    gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisSummaryPage, status_page);
