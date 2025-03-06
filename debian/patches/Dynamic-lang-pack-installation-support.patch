@@ -27,6 +27,13 @@ attempted if there is no active network connection.
 Additional PR style updates
 
 PR code style cleanup
+
+Added a ulimit to set the max file descriptors to a reasonable max in the
+wrapper script. As of 24.10, systemd is no longer compile for Ubuntu using the
+-Dbump-proc-sys-fs-nr-open=false flag. The absence of this flag causes systemd
+to set file descriptor limits to their maximum. This causing pkexec to sit
+attempting to close 1073741816 file descriptors which takes several minutes
+everytime it is called to install a lang pack.
 ---
  data/20-gnome-initial-setup.rules.in               |  10 +
  data/gnome-initial-setup-wrapper                   |   1 +
