@@ -289,7 +289,7 @@ index 0e2278f..6892365 100644
              g_warning ("%s failed: %s", program, error->message);
          }
 diff --git a/gnome-initial-setup/pages/summary/gis-summary-page.c b/gnome-initial-setup/pages/summary/gis-summary-page.c
-index ba9e1fb..64a2745 100644
+index ba9e1fb..0a2974e 100644
 --- a/gnome-initial-setup/pages/summary/gis-summary-page.c
 +++ b/gnome-initial-setup/pages/summary/gis-summary-page.c
 @@ -21,6 +21,9 @@
@@ -482,20 +482,20 @@ index ba9e1fb..64a2745 100644
 +        GisSummaryPagePrivate *priv = gis_summary_page_get_instance_private (page);
 +
 +        if (g_task_propagate_boolean (G_TASK (res), &error)) {
-+                update_status_stack (page, FALSE, NULL);
++                update_status_stack (page, NULL);
 +                update_distro_name(page);
 +                adw_status_page_set_title(priv->status_page, _("All done!"));
 +                return;
 +        }
 +
 +        if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
-+                update_status_stack (page, FALSE,
-+                                     _("Canceled additional downloads"));
++                update_status_stack (page,
++                                     "Canceled additional downloads");
 +                return;
 +        }
 +
-+        update_status_stack (page, FALSE,
-+                             _("Unable to download additional language packs"));
++        update_status_stack (page,
++                             "Unable to download additional language packs");
 +
 +        g_warning ("Installation failed: %s", error->message);
 +}
@@ -550,7 +550,7 @@ index ba9e1fb..64a2745 100644
 +{
 +    GisSummaryPagePrivate *priv = gis_summary_page_get_instance_private(page);
 +    g_cancellable_cancel(priv->install_cancellable);
-+    update_status_stack(page, FALSE, NULL);
++    update_status_stack(page, NULL);
 +    update_distro_name(page);
 +    adw_status_page_set_title(priv->status_page, _("All done!"));
 +}
