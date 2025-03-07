@@ -41,9 +41,9 @@ everytime it is called to install a lang pack.
  gnome-initial-setup/gis-pkexec.h                   |   6 +
  .../pages/language/cc-language-chooser.c           |  47 ++++-
  .../pages/software/gis-software-page.c             |   2 +-
- .../pages/summary/gis-summary-page.c               | 228 +++++++++++++++++++--
- .../pages/summary/gis-summary-page.ui              |  61 +++++-
- 8 files changed, 390 insertions(+), 30 deletions(-)
+ .../pages/summary/gis-summary-page.c               | 230 +++++++++++++++++++--
+ .../pages/summary/gis-summary-page.ui              |  70 ++++++-
+ 8 files changed, 400 insertions(+), 31 deletions(-)
 
 diff --git a/data/20-gnome-initial-setup.rules.in b/data/20-gnome-initial-setup.rules.in
 index 02fd21d..d769020 100644
@@ -289,7 +289,7 @@ index 0e2278f..6892365 100644
              g_warning ("%s failed: %s", program, error->message);
          }
 diff --git a/gnome-initial-setup/pages/summary/gis-summary-page.c b/gnome-initial-setup/pages/summary/gis-summary-page.c
-index ba9e1fb..a43fada 100644
+index ba9e1fb..a5baa9d 100644
 --- a/gnome-initial-setup/pages/summary/gis-summary-page.c
 +++ b/gnome-initial-setup/pages/summary/gis-summary-page.c
 @@ -21,6 +21,9 @@
@@ -302,10 +302,11 @@ index ba9e1fb..a43fada 100644
  #define PAGE_ID "summary"
  
  #include "config.h"
-@@ -39,10 +42,16 @@
+@@ -39,10 +42,17 @@
  
  struct _GisSummaryPagePrivate {
    GtkWidget *start_button;
++  GtkWidget *start_box;
 +  GtkWidget *spinner;
 +  GtkWidget *cancel_button;
 +  GtkWidget *status_stack;
@@ -319,7 +320,7 @@ index ba9e1fb..a43fada 100644
  };
  typedef struct _GisSummaryPagePrivate GisSummaryPagePrivate;
  
-@@ -195,32 +204,122 @@ done_cb (GtkButton *button, GisSummaryPage *page)
+@@ -195,32 +205,122 @@ done_cb (GtkButton *button, GisSummaryPage *page)
      }
  }
  
@@ -458,11 +459,11 @@ index ba9e1fb..a43fada 100644
 +        }
  
 -  gtk_widget_grab_focus (priv->start_button);
-+        gtk_stack_set_visible_child (GTK_STACK (priv->status_stack), priv->start_button);
++        gtk_stack_set_visible_child (GTK_STACK (priv->status_stack), priv->start_box);
  }
  
  static void
-@@ -248,6 +347,91 @@ update_distro_name (GisSummaryPage *page)
+@@ -248,6 +348,91 @@ update_distro_name (GisSummaryPage *page)
    g_free (text);
  }
  
@@ -554,7 +555,7 @@ index ba9e1fb..a43fada 100644
  static void
  gis_summary_page_constructed (GObject *object)
  {
-@@ -268,6 +452,7 @@ gis_summary_page_constructed (GObject *object)
+@@ -268,6 +453,7 @@ gis_summary_page_constructed (GObject *object)
  
    update_distro_name (page);
    g_signal_connect (priv->start_button, "clicked", G_CALLBACK (done_cb), page);
@@ -562,9 +563,11 @@ index ba9e1fb..a43fada 100644
  
    gis_page_set_complete (GIS_PAGE (page), TRUE);
  
-@@ -291,6 +476,9 @@ gis_summary_page_class_init (GisSummaryPageClass *klass)
+@@ -290,7 +476,11 @@ gis_summary_page_class_init (GisSummaryPageClass *klass)
+   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass), "/org/gnome/initial-setup/gis-summary-page.ui");
  
    gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisSummaryPage, start_button);
++  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisSummaryPage, start_box);
    gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisSummaryPage, status_page);
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisSummaryPage, spinner);
 +  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisSummaryPage, cancel_button);
@@ -573,28 +576,28 @@ index ba9e1fb..a43fada 100644
    page_class->page_id = PAGE_ID;
    page_class->locale_changed = gis_summary_page_locale_changed;
 diff --git a/gnome-initial-setup/pages/summary/gis-summary-page.ui b/gnome-initial-setup/pages/summary/gis-summary-page.ui
-index a0afa3a..44e4b5f 100644
+index a0afa3a..08246e2 100644
 --- a/gnome-initial-setup/pages/summary/gis-summary-page.ui
 +++ b/gnome-initial-setup/pages/summary/gis-summary-page.ui
-@@ -10,13 +10,62 @@
+@@ -10,13 +10,69 @@
          </style>
  
          <child>
 -          <object class="GtkButton" id="start_button">
 -            <property name="use_underline">True</property>
-+          <object class="GtkStack" id="status_stack">
-             <property name="halign">center</property>
+-            <property name="halign">center</property>
 -            <style>
 -              <class name="suggested-action"/>
 -              <class name="pill"/>
 -            </style>
-+            <child>
++          <object class="GtkStack" id="status_stack">
++          <property name="halign">center</property>
 +
-+              <object class="GtkBox" id="main_box">
++            <child>
++              <object class="GtkBox" id="download_box">
 +                <property name="orientation">vertical</property>
 +                <property name="halign">center</property>
 +                <property name="spacing">10</property>
-+
 +                <child>
 +                  <object class="GtkBox" id="spinner_box">
 +                    <property name="orientation">horizontal</property>
@@ -632,16 +635,24 @@ index a0afa3a..44e4b5f 100644
 +            </child>
 +
 +            <child>
-+            <object class="GtkButton" id="start_button">
-+                <property name="name">start</property>
-+                <property name="use_underline">True</property>
++              <object class="GtkBox" id="start_box">
++                <property name="orientation">vertical</property>
 +                <property name="halign">center</property>
-+                <style>
-+                  <class name="suggested-action"/>
-+                  <class name="pill"/>
-+                </style>
++                <property name="spacing">10</property>
++                <child>
++                  <object class="GtkButton" id="start_button">
++                    <property name="name">start</property>
++                    <property name="use_underline">True</property>
++                    <property name="halign">center</property>
++                    <style>
++                      <class name="suggested-action"/>
++                      <class name="pill"/>
++                    </style>
++                  </object>
++                  </child>
 +              </object>
 +            </child>
++
            </object>
          </child>
  
