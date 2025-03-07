@@ -42,8 +42,8 @@ everytime it is called to install a lang pack.
  .../pages/language/cc-language-chooser.c           |  47 ++++-
  .../pages/software/gis-software-page.c             |   2 +-
  .../pages/summary/gis-summary-page.c               | 228 +++++++++++++++++++--
- .../pages/summary/gis-summary-page.ui              |  53 ++++-
- 8 files changed, 382 insertions(+), 30 deletions(-)
+ .../pages/summary/gis-summary-page.ui              |  61 +++++-
+ 8 files changed, 390 insertions(+), 30 deletions(-)
 
 diff --git a/data/20-gnome-initial-setup.rules.in b/data/20-gnome-initial-setup.rules.in
 index 02fd21d..d769020 100644
@@ -289,7 +289,7 @@ index 0e2278f..6892365 100644
              g_warning ("%s failed: %s", program, error->message);
          }
 diff --git a/gnome-initial-setup/pages/summary/gis-summary-page.c b/gnome-initial-setup/pages/summary/gis-summary-page.c
-index ba9e1fb..f6864b2 100644
+index ba9e1fb..a43fada 100644
 --- a/gnome-initial-setup/pages/summary/gis-summary-page.c
 +++ b/gnome-initial-setup/pages/summary/gis-summary-page.c
 @@ -21,6 +21,9 @@
@@ -522,7 +522,7 @@ index ba9e1fb..f6864b2 100644
 +  /* Skip installation attempt if there is no active connection. */
 +  if (check_network_connection ()) {
 +    adw_status_page_set_description (priv->status_page, "");
-+    adw_status_page_set_title (priv->status_page, _("Nearly done"));
++    adw_status_page_set_title (priv->status_page, _("Almost done"));
 +    gtk_stack_set_visible_child_name (GTK_STACK(priv->status_stack), "spinner_box");
 +    gtk_spinner_start (GTK_SPINNER (priv->spinner));
 +
@@ -573,10 +573,10 @@ index ba9e1fb..f6864b2 100644
    page_class->page_id = PAGE_ID;
    page_class->locale_changed = gis_summary_page_locale_changed;
 diff --git a/gnome-initial-setup/pages/summary/gis-summary-page.ui b/gnome-initial-setup/pages/summary/gis-summary-page.ui
-index a0afa3a..efb306a 100644
+index a0afa3a..44e4b5f 100644
 --- a/gnome-initial-setup/pages/summary/gis-summary-page.ui
 +++ b/gnome-initial-setup/pages/summary/gis-summary-page.ui
-@@ -10,13 +10,54 @@
+@@ -10,13 +10,62 @@
          </style>
  
          <child>
@@ -588,38 +588,46 @@ index a0afa3a..efb306a 100644
 -              <class name="suggested-action"/>
 -              <class name="pill"/>
 -            </style>
-+
 +            <child>
-+              <object class="GtkBox" id="spinner_box">
-+               <property name="orientation">horizontal</property>
-+               <property name="name">spinner</property>
-+                <property name="spacing">10</property>
++
++              <object class="GtkBox" id="main_box">
++                <property name="orientation">vertical</property>
 +                <property name="halign">center</property>
-+                
++                <property name="spacing">10</property>
++
 +                <child>
-+                  <object class="GtkSpinner" id="spinner">
++                  <object class="GtkBox" id="spinner_box">
++                    <property name="orientation">horizontal</property>
++                    <property name="name">spinner</property>
++                    <property name="spacing">10</property>
++                    <property name="halign">center</property>
++                    <child>
++                      <object class="GtkSpinner" id="spinner">
++                        <property name="halign">center</property>
++                        <style>
++                          <class name="suggested-action"/>
++                          <class name="pill"/>
++                        </style>
++                      </object>
++                    </child>
++                    <child>
++                      <object class="GtkLabel" id="spinner_label">
++                        <property name="label" translatable="yes">Downloading additional language packs</property>
++                        <property name="halign">center</property>
++                      </object>
++                    </child>
++                  </object>
++                </child>
++                <child>
++                  <object class="GtkButton" id="cancel_button">
++                    <property name="label" translatable="yes">Cancel Download</property>
++                    <property name="use_underline">True</property>
 +                    <property name="halign">center</property>
 +                    <style>
-+                      <class name="suggested-action"/>
 +                      <class name="pill"/>
 +                    </style>
 +                  </object>
 +                </child>
-+
-+                <child>
-+                  <object class="GtkLabel" id="spinner_label">
-+                    <property name="label" translatable="yes">Downloading additional language packs...</property>
-+                    <property name="halign">center</property>
-+                  </object>
-+                </child>
-+                
-+                <child>
-+                  <object class="GtkButton" id="cancel_button">
-+                    <property name="label" translatable="yes">Cancel download</property>
-+                    <property name="halign">center</property>
-+                  </object>
-+                </child>
-+
 +              </object>
 +            </child>
 +
