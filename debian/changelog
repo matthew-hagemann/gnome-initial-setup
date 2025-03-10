@@ -3,9 +3,9 @@ gnome-initial-setup (48~beta-0ubuntu3) UNRELEASED; urgency=medium
   [ Matthew Hagemann ]
   * debian/patches/Dynamic-lang-pack-installation-support.patch
     - Removed dynamic lang pack installation from language chooser, moving it
-      instead to the summary page right at the end of the flow.
+      instead to the summary page right at the end of the flow (LP: #2101826)
     - Download is skipped if no active network connection is detected.
-    - Explicitly set max file descriptors before launching GIS.
+    - Explicitly set max file descriptors before launching GIS (LP: #2101825)
 
  -- Matthew Gary Hagemann <matt.hagemann@canonical.com>  Thu, 06 Mar 2025 15:54:07 +0200
 
