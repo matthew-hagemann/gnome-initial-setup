@@ -34,6 +34,9 @@ wrapper script. As of 24.10, systemd is no longer compile for Ubuntu using the
 to set file descriptor limits to their maximum. This causing pkexec to sit
 attempting to close 1073741816 file descriptors which takes several minutes
 everytime it is called to install a lang pack.
+
+
+style: fixing start button filling too much space
 ---
  data/20-gnome-initial-setup.rules.in               |  10 +
  data/gnome-initial-setup-wrapper                   |   1 +
@@ -41,9 +44,9 @@ everytime it is called to install a lang pack.
  gnome-initial-setup/gis-pkexec.h                   |   6 +
  .../pages/language/cc-language-chooser.c           |  47 ++++-
  .../pages/software/gis-software-page.c             |   2 +-
- .../pages/summary/gis-summary-page.c               | 230 +++++++++++++++++++--
+ .../pages/summary/gis-summary-page.c               | 225 +++++++++++++++++++--
  .../pages/summary/gis-summary-page.ui              |  70 ++++++-
- 8 files changed, 400 insertions(+), 31 deletions(-)
+ 8 files changed, 394 insertions(+), 32 deletions(-)
 
 diff --git a/data/20-gnome-initial-setup.rules.in b/data/20-gnome-initial-setup.rules.in
 index 02fd21d..d769020 100644
@@ -289,7 +292,7 @@ index 0e2278f..6892365 100644
              g_warning ("%s failed: %s", program, error->message);
          }
 diff --git a/gnome-initial-setup/pages/summary/gis-summary-page.c b/gnome-initial-setup/pages/summary/gis-summary-page.c
-index ba9e1fb..a5baa9d 100644
+index ba9e1fb..82c5930 100644
 --- a/gnome-initial-setup/pages/summary/gis-summary-page.c
 +++ b/gnome-initial-setup/pages/summary/gis-summary-page.c
 @@ -21,6 +21,9 @@
@@ -320,7 +323,7 @@ index ba9e1fb..a5baa9d 100644
  };
  typedef struct _GisSummaryPagePrivate GisSummaryPagePrivate;
  
-@@ -195,32 +205,122 @@ done_cb (GtkButton *button, GisSummaryPage *page)
+@@ -195,32 +205,116 @@ done_cb (GtkButton *button, GisSummaryPage *page)
      }
  }
  
@@ -334,6 +337,10 @@ index ba9e1fb..a5baa9d 100644
 -  GisSummaryPage *summary = GIS_SUMMARY_PAGE (page);
 -  GisSummaryPagePrivate *priv = gis_summary_page_get_instance_private (summary);
 -  g_autoptr(GError) local_error = NULL;
+-
+-  if (!gis_driver_save_data (GIS_PAGE (page)->driver, &local_error))
+-    {
+-      g_warning ("Error saving data: %s", local_error->message);
 +        g_autoptr (GSubprocess) subprocess = NULL;
 +        g_autofree gchar *stdout_buf = NULL;
 +        g_autofree gchar *stderr_buf = NULL;
@@ -372,9 +379,12 @@ index ba9e1fb..a5baa9d 100644
 +        return g_ptr_array_new_take_null_terminated ((gpointer *) g_steal_pointer (&packages_split), g_free);
 +}
  
--  if (!gis_driver_save_data (GIS_PAGE (page)->driver, &local_error))
--    {
--      g_warning ("Error saving data: %s", local_error->message);
+-      GtkWindow *parent = GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (page)));
+-      GtkWidget *dialog = adw_message_dialog_new (parent,
+-                                                  _("Setup Failed"),
+-                                                  local_error->message);
+-      adw_message_dialog_add_response (ADW_MESSAGE_DIALOG (dialog), "close", _("Close"));
+-      /* FIXME: Provide some more options for debugging or recovery */
 +static gboolean
 +install_language_support (const gchar   *locale,
 +                          GCancellable  *cancellable,
@@ -406,12 +416,8 @@ index ba9e1fb..a5baa9d 100644
 +        return TRUE;
 +}
  
--      GtkWindow *parent = GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (page)));
--      GtkWidget *dialog = adw_message_dialog_new (parent,
--                                                  _("Setup Failed"),
--                                                  local_error->message);
--      adw_message_dialog_add_response (ADW_MESSAGE_DIALOG (dialog), "close", _("Close"));
--      /* FIXME: Provide some more options for debugging or recovery */
+-      gtk_window_present (GTK_WINDOW (dialog));
+-    }
 +static gboolean
 +check_network_connection (void)
 +{
@@ -419,8 +425,9 @@ index ba9e1fb..a5baa9d 100644
 +    return g_network_monitor_get_network_available (monitor);
 +}
  
--      gtk_window_present (GTK_WINDOW (dialog));
--    }
+-  gis_driver_get_user_permissions (GIS_PAGE (page)->driver,
+-                                   &priv->user_account,
+-                                   &priv->user_password);
 +static void
 +installation_task_async (GTask        *task,
 +                         gpointer      source_object,
@@ -445,25 +452,16 @@ index ba9e1fb..a5baa9d 100644
 + 
 +}
  
--  gis_driver_get_user_permissions (GIS_PAGE (page)->driver,
--                                   &priv->user_account,
--                                   &priv->user_password);
+-  gtk_widget_grab_focus (priv->start_button);
 +static void
-+update_status_stack (GisSummaryPage    *page,
-+                     const gchar       *error_message)
++update_status_stack (GisSummaryPage    *page)
 +{
 +        GisSummaryPagePrivate *priv = gis_summary_page_get_instance_private (page);
-+        
-+        if (error_message) {
-+            g_warning("Error: %s", error_message);
-+        }
- 
--  gtk_widget_grab_focus (priv->start_button);
 +        gtk_stack_set_visible_child (GTK_STACK (priv->status_stack), priv->start_box);
  }
  
  static void
-@@ -248,6 +348,91 @@ update_distro_name (GisSummaryPage *page)
+@@ -248,6 +342,90 @@ update_distro_name (GisSummaryPage *page)
    g_free (text);
  }
  
@@ -477,20 +475,18 @@ index ba9e1fb..a5baa9d 100644
 +        GisSummaryPagePrivate *priv = gis_summary_page_get_instance_private (page);
 +
 +        if (g_task_propagate_boolean (G_TASK (res), &error)) {
-+                update_status_stack (page, NULL);
++                update_status_stack (page);
 +                update_distro_name (page);
 +                adw_status_page_set_title (priv->status_page, _("All done!"));
 +                return;
 +        }
 +
 +        if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
-+                update_status_stack (page,
-+                                     "Canceled additional downloads");
++                update_status_stack (page);
 +                return;
 +        }
 +
-+        update_status_stack (page,
-+                             "Unable to download additional language packs");
++        update_status_stack (page);
 +
 +        g_warning ("Installation failed: %s", error->message);
 +}
@@ -527,8 +523,9 @@ index ba9e1fb..a5baa9d 100644
 +    gtk_stack_set_visible_child_name (GTK_STACK(priv->status_stack), "spinner_box");
 +    gtk_spinner_start (GTK_SPINNER (priv->spinner));
 +
-+
 +    g_cancellable_cancel (priv->install_cancellable);
++
++    g_clear_pointer (&priv->install_cancellable, g_free);
 +    priv->install_cancellable = g_cancellable_new ();
 +
 +    g_autoptr (GTask) task = g_task_new (page, priv->install_cancellable,
@@ -547,7 +544,7 @@ index ba9e1fb..a5baa9d 100644
 +{
 +    GisSummaryPagePrivate *priv = gis_summary_page_get_instance_private(page);
 +    g_cancellable_cancel(priv->install_cancellable);
-+    update_status_stack(page, NULL);
++    update_status_stack(page);
 +    update_distro_name(page);
 +    adw_status_page_set_title(priv->status_page, _("All done!"));
 +}
@@ -555,7 +552,7 @@ index ba9e1fb..a5baa9d 100644
  static void
  gis_summary_page_constructed (GObject *object)
  {
-@@ -268,6 +453,7 @@ gis_summary_page_constructed (GObject *object)
+@@ -268,6 +446,7 @@ gis_summary_page_constructed (GObject *object)
  
    update_distro_name (page);
    g_signal_connect (priv->start_button, "clicked", G_CALLBACK (done_cb), page);
@@ -563,7 +560,7 @@ index ba9e1fb..a5baa9d 100644
  
    gis_page_set_complete (GIS_PAGE (page), TRUE);
  
-@@ -290,7 +476,11 @@ gis_summary_page_class_init (GisSummaryPageClass *klass)
+@@ -290,7 +469,11 @@ gis_summary_page_class_init (GisSummaryPageClass *klass)
    gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass), "/org/gnome/initial-setup/gis-summary-page.ui");
  
    gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisSummaryPage, start_button);
