@@ -35,18 +35,18 @@ to set file descriptor limits to their maximum. This causing pkexec to sit
 attempting to close 1073741816 file descriptors which takes several minutes
 everytime it is called to install a lang pack.
 
-
 style: fixing start button filling too much space
 ---
  data/20-gnome-initial-setup.rules.in               |  10 +
  data/gnome-initial-setup-wrapper                   |   1 +
- gnome-initial-setup/gis-pkexec.c                   |  65 +++++-
+ gnome-initial-setup/gis-pkexec.c                   |  65 +++-
  gnome-initial-setup/gis-pkexec.h                   |   6 +
- .../pages/language/cc-language-chooser.c           |  47 ++++-
+ .../pages/language/cc-language-chooser.c           |  47 ++-
+ .../pages/language/gis-language-page.c             | 135 --------
  .../pages/software/gis-software-page.c             |   2 +-
- .../pages/summary/gis-summary-page.c               | 225 +++++++++++++++++++--
- .../pages/summary/gis-summary-page.ui              |  70 ++++++-
- 8 files changed, 394 insertions(+), 32 deletions(-)
+ .../pages/summary/gis-summary-page.c               | 368 +++++++++++++++++++--
+ .../pages/summary/gis-summary-page.ui              |  70 +++-
+ 9 files changed, 538 insertions(+), 166 deletions(-)
 
 diff --git a/data/20-gnome-initial-setup.rules.in b/data/20-gnome-initial-setup.rules.in
 index 02fd21d..d769020 100644
@@ -278,6 +278,196 @@ index 61756be..d68d33b 100644
          initial = cc_common_language_get_initial_languages ();
          add_languages (chooser, locale_ids, initial);
  }
+diff --git a/gnome-initial-setup/pages/language/gis-language-page.c b/gnome-initial-setup/pages/language/gis-language-page.c
+index fe5fed9..be8f90c 100644
+--- a/gnome-initial-setup/pages/language/gis-language-page.c
++++ b/gnome-initial-setup/pages/language/gis-language-page.c
+@@ -46,70 +46,12 @@ struct _GisLanguagePagePrivate
+   GtkWidget *welcome_widget;
+   GtkWidget *language_chooser;
+ 
+-  GDBusProxy *localed;
+-  GPermission *permission;
+   const gchar *new_locale_id;
+-
+-  GCancellable *cancellable;
+ };
+ typedef struct _GisLanguagePagePrivate GisLanguagePagePrivate;
+ 
+ G_DEFINE_TYPE_WITH_PRIVATE (GisLanguagePage, gis_language_page, GIS_TYPE_PAGE);
+ 
+-static void
+-set_localed_locale (GisLanguagePage *self)
+-{
+-  GisLanguagePagePrivate *priv = gis_language_page_get_instance_private (self);
+-  GVariantBuilder *b;
+-  gchar *s;
+-
+-  b = g_variant_builder_new (G_VARIANT_TYPE ("as"));
+-  s = g_strconcat ("LANG=", priv->new_locale_id, NULL);
+-  g_variant_builder_add (b, "s", s);
+-  g_free (s);
+-
+-  g_dbus_proxy_call (priv->localed,
+-                     "SetLocale",
+-                     g_variant_new ("(asb)", b, TRUE),
+-                     G_DBUS_CALL_FLAGS_NONE,
+-                     -1, NULL, NULL, NULL);
+-  g_variant_builder_unref (b);
+-}
+-
+-static void
+-change_locale_permission_acquired (GObject      *source,
+-                                   GAsyncResult *res,
+-                                   gpointer      data)
+-{
+-  GisLanguagePage *page = GIS_LANGUAGE_PAGE (data);
+-  GisLanguagePagePrivate *priv = gis_language_page_get_instance_private (page);
+-  GError *error = NULL;
+-  gboolean allowed;
+-
+-  allowed = g_permission_acquire_finish (priv->permission, res, &error);
+-  if (error) {
+-      if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+-        g_warning ("Failed to acquire permission: %s", error->message);
+-      g_error_free (error);
+-      return;
+-  }
+-
+-  if (allowed)
+-    set_localed_locale (page);
+-}
+-
+-static void
+-user_loaded (GObject    *object,
+-             GParamSpec *pspec,
+-             gpointer    user_data)
+-{
+-  gchar *new_locale_id = user_data;
+-
+-  act_user_set_language (ACT_USER (object), new_locale_id);
+-
+-  g_free (new_locale_id);
+-}
+-
+ static void
+ language_changed (CcLanguageChooser  *chooser,
+                   GParamSpec         *pspec,
+@@ -117,67 +59,16 @@ language_changed (CcLanguageChooser  *chooser,
+ {
+   GisLanguagePagePrivate *priv = gis_language_page_get_instance_private (page);
+   GisDriver *driver;
+-  GSettings *region_settings;
+-  ActUser *user;
+ 
+   priv->new_locale_id = cc_language_chooser_get_language (chooser);
+   driver = GIS_PAGE (page)->driver;
+ 
+   gis_driver_set_user_language (driver, priv->new_locale_id, TRUE);
+ 
+-  if (gis_driver_get_mode (driver) == GIS_DRIVER_MODE_NEW_USER) {
+-      if (g_permission_get_allowed (priv->permission)) {
+-          set_localed_locale (page);
+-      }
+-      else if (g_permission_get_can_acquire (priv->permission)) {
+-          g_permission_acquire_async (priv->permission,
+-                                      NULL,
+-                                      change_locale_permission_acquired,
+-                                      page);
+-      }
+-  }
+-
+-  /* Ensure we won't override the selected language for format strings */
+-  region_settings = g_settings_new (GNOME_SYSTEM_LOCALE_DIR);
+-  g_settings_reset (region_settings, REGION_KEY);
+-  g_object_unref (region_settings);
+-
+-  user = act_user_manager_get_user (act_user_manager_get_default (),
+-                                    g_get_user_name ());
+-  if (act_user_is_loaded (user))
+-    act_user_set_language (user, priv->new_locale_id);
+-  else
+-    g_signal_connect (user,
+-                      "notify::is-loaded",
+-                      G_CALLBACK (user_loaded),
+-                      g_strdup (priv->new_locale_id));
+-
+   gis_welcome_widget_show_locale (GIS_WELCOME_WIDGET (priv->welcome_widget),
+                                   priv->new_locale_id);
+ }
+ 
+-static void
+-localed_proxy_ready (GObject      *source,
+-                     GAsyncResult *res,
+-                     gpointer      data)
+-{
+-  GisLanguagePage *self = data;
+-  GisLanguagePagePrivate *priv = gis_language_page_get_instance_private (self);
+-  GDBusProxy *proxy;
+-  GError *error = NULL;
+-
+-  proxy = g_dbus_proxy_new_finish (res, &error);
+-
+-  if (!proxy) {
+-      if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+-        g_warning ("Failed to contact localed: %s", error->message);
+-      g_error_free (error);
+-      return;
+-  }
+-
+-  priv->localed = proxy;
+-}
+-
+ static void
+ update_distro_logo (GisLanguagePage *page)
+ {
+@@ -220,7 +111,6 @@ gis_language_page_constructed (GObject *object)
+ {
+   GisLanguagePage *page = GIS_LANGUAGE_PAGE (object);
+   GisLanguagePagePrivate *priv = gis_language_page_get_instance_private (page);
+-  GDBusConnection *bus;
+ 
+   g_type_ensure (CC_TYPE_LANGUAGE_CHOOSER);
+ 
+@@ -233,24 +123,6 @@ gis_language_page_constructed (GObject *object)
+   g_signal_connect (priv->language_chooser, "confirm",
+                     G_CALLBACK (language_confirmed), page);
+ 
+-  /* If we're in new user mode then we're manipulating system settings */
+-  if (gis_driver_get_mode (GIS_PAGE (page)->driver) == GIS_DRIVER_MODE_NEW_USER)
+-    {
+-      priv->permission = polkit_permission_new_sync ("org.freedesktop.locale1.set-locale", NULL, NULL, NULL);
+-
+-      bus = g_bus_get_sync (G_BUS_TYPE_SYSTEM, NULL, NULL);
+-      g_dbus_proxy_new (bus,
+-                        G_DBUS_PROXY_FLAGS_GET_INVALIDATED_PROPERTIES,
+-                        NULL,
+-                        "org.freedesktop.locale1",
+-                        "/org/freedesktop/locale1",
+-                        "org.freedesktop.locale1",
+-                        priv->cancellable,
+-                        (GAsyncReadyCallback) localed_proxy_ready,
+-                        object);
+-      g_object_unref (bus);
+-    }
+-
+   gis_page_set_complete (GIS_PAGE (page), TRUE);
+   gtk_widget_set_visible (GTK_WIDGET (page), TRUE);
+ }
+@@ -264,13 +136,6 @@ gis_language_page_locale_changed (GisPage *page)
+ static void
+ gis_language_page_dispose (GObject *object)
+ {
+-  GisLanguagePage *page = GIS_LANGUAGE_PAGE (object);
+-  GisLanguagePagePrivate *priv = gis_language_page_get_instance_private (page);
+-
+-  g_clear_object (&priv->permission);
+-  g_clear_object (&priv->localed);
+-  g_clear_object (&priv->cancellable);
+-
+   G_OBJECT_CLASS (gis_language_page_parent_class)->dispose (object);
+ }
+ 
 diff --git a/gnome-initial-setup/pages/software/gis-software-page.c b/gnome-initial-setup/pages/software/gis-software-page.c
 index 0e2278f..6892365 100644
 --- a/gnome-initial-setup/pages/software/gis-software-page.c
@@ -292,20 +482,26 @@ index 0e2278f..6892365 100644
              g_warning ("%s failed: %s", program, error->message);
          }
 diff --git a/gnome-initial-setup/pages/summary/gis-summary-page.c b/gnome-initial-setup/pages/summary/gis-summary-page.c
-index ba9e1fb..82c5930 100644
+index ba9e1fb..070ab80 100644
 --- a/gnome-initial-setup/pages/summary/gis-summary-page.c
 +++ b/gnome-initial-setup/pages/summary/gis-summary-page.c
-@@ -21,6 +21,9 @@
+@@ -21,8 +21,15 @@
  
  /* Summary page {{{1 */
  
 +#include "adwaita.h"
 +#include "glib.h"
++#include "polkit/polkit.h"
 +#include <locale.h>
  #define PAGE_ID "summary"
  
++#define GNOME_SYSTEM_LOCALE_DIR "org.gnome.system.locale"
++#define REGION_KEY "region"
++
  #include "config.h"
-@@ -39,10 +42,17 @@
+ #include "summary-resources.h"
+ #include "gis-summary-page.h"
+@@ -39,15 +46,124 @@
  
  struct _GisSummaryPagePrivate {
    GtkWidget *start_button;
@@ -314,16 +510,123 @@ index ba9e1fb..82c5930 100644
 +  GtkWidget *cancel_button;
 +  GtkWidget *status_stack;
 +
++  GPermission *permission;
++  GDBusProxy *localed;
++
    AdwStatusPage *status_page;
  
    ActUser *user_account;
    const gchar *user_password;
 +
 +  GCancellable *install_cancellable;
++  GCancellable *cancellable;
  };
  typedef struct _GisSummaryPagePrivate GisSummaryPagePrivate;
  
-@@ -195,32 +205,116 @@ done_cb (GtkButton *button, GisSummaryPage *page)
+ G_DEFINE_TYPE_WITH_PRIVATE (GisSummaryPage, gis_summary_page, GIS_TYPE_PAGE);
+ 
++static void
++set_localed_locale (GisSummaryPage *self)
++{
++  GisSummaryPagePrivate *priv = gis_summary_page_get_instance_private (self);
++  GVariantBuilder *b;
++  gchar *s;
++  GisDriver *driver;
++
++  driver = GIS_PAGE (self)->driver;
++  const char *locale = gis_driver_get_user_language(driver);
++
++  b = g_variant_builder_new (G_VARIANT_TYPE ("as"));
++  s = g_strconcat ("LANG=", locale, NULL);
++  g_variant_builder_add (b, "s", s);
++  g_free (s);
++    
++  g_dbus_proxy_call (priv->localed,
++                     "SetLocale",
++                     g_variant_new ("(asb)", b, TRUE),
++                     G_DBUS_CALL_FLAGS_NONE,
++                     -1, NULL, NULL, NULL);
++  g_variant_builder_unref (b);
++}
++
++static void
++change_locale_permission_acquired (GObject      *source,
++                                   GAsyncResult *res,
++                                   gpointer      data)
++{
++  GisSummaryPage *page = GIS_SUMMARY_PAGE(data);
++  GisSummaryPagePrivate *priv = gis_summary_page_get_instance_private (page);
++  GError *error = NULL;
++  gboolean allowed;
++
++  allowed = g_permission_acquire_finish (priv->permission, res, &error);
++  if (error) {
++      if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
++        g_message ("Failed to acquire permission: %s", error->message);
++      g_error_free (error);
++      return;
++  }
++
++  if (allowed)
++    set_localed_locale (page);
++}
++
++static void
++user_loaded (GObject    *object,
++             GParamSpec *pspec,
++             gpointer    user_data)
++{
++  gchar *new_locale_id = user_data;
++
++  act_user_set_language (ACT_USER (object), new_locale_id);
++
++  g_free (new_locale_id);
++}
++
++static void
++apply_system_locale_changes (GisSummaryPage  *page)
++{
++  GSettings *region_settings;
++  GisDriver *driver;
++  ActUser *user;
++
++  GisSummaryPagePrivate *priv = gis_summary_page_get_instance_private (page);
++  driver = GIS_PAGE (page)->driver;
++
++  if (gis_driver_get_mode (driver) == GIS_DRIVER_MODE_NEW_USER) {
++      if (g_permission_get_allowed (priv->permission)) {
++          set_localed_locale (page);
++      }
++      else if (g_permission_get_can_acquire (priv->permission)) {
++          g_permission_acquire_async (priv->permission,
++                                      NULL,
++                                      change_locale_permission_acquired,
++                                      page);
++      }
++  }
++
++  /* Ensure we won't override the selected language for format strings */
++  region_settings = g_settings_new (GNOME_SYSTEM_LOCALE_DIR);
++  g_settings_reset (region_settings, REGION_KEY);
++  g_object_unref (region_settings);
++
++  const char *locale = gis_driver_get_user_language(driver);
++
++  user = act_user_manager_get_user (act_user_manager_get_default (),
++                                    g_get_user_name ());
++  if (act_user_is_loaded (user))
++    act_user_set_language (user, locale);
++  else
++    g_signal_connect (user,
++                      "notify::is-loaded",
++                      G_CALLBACK (user_loaded),
++                      g_strdup (locale));
++}
++
+ static void
+ request_info_query (GisSummaryPage  *page,
+                     GdmUserVerifier *user_verifier,
+@@ -195,32 +311,115 @@ done_cb (GtkButton *button, GisSummaryPage *page)
      }
  }
  
@@ -337,10 +640,6 @@ index ba9e1fb..82c5930 100644
 -  GisSummaryPage *summary = GIS_SUMMARY_PAGE (page);
 -  GisSummaryPagePrivate *priv = gis_summary_page_get_instance_private (summary);
 -  g_autoptr(GError) local_error = NULL;
--
--  if (!gis_driver_save_data (GIS_PAGE (page)->driver, &local_error))
--    {
--      g_warning ("Error saving data: %s", local_error->message);
 +        g_autoptr (GSubprocess) subprocess = NULL;
 +        g_autofree gchar *stdout_buf = NULL;
 +        g_autofree gchar *stderr_buf = NULL;
@@ -379,12 +678,9 @@ index ba9e1fb..82c5930 100644
 +        return g_ptr_array_new_take_null_terminated ((gpointer *) g_steal_pointer (&packages_split), g_free);
 +}
  
--      GtkWindow *parent = GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (page)));
--      GtkWidget *dialog = adw_message_dialog_new (parent,
--                                                  _("Setup Failed"),
--                                                  local_error->message);
--      adw_message_dialog_add_response (ADW_MESSAGE_DIALOG (dialog), "close", _("Close"));
--      /* FIXME: Provide some more options for debugging or recovery */
+-  if (!gis_driver_save_data (GIS_PAGE (page)->driver, &local_error))
+-    {
+-      g_warning ("Error saving data: %s", local_error->message);
 +static gboolean
 +install_language_support (const gchar   *locale,
 +                          GCancellable  *cancellable,
@@ -416,8 +712,12 @@ index ba9e1fb..82c5930 100644
 +        return TRUE;
 +}
  
--      gtk_window_present (GTK_WINDOW (dialog));
--    }
+-      GtkWindow *parent = GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (page)));
+-      GtkWidget *dialog = adw_message_dialog_new (parent,
+-                                                  _("Setup Failed"),
+-                                                  local_error->message);
+-      adw_message_dialog_add_response (ADW_MESSAGE_DIALOG (dialog), "close", _("Close"));
+-      /* FIXME: Provide some more options for debugging or recovery */
 +static gboolean
 +check_network_connection (void)
 +{
@@ -425,9 +725,8 @@ index ba9e1fb..82c5930 100644
 +    return g_network_monitor_get_network_available (monitor);
 +}
  
--  gis_driver_get_user_permissions (GIS_PAGE (page)->driver,
--                                   &priv->user_account,
--                                   &priv->user_password);
+-      gtk_window_present (GTK_WINDOW (dialog));
+-    }
 +static void
 +installation_task_async (GTask        *task,
 +                         gpointer      source_object,
@@ -436,23 +735,25 @@ index ba9e1fb..82c5930 100644
 +{
 +        const gchar *locale = task_data;
 +        g_autoptr (GError) error = NULL;
-+        
 +        if (g_cancellable_set_error_if_cancelled (cancellable, &error)) {
 +                g_task_return_error (task, g_steal_pointer(&error));
 +                return;
 +        }
-+
+ 
+-  gis_driver_get_user_permissions (GIS_PAGE (page)->driver,
+-                                   &priv->user_account,
+-                                   &priv->user_password);
 +        if (!install_language_support (locale, cancellable, &error)) {
 +                g_task_return_error (task, g_steal_pointer (&error));
 +                return;
 +        }
-+
+ 
+-  gtk_widget_grab_focus (priv->start_button);
 +        g_task_return_boolean(task, TRUE);
 +
 + 
 +}
- 
--  gtk_widget_grab_focus (priv->start_button);
++
 +static void
 +update_status_stack (GisSummaryPage    *page)
 +{
@@ -461,7 +762,7 @@ index ba9e1fb..82c5930 100644
  }
  
  static void
-@@ -248,6 +342,90 @@ update_distro_name (GisSummaryPage *page)
+@@ -248,12 +447,119 @@ update_distro_name (GisSummaryPage *page)
    g_free (text);
  }
  
@@ -475,6 +776,7 @@ index ba9e1fb..82c5930 100644
 +        GisSummaryPagePrivate *priv = gis_summary_page_get_instance_private (page);
 +
 +        if (g_task_propagate_boolean (G_TASK (res), &error)) {
++                apply_system_locale_changes(page);
 +                update_status_stack (page);
 +                update_distro_name (page);
 +                adw_status_page_set_title (priv->status_page, _("All done!"));
@@ -485,7 +787,6 @@ index ba9e1fb..82c5930 100644
 +                update_status_stack (page);
 +                return;
 +        }
-+
 +        update_status_stack (page);
 +
 +        g_warning ("Installation failed: %s", error->message);
@@ -549,18 +850,64 @@ index ba9e1fb..82c5930 100644
 +    adw_status_page_set_title(priv->status_page, _("All done!"));
 +}
 +
++static void
++localed_proxy_ready (GObject      *source,
++                     GAsyncResult *res,
++                     gpointer      data)
++{
++  GisSummaryPage *self = data;
++  GisSummaryPagePrivate *priv = gis_summary_page_get_instance_private (self);
++  GDBusProxy *proxy;
++  GError *error = NULL;
++
++  proxy = g_dbus_proxy_new_finish (res, &error);
++
++  if (!proxy) {
++      if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
++        g_message ("Failed to contact localed: %s", error->message);
++      g_error_free (error);
++      return;
++  }
++
++  priv->localed = proxy;
++}
++
  static void
  gis_summary_page_constructed (GObject *object)
  {
-@@ -268,6 +446,7 @@ gis_summary_page_constructed (GObject *object)
+   GisSummaryPage *page = GIS_SUMMARY_PAGE (object);
+   GisSummaryPagePrivate *priv = gis_summary_page_get_instance_private (page);
+   g_autoptr(GtkCssProvider) css_provider = NULL;
++  GDBusConnection *bus;
+ 
+   G_OBJECT_CLASS (gis_summary_page_parent_class)->constructed (object);
+ 
+@@ -268,6 +574,24 @@ gis_summary_page_constructed (GObject *object)
  
    update_distro_name (page);
    g_signal_connect (priv->start_button, "clicked", G_CALLBACK (done_cb), page);
 +  g_signal_connect (priv->cancel_button, "clicked", G_CALLBACK (status_stack_reset_cb), page);
++
++  /* If we're in new user mode then we're manipulating system settings */
++  if (gis_driver_get_mode (GIS_PAGE (page)->driver) == GIS_DRIVER_MODE_NEW_USER)
++    {
++      priv->permission = polkit_permission_new_sync ("org.freedesktop.locale1.set-locale", NULL, NULL, NULL);
++      bus = g_bus_get_sync (G_BUS_TYPE_SYSTEM, NULL, NULL);
++      g_dbus_proxy_new (bus,
++                        G_DBUS_PROXY_FLAGS_GET_INVALIDATED_PROPERTIES,
++                        NULL,
++                        "org.freedesktop.locale1",
++                        "/org/freedesktop/locale1",
++                        "org.freedesktop.locale1",
++                        priv->cancellable,
++                        (GAsyncReadyCallback) localed_proxy_ready,
++                        object);
++      g_object_unref (bus);
++    }
  
    gis_page_set_complete (GIS_PAGE (page), TRUE);
  
-@@ -290,7 +469,11 @@ gis_summary_page_class_init (GisSummaryPageClass *klass)
+@@ -290,7 +614,11 @@ gis_summary_page_class_init (GisSummaryPageClass *klass)
    gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass), "/org/gnome/initial-setup/gis-summary-page.ui");
  
    gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisSummaryPage, start_button);
