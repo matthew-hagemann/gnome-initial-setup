@@ -42,11 +42,11 @@ style: fixing start button filling too much space
  gnome-initial-setup/gis-pkexec.c                   |  65 +++-
  gnome-initial-setup/gis-pkexec.h                   |   6 +
  .../pages/language/cc-language-chooser.c           |  47 ++-
- .../pages/language/gis-language-page.c             | 135 --------
+ .../pages/language/gis-language-page.c             | 129 --------
  .../pages/software/gis-software-page.c             |   2 +-
- .../pages/summary/gis-summary-page.c               | 368 +++++++++++++++++++--
+ .../pages/summary/gis-summary-page.c               | 357 +++++++++++++++++++--
  .../pages/summary/gis-summary-page.ui              |  70 +++-
- 9 files changed, 538 insertions(+), 166 deletions(-)
+ 9 files changed, 527 insertions(+), 160 deletions(-)
 
 diff --git a/data/20-gnome-initial-setup.rules.in b/data/20-gnome-initial-setup.rules.in
 index 02fd21d..d769020 100644
@@ -279,7 +279,7 @@ index 61756be..d68d33b 100644
          add_languages (chooser, locale_ids, initial);
  }
 diff --git a/gnome-initial-setup/pages/language/gis-language-page.c b/gnome-initial-setup/pages/language/gis-language-page.c
-index fe5fed9..be8f90c 100644
+index fe5fed9..3d26f93 100644
 --- a/gnome-initial-setup/pages/language/gis-language-page.c
 +++ b/gnome-initial-setup/pages/language/gis-language-page.c
 @@ -46,70 +46,12 @@ struct _GisLanguagePagePrivate
@@ -353,11 +353,10 @@ index fe5fed9..be8f90c 100644
  static void
  language_changed (CcLanguageChooser  *chooser,
                    GParamSpec         *pspec,
-@@ -117,67 +59,16 @@ language_changed (CcLanguageChooser  *chooser,
- {
+@@ -118,66 +60,21 @@ language_changed (CcLanguageChooser  *chooser,
    GisLanguagePagePrivate *priv = gis_language_page_get_instance_private (page);
    GisDriver *driver;
--  GSettings *region_settings;
+   GSettings *region_settings;
 -  ActUser *user;
  
    priv->new_locale_id = cc_language_chooser_get_language (chooser);
@@ -377,11 +376,11 @@ index fe5fed9..be8f90c 100644
 -      }
 -  }
 -
--  /* Ensure we won't override the selected language for format strings */
--  region_settings = g_settings_new (GNOME_SYSTEM_LOCALE_DIR);
--  g_settings_reset (region_settings, REGION_KEY);
--  g_object_unref (region_settings);
--
+   /* Ensure we won't override the selected language for format strings */
+   region_settings = g_settings_new (GNOME_SYSTEM_LOCALE_DIR);
+   g_settings_reset (region_settings, REGION_KEY);
+   g_object_unref (region_settings);
+ 
 -  user = act_user_manager_get_user (act_user_manager_get_default (),
 -                                    g_get_user_name ());
 -  if (act_user_is_loaded (user))
@@ -421,7 +420,7 @@ index fe5fed9..be8f90c 100644
  static void
  update_distro_logo (GisLanguagePage *page)
  {
-@@ -220,7 +111,6 @@ gis_language_page_constructed (GObject *object)
+@@ -220,7 +117,6 @@ gis_language_page_constructed (GObject *object)
  {
    GisLanguagePage *page = GIS_LANGUAGE_PAGE (object);
    GisLanguagePagePrivate *priv = gis_language_page_get_instance_private (page);
@@ -429,7 +428,7 @@ index fe5fed9..be8f90c 100644
  
    g_type_ensure (CC_TYPE_LANGUAGE_CHOOSER);
  
-@@ -233,24 +123,6 @@ gis_language_page_constructed (GObject *object)
+@@ -233,24 +129,6 @@ gis_language_page_constructed (GObject *object)
    g_signal_connect (priv->language_chooser, "confirm",
                      G_CALLBACK (language_confirmed), page);
  
@@ -454,7 +453,7 @@ index fe5fed9..be8f90c 100644
    gis_page_set_complete (GIS_PAGE (page), TRUE);
    gtk_widget_set_visible (GTK_WIDGET (page), TRUE);
  }
-@@ -264,13 +136,6 @@ gis_language_page_locale_changed (GisPage *page)
+@@ -264,13 +142,6 @@ gis_language_page_locale_changed (GisPage *page)
  static void
  gis_language_page_dispose (GObject *object)
  {
@@ -482,7 +481,7 @@ index 0e2278f..6892365 100644
              g_warning ("%s failed: %s", program, error->message);
          }
 diff --git a/gnome-initial-setup/pages/summary/gis-summary-page.c b/gnome-initial-setup/pages/summary/gis-summary-page.c
-index ba9e1fb..070ab80 100644
+index ba9e1fb..e92ad6a 100644
 --- a/gnome-initial-setup/pages/summary/gis-summary-page.c
 +++ b/gnome-initial-setup/pages/summary/gis-summary-page.c
 @@ -21,8 +21,15 @@
@@ -501,7 +500,7 @@ index ba9e1fb..070ab80 100644
  #include "config.h"
  #include "summary-resources.h"
  #include "gis-summary-page.h"
-@@ -39,15 +46,124 @@
+@@ -39,15 +46,117 @@
  
  struct _GisSummaryPagePrivate {
    GtkWidget *start_button;
@@ -518,7 +517,6 @@ index ba9e1fb..070ab80 100644
    ActUser *user_account;
    const gchar *user_password;
 +
-+  GCancellable *install_cancellable;
 +  GCancellable *cancellable;
  };
  typedef struct _GisSummaryPagePrivate GisSummaryPagePrivate;
@@ -586,7 +584,6 @@ index ba9e1fb..070ab80 100644
 +static void
 +apply_system_locale_changes (GisSummaryPage  *page)
 +{
-+  GSettings *region_settings;
 +  GisDriver *driver;
 +  ActUser *user;
 +
@@ -605,11 +602,6 @@ index ba9e1fb..070ab80 100644
 +      }
 +  }
 +
-+  /* Ensure we won't override the selected language for format strings */
-+  region_settings = g_settings_new (GNOME_SYSTEM_LOCALE_DIR);
-+  g_settings_reset (region_settings, REGION_KEY);
-+  g_object_unref (region_settings);
-+
 +  const char *locale = gis_driver_get_user_language(driver);
 +
 +  user = act_user_manager_get_user (act_user_manager_get_default (),
@@ -626,7 +618,7 @@ index ba9e1fb..070ab80 100644
  static void
  request_info_query (GisSummaryPage  *page,
                      GdmUserVerifier *user_verifier,
-@@ -195,32 +311,115 @@ done_cb (GtkButton *button, GisSummaryPage *page)
+@@ -195,32 +304,115 @@ done_cb (GtkButton *button, GisSummaryPage *page)
      }
  }
  
@@ -762,7 +754,7 @@ index ba9e1fb..070ab80 100644
  }
  
  static void
-@@ -248,12 +447,119 @@ update_distro_name (GisSummaryPage *page)
+@@ -248,12 +440,119 @@ update_distro_name (GisSummaryPage *page)
    g_free (text);
  }
  
@@ -824,12 +816,12 @@ index ba9e1fb..070ab80 100644
 +    gtk_stack_set_visible_child_name (GTK_STACK(priv->status_stack), "spinner_box");
 +    gtk_spinner_start (GTK_SPINNER (priv->spinner));
 +
-+    g_cancellable_cancel (priv->install_cancellable);
++    g_cancellable_cancel (priv->cancellable);
 +
-+    g_clear_pointer (&priv->install_cancellable, g_free);
-+    priv->install_cancellable = g_cancellable_new ();
++    g_clear_pointer (&priv->cancellable, g_free);
++    priv->cancellable = g_cancellable_new ();
 +
-+    g_autoptr (GTask) task = g_task_new (page, priv->install_cancellable,
++    g_autoptr (GTask) task = g_task_new (page, priv->cancellable,
 +                                             installation_task_done, page);
 +
 +    GisDriver *driver = GIS_PAGE(page)->driver;
@@ -844,7 +836,7 @@ index ba9e1fb..070ab80 100644
 +status_stack_reset_cb (GtkButton *button, GisSummaryPage *page)
 +{
 +    GisSummaryPagePrivate *priv = gis_summary_page_get_instance_private(page);
-+    g_cancellable_cancel(priv->install_cancellable);
++    g_cancellable_cancel(priv->cancellable);
 +    update_status_stack(page);
 +    update_distro_name(page);
 +    adw_status_page_set_title(priv->status_page, _("All done!"));
@@ -882,32 +874,28 @@ index ba9e1fb..070ab80 100644
  
    G_OBJECT_CLASS (gis_summary_page_parent_class)->constructed (object);
  
-@@ -268,6 +574,24 @@ gis_summary_page_constructed (GObject *object)
+@@ -268,6 +567,20 @@ gis_summary_page_constructed (GObject *object)
  
    update_distro_name (page);
    g_signal_connect (priv->start_button, "clicked", G_CALLBACK (done_cb), page);
 +  g_signal_connect (priv->cancel_button, "clicked", G_CALLBACK (status_stack_reset_cb), page);
 +
-+  /* If we're in new user mode then we're manipulating system settings */
-+  if (gis_driver_get_mode (GIS_PAGE (page)->driver) == GIS_DRIVER_MODE_NEW_USER)
-+    {
-+      priv->permission = polkit_permission_new_sync ("org.freedesktop.locale1.set-locale", NULL, NULL, NULL);
-+      bus = g_bus_get_sync (G_BUS_TYPE_SYSTEM, NULL, NULL);
-+      g_dbus_proxy_new (bus,
-+                        G_DBUS_PROXY_FLAGS_GET_INVALIDATED_PROPERTIES,
-+                        NULL,
-+                        "org.freedesktop.locale1",
-+                        "/org/freedesktop/locale1",
-+                        "org.freedesktop.locale1",
-+                        priv->cancellable,
-+                        (GAsyncReadyCallback) localed_proxy_ready,
-+                        object);
-+      g_object_unref (bus);
-+    }
++  priv->permission = polkit_permission_new_sync ("org.freedesktop.locale1.set-locale", NULL, NULL, NULL);
++  bus = g_bus_get_sync (G_BUS_TYPE_SYSTEM, NULL, NULL);
++  g_dbus_proxy_new (bus,
++                    G_DBUS_PROXY_FLAGS_GET_INVALIDATED_PROPERTIES,
++                    NULL,
++                    "org.freedesktop.locale1",
++                    "/org/freedesktop/locale1",
++                    "org.freedesktop.locale1",
++                    priv->cancellable,
++                    (GAsyncReadyCallback) localed_proxy_ready,
++                    object);
++  g_object_unref (bus);
  
    gis_page_set_complete (GIS_PAGE (page), TRUE);
  
-@@ -290,7 +614,11 @@ gis_summary_page_class_init (GisSummaryPageClass *klass)
+@@ -290,7 +603,11 @@ gis_summary_page_class_init (GisSummaryPageClass *klass)
    gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass), "/org/gnome/initial-setup/gis-summary-page.ui");
  
    gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisSummaryPage, start_button);
