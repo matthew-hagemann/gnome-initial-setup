@@ -1,3 +1,9 @@
+gnome-initial-setup (48.0-1) UNRELEASED; urgency=medium
+
+  * New upstream release
+
+ -- Alessandro Astone <alessandro.astone@canonical.com>  Fri, 14 Mar 2025 15:26:54 +0100
+
 gnome-initial-setup (48~rc-1) unstable; urgency=medium
 
   * New upstream release
