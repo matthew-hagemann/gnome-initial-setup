@@ -1,10 +1,8 @@
-gnome-initial-setup (48~rc-1) unstable; urgency=medium
+gnome-initial-setup (48~rc-1ubuntu1) UNRELEASED; urgency=medium
 
-  * New upstream release
-
- -- Jeremy Bícha <jbicha@ubuntu.com>  Thu, 06 Mar 2025 10:48:53 -0500
-
-gnome-initial-setup (48~beta-0ubuntu3) UNRELEASED; urgency=medium
+  [ Marco Trevisan (Treviño) ]
+  * Merge with debian
+  * debian/salsa-ci: Use ubuntu recipe
 
   [ Matthew Hagemann ]
   * debian/patches/Dynamic-lang-pack-installation-support.patch
@@ -13,7 +11,13 @@ gnome-initial-setup (48~beta-0ubuntu3) UNRELEASED; urgency=medium
     - Download is skipped if no active network connection is detected.
     - Explicitly set max file descriptors before launching GIS (LP: #2101825)
 
- -- Matthew Gary Hagemann <matt.hagemann@canonical.com>  Thu, 06 Mar 2025 15:54:07 +0200
+ -- Marco Trevisan (Treviño) <marco@ubuntu.com>  Fri, 14 Mar 2025 03:27:16 +0100
+
+gnome-initial-setup (48~rc-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Thu, 06 Mar 2025 10:48:53 -0500
 
 gnome-initial-setup (48~beta-0ubuntu2) plucky; urgency=medium
 
