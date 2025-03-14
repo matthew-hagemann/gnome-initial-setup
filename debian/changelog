@@ -1,4 +1,4 @@
-gnome-initial-setup (48~rc-1ubuntu1) UNRELEASED; urgency=medium
+gnome-initial-setup (48~rc-1ubuntu1) plucky; urgency=medium
 
   [ Marco Trevisan (Treviño) ]
   * Merge with debian
@@ -11,7 +11,7 @@ gnome-initial-setup (48~rc-1ubuntu1) UNRELEASED; urgency=medium
     - Download is skipped if no active network connection is detected.
     - Explicitly set max file descriptors before launching GIS (LP: #2101825)
 
- -- Marco Trevisan (Treviño) <marco@ubuntu.com>  Fri, 14 Mar 2025 03:27:16 +0100
+ -- Marco Trevisan (Treviño) <marco@ubuntu.com>  Fri, 14 Mar 2025 03:29:39 +0100
 
 gnome-initial-setup (48~rc-1) unstable; urgency=medium
 
