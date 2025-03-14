@@ -38,8 +38,6 @@ else
 	-Vmalcontent:Recommends='malcontent [amd64 arm64 armel armhf i386 mips64el ppc64el riscv64 s390x hppa loong64 powerpc ppc64 x32]'
 endif
 
-override_dh_gnome_clean:
-
 # Build tests need to be fixed
 # https://launchpad.net/bugs/2077002
 override_dh_auto_test:
