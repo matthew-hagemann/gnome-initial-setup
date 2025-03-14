@@ -44,9 +44,9 @@ style: fixing start button filling too much space
  .../pages/language/cc-language-chooser.c           |  47 ++-
  .../pages/language/gis-language-page.c             | 129 --------
  .../pages/software/gis-software-page.c             |   2 +-
- .../pages/summary/gis-summary-page.c               | 357 +++++++++++++++++++--
+ .../pages/summary/gis-summary-page.c               | 356 +++++++++++++++++++--
  .../pages/summary/gis-summary-page.ui              |  70 +++-
- 9 files changed, 527 insertions(+), 160 deletions(-)
+ 9 files changed, 526 insertions(+), 160 deletions(-)
 
 diff --git a/data/20-gnome-initial-setup.rules.in b/data/20-gnome-initial-setup.rules.in
 index 02fd21d..d769020 100644
@@ -82,7 +82,7 @@ index 0e276f5..5be7c08 100755
  if [ -f "${CONVD_WRAPPER}" ]; then
  # call convd wrapper passing as first parameter the full path to
 diff --git a/gnome-initial-setup/gis-pkexec.c b/gnome-initial-setup/gis-pkexec.c
-index 9e1bfa9..6654b006 100644
+index 9e1bfa9..6654b00 100644
 --- a/gnome-initial-setup/gis-pkexec.c
 +++ b/gnome-initial-setup/gis-pkexec.c
 @@ -29,6 +29,7 @@ gboolean
@@ -481,7 +481,7 @@ index 0e2278f..6892365 100644
              g_warning ("%s failed: %s", program, error->message);
          }
 diff --git a/gnome-initial-setup/pages/summary/gis-summary-page.c b/gnome-initial-setup/pages/summary/gis-summary-page.c
-index ba9e1fb..e92ad6a 100644
+index ba9e1fb..03a019e 100644
 --- a/gnome-initial-setup/pages/summary/gis-summary-page.c
 +++ b/gnome-initial-setup/pages/summary/gis-summary-page.c
 @@ -21,8 +21,15 @@
@@ -618,7 +618,7 @@ index ba9e1fb..e92ad6a 100644
  static void
  request_info_query (GisSummaryPage  *page,
                      GdmUserVerifier *user_verifier,
-@@ -195,32 +304,115 @@ done_cb (GtkButton *button, GisSummaryPage *page)
+@@ -195,32 +304,114 @@ done_cb (GtkButton *button, GisSummaryPage *page)
      }
  }
  
@@ -632,77 +632,30 @@ index ba9e1fb..e92ad6a 100644
 -  GisSummaryPage *summary = GIS_SUMMARY_PAGE (page);
 -  GisSummaryPagePrivate *priv = gis_summary_page_get_instance_private (summary);
 -  g_autoptr(GError) local_error = NULL;
-+        g_autoptr (GSubprocess) subprocess = NULL;
-+        g_autofree gchar *stdout_buf = NULL;
-+        g_autofree gchar *stderr_buf = NULL;
++  g_autoptr (GSubprocess) subprocess = NULL;
++  g_autofree gchar *stdout_buf = NULL;
++  g_autofree gchar *stderr_buf = NULL;
 +
-+        subprocess = g_subprocess_new (G_SUBPROCESS_FLAGS_STDOUT_PIPE |
-+                                       G_SUBPROCESS_FLAGS_STDERR_PIPE,
-+                                       error,
-+                                       "/usr/bin/check-language-support",
-+                                       "-l",
-+                                       locale,
-+                                       NULL);
++  subprocess = g_subprocess_new (G_SUBPROCESS_FLAGS_STDOUT_PIPE |
++                                 G_SUBPROCESS_FLAGS_STDERR_PIPE,
++                                 error,
++                                 "/usr/bin/check-language-support",
++                                 "-l",
++                                 locale,
++                                 NULL);
 +
-+        if (!subprocess)
-+                return NULL;
++  if (!subprocess)
++          return NULL;
 +
-+        if (!g_subprocess_communicate_utf8 (subprocess, NULL, cancellable,
-+                                            &stdout_buf, &stderr_buf, error)) {
-+                g_prefix_error_literal (error, "Failed to communicate with check-language-support: ");
-+                return NULL;
-+        }
-+
-+ 
-+
-+        if (!g_subprocess_wait_check (subprocess, cancellable, error)) {
-+                g_prefix_error_literal (error, "check-language-support returned an error: ");
-+                return NULL;
-+        }
-+
-+        if (stderr_buf && *stderr_buf != '\0')
-+                g_warning ("check-language-support stderr: %s", stderr_buf);
-+
-+        if (!stdout_buf || *stdout_buf == '\0')
-+                return g_ptr_array_new_with_free_func (g_free);
-+
-+        g_auto (GStrv) packages_split = g_strsplit (g_strstrip (stdout_buf), " ", -1);
-+        return g_ptr_array_new_take_null_terminated ((gpointer *) g_steal_pointer (&packages_split), g_free);
-+}
++  if (!g_subprocess_communicate_utf8 (subprocess, NULL, cancellable,
++                                      &stdout_buf, &stderr_buf, error)) {
++    g_prefix_error_literal (error, "Failed to communicate with check-language-support: ");
++    return NULL;
++  }
  
 -  if (!gis_driver_save_data (GIS_PAGE (page)->driver, &local_error))
 -    {
 -      g_warning ("Error saving data: %s", local_error->message);
-+static gboolean
-+install_language_support (const gchar   *locale,
-+                          GCancellable  *cancellable,
-+                          GError       **error)
-+{
-+        g_autoptr (GPtrArray) packages = NULL;
-+
-+        g_autofree gchar *locale_for_install = NULL;
-+        char *suffix = strchr (locale, '.');
-+        if (suffix)
-+                locale_for_install = g_strndup (locale, suffix - locale);
-+        else
-+                locale_for_install = g_strdup (locale);
-+
-+        packages = get_lang_support_packages_for_locale (locale_for_install, cancellable, error);
-+        if (!packages)
-+                return FALSE;
-+
-+        if (packages->len == 0) {
-+                g_message ("No packages to install for locale: %s", locale_for_install);
-+                return TRUE;
-+        }
-+
-+        if (!apt_get_install (packages, cancellable, error)) {
-+                g_prefix_error_literal (error, "Error installing language support: ");
-+                return FALSE;
-+        }
-+
-+        return TRUE;
-+}
  
 -      GtkWindow *parent = GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (page)));
 -      GtkWidget *dialog = adw_message_dialog_new (parent,
@@ -710,51 +663,97 @@ index ba9e1fb..e92ad6a 100644
 -                                                  local_error->message);
 -      adw_message_dialog_add_response (ADW_MESSAGE_DIALOG (dialog), "close", _("Close"));
 -      /* FIXME: Provide some more options for debugging or recovery */
+ 
+-      gtk_window_present (GTK_WINDOW (dialog));
+-    }
++  if (!g_subprocess_wait_check (subprocess, cancellable, error)) {
++    g_prefix_error_literal (error, "check-language-support returned an error: ");
++    return NULL;
++  }
+ 
+-  gis_driver_get_user_permissions (GIS_PAGE (page)->driver,
+-                                   &priv->user_account,
+-                                   &priv->user_password);
++  if (stderr_buf && *stderr_buf != '\0')
++    g_warning ("check-language-support stderr: %s", stderr_buf);
+ 
+-  gtk_widget_grab_focus (priv->start_button);
++  if (!stdout_buf || *stdout_buf == '\0')
++    return g_ptr_array_new_with_free_func (g_free);
++
++  g_auto (GStrv) packages_split = g_strsplit (g_strstrip (stdout_buf), " ", -1);
++  return g_ptr_array_new_take_null_terminated ((gpointer *) g_steal_pointer (&packages_split), g_free);
++}
++
++static gboolean
++install_language_support (const gchar   *locale,
++                          GCancellable  *cancellable,
++                          GError       **error)
++{
++  g_autoptr (GPtrArray) packages = NULL;
++  g_autofree gchar *locale_for_install = NULL;
++
++  char *suffix = strchr (locale, '.');
++  if (suffix)
++    locale_for_install = g_strndup (locale, suffix - locale);
++  else
++    locale_for_install = g_strdup (locale);
++
++  packages = get_lang_support_packages_for_locale (locale_for_install, cancellable, error);
++  if (!packages)
++    return FALSE;
++
++  if (packages->len == 0) {
++    g_message ("No packages to install for locale: %s", locale_for_install);
++    return TRUE;
++  }
++
++  if (!apt_get_install (packages, cancellable, error)) {
++    g_prefix_error_literal (error, "Error installing language support: ");
++    return FALSE;
++  }
++
++  return TRUE;
++}
++
 +static gboolean
 +check_network_connection (void)
 +{
 +    g_autoptr (GNetworkMonitor) monitor = g_network_monitor_get_default ();
 +    return g_network_monitor_get_network_available (monitor);
 +}
- 
--      gtk_window_present (GTK_WINDOW (dialog));
--    }
++
 +static void
 +installation_task_async (GTask        *task,
 +                         gpointer      source_object,
 +                         gpointer      task_data,
 +                         GCancellable *cancellable)
 +{
-+        const gchar *locale = task_data;
-+        g_autoptr (GError) error = NULL;
-+        if (g_cancellable_set_error_if_cancelled (cancellable, &error)) {
-+                g_task_return_error (task, g_steal_pointer(&error));
-+                return;
-+        }
- 
--  gis_driver_get_user_permissions (GIS_PAGE (page)->driver,
--                                   &priv->user_account,
--                                   &priv->user_password);
-+        if (!install_language_support (locale, cancellable, &error)) {
-+                g_task_return_error (task, g_steal_pointer (&error));
-+                return;
-+        }
- 
--  gtk_widget_grab_focus (priv->start_button);
-+        g_task_return_boolean(task, TRUE);
++  const gchar *locale = task_data;
++  g_autoptr (GError) error = NULL;
 +
-+ 
++  if (g_cancellable_set_error_if_cancelled (cancellable, &error)) {
++    g_task_return_error (task, g_steal_pointer(&error));
++    return;
++  }
++
++  if (!install_language_support (locale, cancellable, &error)) {
++    g_task_return_error (task, g_steal_pointer (&error));
++    return;
++  }
++
++  g_task_return_boolean (task, TRUE);
 +}
 +
 +static void
 +update_status_stack (GisSummaryPage    *page)
 +{
-+        GisSummaryPagePrivate *priv = gis_summary_page_get_instance_private (page);
-+        gtk_stack_set_visible_child (GTK_STACK (priv->status_stack), priv->start_box);
++  GisSummaryPagePrivate *priv = gis_summary_page_get_instance_private (page);
++  gtk_stack_set_visible_child (GTK_STACK (priv->status_stack), priv->start_box);
  }
  
  static void
-@@ -248,12 +440,119 @@ update_distro_name (GisSummaryPage *page)
+@@ -248,12 +439,119 @@ update_distro_name (GisSummaryPage *page)
    g_free (text);
  }
  
@@ -763,25 +762,25 @@ index ba9e1fb..e92ad6a 100644
 +                        GAsyncResult *res,
 +                        gpointer      user_data)
 +{
-+        g_autoptr (GError) error = NULL;
-+        GisSummaryPage *page = user_data;
-+        GisSummaryPagePrivate *priv = gis_summary_page_get_instance_private (page);
++  g_autoptr (GError) error = NULL;
++  GisSummaryPage *page = user_data;
++  GisSummaryPagePrivate *priv = gis_summary_page_get_instance_private (page);
 +
-+        if (g_task_propagate_boolean (G_TASK (res), &error)) {
-+                apply_system_locale_changes(page);
-+                update_status_stack (page);
-+                update_distro_name (page);
-+                adw_status_page_set_title (priv->status_page, _("All done!"));
-+                return;
-+        }
++  if (g_task_propagate_boolean (G_TASK (res), &error)) {
++    apply_system_locale_changes(page);
++    update_status_stack (page);
++    update_distro_name (page);
++    adw_status_page_set_title (priv->status_page, _("All done!"));
++    return;
++  }
 +
-+        if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
-+                update_status_stack (page);
-+                return;
-+        }
-+        update_status_stack (page);
++  if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
++    update_status_stack (page);
++    return;
++  }
 +
-+        g_warning ("Installation failed: %s", error->message);
++  update_status_stack (page);
++  g_warning ("Installation failed: %s", error->message);
 +}
 +
 +static void
@@ -874,7 +873,7 @@ index ba9e1fb..e92ad6a 100644
  
    G_OBJECT_CLASS (gis_summary_page_parent_class)->constructed (object);
  
-@@ -268,6 +567,20 @@ gis_summary_page_constructed (GObject *object)
+@@ -268,6 +566,20 @@ gis_summary_page_constructed (GObject *object)
  
    update_distro_name (page);
    g_signal_connect (priv->start_button, "clicked", G_CALLBACK (done_cb), page);
@@ -895,7 +894,7 @@ index ba9e1fb..e92ad6a 100644
  
    gis_page_set_complete (GIS_PAGE (page), TRUE);
  
-@@ -290,7 +603,11 @@ gis_summary_page_class_init (GisSummaryPageClass *klass)
+@@ -290,7 +602,11 @@ gis_summary_page_class_init (GisSummaryPageClass *klass)
    gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass), "/org/gnome/initial-setup/gis-summary-page.ui");
  
    gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisSummaryPage, start_button);
