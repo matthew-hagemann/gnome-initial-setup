@@ -44,9 +44,9 @@ style: fixing start button filling too much space
  .../pages/language/cc-language-chooser.c           |  47 ++-
  .../pages/language/gis-language-page.c             | 129 --------
  .../pages/software/gis-software-page.c             |   2 +-
- .../pages/summary/gis-summary-page.c               | 356 +++++++++++++++++++--
- .../pages/summary/gis-summary-page.ui              |  70 +++-
- 9 files changed, 526 insertions(+), 160 deletions(-)
+ .../pages/summary/gis-summary-page.c               | 331 +++++++++++++++++++--
+ .../pages/summary/gis-summary-page.ui              |  70 ++++-
+ 9 files changed, 501 insertions(+), 160 deletions(-)
 
 diff --git a/data/20-gnome-initial-setup.rules.in b/data/20-gnome-initial-setup.rules.in
 index 02fd21d..d769020 100644
@@ -481,7 +481,7 @@ index 0e2278f..6892365 100644
              g_warning ("%s failed: %s", program, error->message);
          }
 diff --git a/gnome-initial-setup/pages/summary/gis-summary-page.c b/gnome-initial-setup/pages/summary/gis-summary-page.c
-index ba9e1fb..03a019e 100644
+index ba9e1fb..0ad0764 100644
 --- a/gnome-initial-setup/pages/summary/gis-summary-page.c
 +++ b/gnome-initial-setup/pages/summary/gis-summary-page.c
 @@ -21,8 +21,15 @@
@@ -500,7 +500,7 @@ index ba9e1fb..03a019e 100644
  #include "config.h"
  #include "summary-resources.h"
  #include "gis-summary-page.h"
-@@ -39,15 +46,117 @@
+@@ -39,15 +46,92 @@
  
  struct _GisSummaryPagePrivate {
    GtkWidget *start_button;
@@ -527,8 +527,8 @@ index ba9e1fb..03a019e 100644
 +set_localed_locale (GisSummaryPage *self)
 +{
 +  GisSummaryPagePrivate *priv = gis_summary_page_get_instance_private (self);
-+  GVariantBuilder *b;
-+  gchar *s;
++  g_autoptr (GVariantBuilder) b = NULL;
++  g_autofree gchar *s = NULL;
 +  GisDriver *driver;
 +
 +  driver = GIS_PAGE (self)->driver;
@@ -537,14 +537,14 @@ index ba9e1fb..03a019e 100644
 +  b = g_variant_builder_new (G_VARIANT_TYPE ("as"));
 +  s = g_strconcat ("LANG=", locale, NULL);
 +  g_variant_builder_add (b, "s", s);
-+  g_free (s);
-+    
++
 +  g_dbus_proxy_call (priv->localed,
 +                     "SetLocale",
 +                     g_variant_new ("(asb)", b, TRUE),
 +                     G_DBUS_CALL_FLAGS_NONE,
 +                     -1, NULL, NULL, NULL);
-+  g_variant_builder_unref (b);
++
++  act_user_set_language (priv->user_account, locale);
 +}
 +
 +static void
@@ -570,22 +570,9 @@ index ba9e1fb..03a019e 100644
 +}
 +
 +static void
-+user_loaded (GObject    *object,
-+             GParamSpec *pspec,
-+             gpointer    user_data)
-+{
-+  gchar *new_locale_id = user_data;
-+
-+  act_user_set_language (ACT_USER (object), new_locale_id);
-+
-+  g_free (new_locale_id);
-+}
-+
-+static void
 +apply_system_locale_changes (GisSummaryPage  *page)
 +{
 +  GisDriver *driver;
-+  ActUser *user;
 +
 +  GisSummaryPagePrivate *priv = gis_summary_page_get_instance_private (page);
 +  driver = GIS_PAGE (page)->driver;
@@ -601,24 +588,12 @@ index ba9e1fb..03a019e 100644
 +                                      page);
 +      }
 +  }
-+
-+  const char *locale = gis_driver_get_user_language(driver);
-+
-+  user = act_user_manager_get_user (act_user_manager_get_default (),
-+                                    g_get_user_name ());
-+  if (act_user_is_loaded (user))
-+    act_user_set_language (user, locale);
-+  else
-+    g_signal_connect (user,
-+                      "notify::is-loaded",
-+                      G_CALLBACK (user_loaded),
-+                      g_strdup (locale));
 +}
 +
  static void
  request_info_query (GisSummaryPage  *page,
                      GdmUserVerifier *user_verifier,
-@@ -195,32 +304,114 @@ done_cb (GtkButton *button, GisSummaryPage *page)
+@@ -195,32 +279,114 @@ done_cb (GtkButton *button, GisSummaryPage *page)
      }
  }
  
@@ -676,8 +651,7 @@ index ba9e1fb..03a019e 100644
 -                                   &priv->user_password);
 +  if (stderr_buf && *stderr_buf != '\0')
 +    g_warning ("check-language-support stderr: %s", stderr_buf);
- 
--  gtk_widget_grab_focus (priv->start_button);
++
 +  if (!stdout_buf || *stdout_buf == '\0')
 +    return g_ptr_array_new_with_free_func (g_free);
 +
@@ -744,7 +718,8 @@ index ba9e1fb..03a019e 100644
 +
 +  g_task_return_boolean (task, TRUE);
 +}
-+
+ 
+-  gtk_widget_grab_focus (priv->start_button);
 +static void
 +update_status_stack (GisSummaryPage    *page)
 +{
@@ -753,7 +728,7 @@ index ba9e1fb..03a019e 100644
  }
  
  static void
-@@ -248,12 +439,119 @@ update_distro_name (GisSummaryPage *page)
+@@ -248,12 +414,119 @@ update_distro_name (GisSummaryPage *page)
    g_free (text);
  }
  
@@ -873,7 +848,7 @@ index ba9e1fb..03a019e 100644
  
    G_OBJECT_CLASS (gis_summary_page_parent_class)->constructed (object);
  
-@@ -268,6 +566,20 @@ gis_summary_page_constructed (GObject *object)
+@@ -268,6 +541,20 @@ gis_summary_page_constructed (GObject *object)
  
    update_distro_name (page);
    g_signal_connect (priv->start_button, "clicked", G_CALLBACK (done_cb), page);
@@ -894,7 +869,7 @@ index ba9e1fb..03a019e 100644
  
    gis_page_set_complete (GIS_PAGE (page), TRUE);
  
-@@ -290,7 +602,11 @@ gis_summary_page_class_init (GisSummaryPageClass *klass)
+@@ -290,7 +577,11 @@ gis_summary_page_class_init (GisSummaryPageClass *klass)
    gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass), "/org/gnome/initial-setup/gis-summary-page.ui");
  
    gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass), GisSummaryPage, start_button);
