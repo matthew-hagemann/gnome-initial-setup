@@ -44,11 +44,11 @@ index c15fd6e..dfc6f4b 100644
  Type=Application
  StartupNotify=true
 diff --git a/data/meson.build b/data/meson.build
-index dfa064c..239a44b 100644
+index decf523..102a344 100644
 --- a/data/meson.build
 +++ b/data/meson.build
-@@ -130,3 +130,4 @@ configure_file(
- 
- mode_dir = join_paths(data_dir, 'gnome-shell', 'modes')
+@@ -132,3 +132,4 @@ mode_dir = join_paths(data_dir, 'gnome-shell', 'modes')
  install_data('initial-setup.json', install_dir: mode_dir)
+ 
+ install_data('distributor-logo.svg', install_dir: join_paths(data_dir, 'icons', 'hicolor', 'scalable', 'places'))
 +install_data('gnome-initial-setup-wrapper', install_dir: libexec_dir)
