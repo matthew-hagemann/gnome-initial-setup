@@ -1,9 +1,16 @@
-gnome-initial-setup (48.0-1ubuntu3) UNRELEASED; urgency=medium
+gnome-initial-setup (48.0-1ubuntu3) plucky; urgency=medium
 
+  [ Sebastien Bacher ]
   * debian/patches/0001-Add-Ubuntu-mode-with-special-pages.patch:
     - update the mascot asset for plucky
 
- -- Sebastien Bacher <seb128@ubuntu.com>  Tue, 25 Mar 2025 15:11:31 +0100
+  [ Alessandro Astone ]
+  * Provide distributor-logo icon (LP: #2103423)
+
+  [ Jeremy Bícha ]
+  * Update Ubuntu report page for deprecation of /etc/timezone
+
+ -- Jeremy Bícha <jbicha@ubuntu.com>  Wed, 26 Mar 2025 18:47:03 -0400
 
 gnome-initial-setup (48.0-1ubuntu2) plucky; urgency=medium
 
