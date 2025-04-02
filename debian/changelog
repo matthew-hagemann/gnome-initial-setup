@@ -1,3 +1,11 @@
+gnome-initial-setup (48.0-1ubuntu4) UNRELEASED; urgency=medium
+
+  * debian/patches/launchpad-translations-export.patch:
+    - include translations from launchpad a patch, it's needed since we
+      opted out from langpacks to include all languages (lp: #2104148)
+
+ -- Sebastien Bacher <seb128@ubuntu.com>  Wed, 02 Apr 2025 11:26:56 +0200
+
 gnome-initial-setup (48.0-1ubuntu3) plucky; urgency=medium
 
   [ Sebastien Bacher ]
