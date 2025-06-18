@@ -66,12 +66,12 @@ to the first three pages.
  .../pages/ubuntu-report/ubuntu-report.svg          |    1 +
  .../pages/welcome/gis-welcome-page.c               |   32 +-
  .../pages/welcome/gis-welcome-page.css             |    4 +
- .../pages/welcome/gis-welcome-page.ui              |   56 +-
+ .../pages/welcome/gis-welcome-page.ui              |   57 +-
  .../pages/welcome/initial-setup-welcome.svg        | 1833 --------------------
  .../pages/welcome/ubuntu-mascot.svg                |    1 +
  .../pages/welcome/welcome.gresource.xml            |    2 +-
  po/POTFILES.in                                     |   10 +
- 66 files changed, 3513 insertions(+), 1921 deletions(-)
+ 66 files changed, 3514 insertions(+), 1921 deletions(-)
  create mode 100644 data/its/polkit.its
  create mode 100644 data/its/polkit.loc
  create mode 100644 gnome-initial-setup/pages/apps/app-center.svg
@@ -4383,10 +4383,10 @@ index 0abdd60..d995e10 100644
 +  text-decoration: none;
 +}
 diff --git a/gnome-initial-setup/pages/welcome/gis-welcome-page.ui b/gnome-initial-setup/pages/welcome/gis-welcome-page.ui
-index dd62662..92192c4 100644
+index dd62662..77c7736 100644
 --- a/gnome-initial-setup/pages/welcome/gis-welcome-page.ui
 +++ b/gnome-initial-setup/pages/welcome/gis-welcome-page.ui
-@@ -1,52 +1,40 @@
+@@ -1,52 +1,41 @@
 -<?xml version="1.0"?>
 +<?xml version="1.0" encoding="UTF-8"?>
  <interface>
@@ -4450,6 +4450,7 @@ index dd62662..92192c4 100644
 +                <property name="use-markup">True</property>
 +                <property name="visible">True</property>
 +                <property name="label"></property>
++                <property name="accessible-role">button</property>
                </object>
              </child>
 -            <style>
