@@ -6,7 +6,6 @@ reenable-existing-user-mode.patch
 0002-no-deprecation-warnings.patch
 0008-Ubuntu-location-default.patch
 ubuntu-distributor-logo.patch
-Update-style-to-the-same-than-flutter-installer.patch
 Add-wrapper-for-convd-flutter-ui.patch
 Do-not-skip-g-i-s-first-login-mode-after-user-creation.patch
 Adding-EULA-page-for-OEMs.patch

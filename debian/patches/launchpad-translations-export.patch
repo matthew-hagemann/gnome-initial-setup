@@ -1,5 +1,151 @@
+From: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Date: Thu, 19 Jun 2025 13:15:24 +0200
+Subject: launchpad-translations-export
+
+---
+ po/LINGUAS        |   30 ++
+ po/ab.po          |  647 +++++++++++++++++++++--------
+ po/af.po          | 1167 +++++++++++++++++++++++++++++++++-------------------
+ po/am.po          | 1009 +++++++++++++++++++++++++++++++++++++++++++++
+ po/an.po          | 1109 +++++++++++++++++++++++++++++++------------------
+ po/ar.po          | 1150 ++++++++++++++++++++++++++++++---------------------
+ po/arn.po         | 1009 +++++++++++++++++++++++++++++++++++++++++++++
+ po/as.po          | 1175 +++++++++++++++++++++++++++++++---------------------
+ po/ast.po         | 1045 +++++++++++++++++++++++++++++++++++++++++++++++
+ po/az.po          | 1009 +++++++++++++++++++++++++++++++++++++++++++++
+ po/be.po          |  507 +++++++++++++++++------
+ po/bg.po          |  456 +++++++++++++++++----
+ po/bn.po          | 1011 +++++++++++++++++++++++++++++++++++++++++++++
+ po/bo.po          | 1009 +++++++++++++++++++++++++++++++++++++++++++++
+ po/br.po          | 1009 +++++++++++++++++++++++++++++++++++++++++++++
+ po/bs.po          | 1076 ++++++++++++++++++++++++++++++++++--------------
+ po/ca.po          |  483 ++++++++++++++++------
+ po/ca@valencia.po | 1064 ++++++++++++++++++++++++++++++-----------------
+ po/ceb.po         | 1028 ++++++++++++++++++++++++++++++++++++++++++++++
+ po/ckb.po         |  917 ++++++++++++++++++++++++-----------------
+ po/cs.po          |  509 +++++++++++++++++------
+ po/cy.po          | 1080 ++++++++++++++++++++++++++++++++++++++++++++++++
+ po/da.po          |  625 +++++++++++++++++-----------
+ po/de.po          |  651 ++++++++++++++++++-----------
+ po/el.po          |  674 +++++++++++++++---------------
+ po/en_AU.po       | 1057 +++++++++++++++++++++++++++++++++++++++++++++++
+ po/en_CA.po       | 1082 ++++++++++++++++++++++++++++++++++++++++++++++++
+ po/en_GB.po       |  803 +++++++++++++++++-------------------
+ po/eo.po          |  784 ++++++++++++++++++-----------------
+ po/es.po          |  909 ++++++++++++++++++-----------------------
+ po/et.po          | 1077 +++++++++++++++++++++++++++++++++++++-----------
+ po/eu.po          |  903 ++++++++++++++++++++--------------------
+ po/fa.po          |  869 ++++++++++++++++++---------------------
+ po/fi.po          |  837 +++++++++++++++++--------------------
+ po/fil.po         | 1009 +++++++++++++++++++++++++++++++++++++++++++++
+ po/fo.po          | 1009 +++++++++++++++++++++++++++++++++++++++++++++
+ po/fr.po          |  551 +++++++++++++++++++++----
+ po/fr_CA.po       | 1102 +++++++++++++++++++++++++++++++++++++++++++++++++
+ po/fur.po         |  705 ++++++++++++++++----------------
+ po/ga.po          |  956 +++++++++++++++++++++++++++++++------------
+ po/gd.po          | 1013 +++++++++++++++++++++++++++++----------------
+ po/gl.po          |  619 ++++++++++++++++++----------
+ po/gu.po          | 1128 ++++++++++++++++++++++++++++++++------------------
+ po/he.po          |  819 +++++++++++++++++--------------------
+ po/hi.po          |  579 ++++++++++++++++++++------
+ po/hr.po          |  835 ++++++++++++++++++++++---------------
+ po/hu.po          |  478 +++++++++++++++++++---
+ po/hy.po          | 1011 +++++++++++++++++++++++++++++++++++++++++++++
+ po/ia.po          |  698 +++++++++++++++++++++----------
+ po/id.po          |  490 ++++++++++++++++++----
+ po/ie.po          |  706 +++++++++++++++++++++++---------
+ po/is.po          |  855 ++++++++++++++++++++++----------------
+ po/it.po          |  627 ++++++++++++++++++++++------
+ po/ja.po          |  985 +++++++++++++++++++++++++-------------------
+ po/ka.po          |  500 ++++++++++++++++-------
+ po/kab.po         |  527 +++++++++++++++++++-----
+ po/kk.po          |  697 ++++++++++++++++---------------
+ po/kn.po          | 1131 ++++++++++++++++++++++++++++++++------------------
+ po/ko.po          |  667 +++++++++++++++++-------------
+ po/ku.po          | 1049 +++++++++++++++++++++++++++++++++++++++++++++++
+ po/kw.po          | 1038 ++++++++++++++++++++++++++++++++++++++++++++++
+ po/lld.po         | 1023 ++++++++++++++++++++++++++++++++++++++++++++++
+ po/lt.po          |  736 +++++++++++++++++++--------------
+ po/lv.po          |  630 +++++++++++++++++++---------
+ po/mjw.po         |  770 +++++++++++++++++++++++++---------
+ po/ml.po          | 1066 +++++++++++++++++++++++++++++++-----------------
+ po/mnw.po         | 1041 ++++++++++++++++++++++++++++++++++++++++++++++
+ po/mr.po          | 1152 +++++++++++++++++++++++++++++++--------------------
+ po/ms.po          |  806 +++++++++++++++++++++++++++---------
+ po/my.po          | 1126 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ po/nb.po          |  456 +++++++++++++++++----
+ po/ne.po          |  826 ++++++++++++++++++++++++-------------
+ po/nl.po          |  727 +++++++++++++++++----------------
+ po/nn.po          | 1009 +++++++++++++++++++++++++++++++++++++++++++++
+ po/oc.po          |  824 +++++++++++++++++++------------------
+ po/or.po          | 1132 ++++++++++++++++++++++++++++++++------------------
+ po/pa.po          |  897 ++++++++++++++++++----------------------
+ po/pl.po          |  486 ++++++++++++++++++----
+ po/ps.po          | 1021 ++++++++++++++++++++++++++++++++++++++++++++++
+ po/pt.po          |  869 ++++++++++++++++++---------------------
+ po/pt_BR.po       |  835 +++++++++++++++++--------------------
+ po/ro.po          |  619 ++++++++++++++++------------
+ po/ru.po          |  529 +++++++++++++++++-------
+ po/sd.po          | 1009 +++++++++++++++++++++++++++++++++++++++++++++
+ po/se.po          | 1009 +++++++++++++++++++++++++++++++++++++++++++++
+ po/shn.po         | 1009 +++++++++++++++++++++++++++++++++++++++++++++
+ po/si.po          | 1009 +++++++++++++++++++++++++++++++++++++++++++++
+ po/sk.po          |  776 ++++++++++++++++-------------------
+ po/sl.po          |  472 +++++++++++++++++----
+ po/sq.po          | 1053 +++++++++++++++++++++++++++++++++++++++++++++++
+ po/sr.po          |  726 ++++++++++++++++-----------------
+ po/sr@latin.po    |  732 ++++++++++++++++-----------------
+ po/su.po          | 1074 ++++++++++++++++++++++++++++++++++++++++++++++++
+ po/sv.po          |  533 +++++++++++++++++-------
+ po/szl.po         | 1029 ++++++++++++++++++++++++++++++++++++++++++++++
+ po/ta.po          | 1135 ++++++++++++++++++++++++++++++++-------------------
+ po/te.po          | 1111 +++++++++++++++++++++++++++++++++-----------------
+ po/tg.po          |  968 +++++++++++++++++++++++--------------------
+ po/th.po          |  695 ++++++++++++++++++++-----------
+ po/tl.po          | 1009 +++++++++++++++++++++++++++++++++++++++++++++
+ po/tr.po          |  580 ++++++++++++++++++++------
+ po/ug.po          | 1178 ++++++++++++++++++++++++++++++++++++++++-------------
+ po/uk.po          |  590 ++++++++++++++++++++-------
+ po/uz.po          | 1043 +++++++++++++++++++++++++++++++++++++++++++++++
+ po/vi.po          |  848 +++++++++++++++++++-------------------
+ po/zh_CN.po       |  773 ++++++++++++++++-------------------
+ po/zh_HK.po       | 1142 +++++++++++++++++++++++++++++++++++----------------
+ po/zh_TW.po       |  807 ++++++++++++++++++------------------
+ 108 files changed, 69837 insertions(+), 22607 deletions(-)
+ create mode 100644 po/am.po
+ create mode 100644 po/arn.po
+ create mode 100644 po/ast.po
+ create mode 100644 po/az.po
+ create mode 100644 po/bn.po
+ create mode 100644 po/bo.po
+ create mode 100644 po/br.po
+ create mode 100644 po/ceb.po
+ create mode 100644 po/cy.po
+ create mode 100644 po/en_AU.po
+ create mode 100644 po/en_CA.po
+ create mode 100644 po/fil.po
+ create mode 100644 po/fo.po
+ create mode 100644 po/fr_CA.po
+ create mode 100644 po/hy.po
+ create mode 100644 po/ku.po
+ create mode 100644 po/kw.po
+ create mode 100644 po/lld.po
+ create mode 100644 po/mnw.po
+ create mode 100644 po/my.po
+ create mode 100644 po/nn.po
+ create mode 100644 po/ps.po
+ create mode 100644 po/sd.po
+ create mode 100644 po/se.po
+ create mode 100644 po/shn.po
+ create mode 100644 po/si.po
+ create mode 100644 po/sq.po
+ create mode 100644 po/su.po
+ create mode 100644 po/szl.po
+ create mode 100644 po/tl.po
+ create mode 100644 po/uz.po
+
 diff --git a/po/LINGUAS b/po/LINGUAS
-index 6a7cb837..50f34511 100644
+index 6a7cb83..50f3451 100644
 --- a/po/LINGUAS
 +++ b/po/LINGUAS
 @@ -1,19 +1,29 @@
@@ -104,7 +250,7 @@ index 6a7cb837..50f34511 100644
  zh_CN
  zh_HK
 diff --git a/po/ab.po b/po/ab.po
-index d50f8b9b..f28e9685 100644
+index d50f8b9..f28e968 100644
 --- a/po/ab.po
 +++ b/po/ab.po
 @@ -1,67 +1,76 @@
@@ -1050,7 +1196,7 @@ index d50f8b9b..f28e9685 100644
 +msgid "Open App Center"
  msgstr ""
 diff --git a/po/af.po b/po/af.po
-index f15828fa..7a018ff0 100644
+index f15828f..7a018ff 100644
 --- a/po/af.po
 +++ b/po/af.po
 @@ -7,80 +7,85 @@
@@ -2589,7 +2735,7 @@ index f15828fa..7a018ff0 100644
 +#~ "vergeet."
 diff --git a/po/am.po b/po/am.po
 new file mode 100644
-index 00000000..c4515fbe
+index 0000000..c4515fb
 --- /dev/null
 +++ b/po/am.po
 @@ -0,0 +1,1009 @@
@@ -3603,7 +3749,7 @@ index 00000000..c4515fbe
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/an.po b/po/an.po
-index 32141467..925c37cd 100644
+index 3214146..925c37c 100644
 --- a/po/an.po
 +++ b/po/an.po
 @@ -7,112 +7,113 @@
@@ -5023,7 +5169,7 @@ index 32141467..925c37cd 100644
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/ar.po b/po/ar.po
-index 32430a66..0a6fa2c7 100644
+index 32430a6..0a6fa2c 100644
 --- a/po/ar.po
 +++ b/po/ar.po
 @@ -5,114 +5,115 @@
@@ -6542,7 +6688,7 @@ index 32430a66..0a6fa2c7 100644
 +msgstr "فتح مركز التطبيقات"
 diff --git a/po/arn.po b/po/arn.po
 new file mode 100644
-index 00000000..15081161
+index 0000000..1508116
 --- /dev/null
 +++ b/po/arn.po
 @@ -0,0 +1,1009 @@
@@ -7556,7 +7702,7 @@ index 00000000..15081161
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/as.po b/po/as.po
-index aba52749..17508fb8 100644
+index aba5274..17508fb 100644
 --- a/po/as.po
 +++ b/po/as.po
 @@ -6,112 +6,113 @@
@@ -9045,7 +9191,7 @@ index aba52749..17508fb8 100644
 +msgstr ""
 diff --git a/po/ast.po b/po/ast.po
 new file mode 100644
-index 00000000..8fbee3b1
+index 0000000..8fbee3b
 --- /dev/null
 +++ b/po/ast.po
 @@ -0,0 +1,1045 @@
@@ -10096,7 +10242,7 @@ index 00000000..8fbee3b1
 +msgstr ""
 diff --git a/po/az.po b/po/az.po
 new file mode 100644
-index 00000000..dedb29d0
+index 0000000..dedb29d
 --- /dev/null
 +++ b/po/az.po
 @@ -0,0 +1,1009 @@
@@ -11110,7 +11256,7 @@ index 00000000..dedb29d0
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/be.po b/po/be.po
-index d07f22c2..94dbaf44 100644
+index d07f22c..94dbaf4 100644
 --- a/po/be.po
 +++ b/po/be.po
 @@ -8,50 +8,55 @@
@@ -11853,7 +11999,7 @@ index d07f22c2..94dbaf44 100644
 +#~ msgid "Password reminder will be shown in case you forget your password."
 +#~ msgstr "Падказка будзе паказвацца, калі вы забудзеце пароль."
 diff --git a/po/bg.po b/po/bg.po
-index 04af45ea..0790e45d 100644
+index 04af45e..0790e45 100644
 --- a/po/bg.po
 +++ b/po/bg.po
 @@ -8,50 +8,55 @@
@@ -12504,7 +12650,7 @@ index 04af45ea..0790e45d 100644
 +#~ msgstr "Напомняне за паролата, което се показва, ако я забравите."
 diff --git a/po/bn.po b/po/bn.po
 new file mode 100644
-index 00000000..781c4508
+index 0000000..781c450
 --- /dev/null
 +++ b/po/bn.po
 @@ -0,0 +1,1011 @@
@@ -13521,7 +13667,7 @@ index 00000000..781c4508
 +msgstr ""
 diff --git a/po/bo.po b/po/bo.po
 new file mode 100644
-index 00000000..9b36d126
+index 0000000..9b36d12
 --- /dev/null
 +++ b/po/bo.po
 @@ -0,0 +1,1009 @@
@@ -14536,7 +14682,7 @@ index 00000000..9b36d126
 +msgstr ""
 diff --git a/po/br.po b/po/br.po
 new file mode 100644
-index 00000000..c042fd4f
+index 0000000..c042fd4
 --- /dev/null
 +++ b/po/br.po
 @@ -0,0 +1,1009 @@
@@ -15550,7 +15696,7 @@ index 00000000..c042fd4f
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/bs.po b/po/bs.po
-index 4c158c3c..0bdecb5c 100644
+index 4c158c3..0bdecb5 100644
 --- a/po/bs.po
 +++ b/po/bs.po
 @@ -6,112 +6,116 @@
@@ -16885,7 +17031,7 @@ index 4c158c3c..0bdecb5c 100644
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/ca.po b/po/ca.po
-index efe100ed..b0df5846 100644
+index efe100e..b0df584 100644
 --- a/po/ca.po
 +++ b/po/ca.po
 @@ -9,51 +9,55 @@
@@ -17573,7 +17719,7 @@ index efe100ed..b0df5846 100644
 +#~ "El recordatori per la contrasenya us serà mostrat en cas que oblideu la "
 +#~ "vostra contrasenya."
 diff --git a/po/ca@valencia.po b/po/ca@valencia.po
-index 3038ccd3..85cb774a 100644
+index 3038ccd..85cb774 100644
 --- a/po/ca@valencia.po
 +++ b/po/ca@valencia.po
 @@ -9,78 +9,83 @@
@@ -18971,7 +19117,7 @@ index 3038ccd3..85cb774a 100644
 +msgstr ""
 diff --git a/po/ceb.po b/po/ceb.po
 new file mode 100644
-index 00000000..6f27c4b5
+index 0000000..6f27c4b
 --- /dev/null
 +++ b/po/ceb.po
 @@ -0,0 +1,1028 @@
@@ -20004,7 +20150,7 @@ index 00000000..6f27c4b5
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/ckb.po b/po/ckb.po
-index 25d0d31a..583a4403 100644
+index 25d0d31..583a440 100644
 --- a/po/ckb.po
 +++ b/po/ckb.po
 @@ -7,169 +7,198 @@ msgid ""
@@ -21264,7 +21410,7 @@ index 25d0d31a..583a4403 100644
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/cs.po b/po/cs.po
-index 14670c1f..8b9995c9 100644
+index 14670c1..8b9995c 100644
 --- a/po/cs.po
 +++ b/po/cs.po
 @@ -10,51 +10,55 @@
@@ -21979,7 +22125,7 @@ index 14670c1f..8b9995c9 100644
 +#~ msgstr "Upomínka hesla se zobrazí v případě, že zapomenete své heslo."
 diff --git a/po/cy.po b/po/cy.po
 new file mode 100644
-index 00000000..00d8f490
+index 0000000..00d8f49
 --- /dev/null
 +++ b/po/cy.po
 @@ -0,0 +1,1080 @@
@@ -23064,7 +23210,7 @@ index 00000000..00d8f490
 +msgid "Open App Center"
 +msgstr "Agor y Ganolfan Apiau"
 diff --git a/po/da.po b/po/da.po
-index 9aa6d0b8..f4b56fbe 100644
+index 9aa6d0b..f4b56fb 100644
 --- a/po/da.po
 +++ b/po/da.po
 @@ -11,51 +11,55 @@
@@ -23930,7 +24076,7 @@ index 9aa6d0b8..f4b56fbe 100644
 +#~ "Der vil blive vist en huskeregel til adgangskoden, hvis du glemmer din "
 +#~ "adgangskode."
 diff --git a/po/de.po b/po/de.po
-index 56f0c155..b98e8ebf 100644
+index 56f0c15..b98e8eb 100644
 --- a/po/de.po
 +++ b/po/de.po
 @@ -16,55 +16,59 @@
@@ -24868,7 +25014,7 @@ index 56f0c155..b98e8ebf 100644
 -#~ msgstr "Alles eingerichtet!"
 +#~ "Eine Passworterinnerung wird angezeigt, falls Sie Ihr Passwort vergessen."
 diff --git a/po/el.po b/po/el.po
-index 29d1b6df..304c3177 100644
+index 29d1b6d..304c317 100644
 --- a/po/el.po
 +++ b/po/el.po
 @@ -8,52 +8,56 @@
@@ -25806,7 +25952,7 @@ index 29d1b6df..304c3177 100644
 +#~ "συνθηματικό σας."
 diff --git a/po/en_AU.po b/po/en_AU.po
 new file mode 100644
-index 00000000..8554c268
+index 0000000..8554c26
 --- /dev/null
 +++ b/po/en_AU.po
 @@ -0,0 +1,1057 @@
@@ -26869,7 +27015,7 @@ index 00000000..8554c268
 +msgstr "Open App Centre"
 diff --git a/po/en_CA.po b/po/en_CA.po
 new file mode 100644
-index 00000000..da74575f
+index 0000000..da74575
 --- /dev/null
 +++ b/po/en_CA.po
 @@ -0,0 +1,1082 @@
@@ -27956,7 +28102,7 @@ index 00000000..da74575f
 +#~ msgid "Password reminder will be shown in case you forget your password."
 +#~ msgstr "Password reminder will be shown in case you forget your password."
 diff --git a/po/en_GB.po b/po/en_GB.po
-index 50e4f57a..49add2d2 100644
+index 50e4f57..49add2d 100644
 --- a/po/en_GB.po
 +++ b/po/en_GB.po
 @@ -8,52 +8,56 @@
@@ -29030,7 +29176,7 @@ index 50e4f57a..49add2d2 100644
 +#~ msgid "Password reminder will be shown in case you forget your password."
 +#~ msgstr "Password reminder will be shown in case you forget your password."
 diff --git a/po/eo.po b/po/eo.po
-index 693de559..06283c67 100644
+index 693de55..06283c6 100644
 --- a/po/eo.po
 +++ b/po/eo.po
 @@ -8,68 +8,76 @@
@@ -30200,7 +30346,7 @@ index 693de559..06283c67 100644
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/es.po b/po/es.po
-index 3e854655..8110424b 100644
+index 3e85465..8110424 100644
 --- a/po/es.po
 +++ b/po/es.po
 @@ -7,53 +7,57 @@
@@ -31408,7 +31554,7 @@ index 3e854655..8110424b 100644
 +#~ "El recordatorio de contraseña se mostrará en caso de que haya olvidado la "
 +#~ "contraseña."
 diff --git a/po/et.po b/po/et.po
-index 63decfd7..f6a8e179 100644
+index 63decfd..f6a8e17 100644
 --- a/po/et.po
 +++ b/po/et.po
 @@ -6,403 +6,1006 @@
@@ -32656,7 +32802,7 @@ index 63decfd7..f6a8e179 100644
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/eu.po b/po/eu.po
-index 79d5e615..3e9638c5 100644
+index 79d5e61..3e9638c 100644
 --- a/po/eu.po
 +++ b/po/eu.po
 @@ -7,50 +7,58 @@
@@ -33882,7 +34028,7 @@ index 79d5e615..3e9638c5 100644
 +#~ msgid "Password reminder will be shown in case you forget your password."
 +#~ msgstr "Pasahitza ahazten baduzu, pasahitzaren oroigarria erakutsiko da."
 diff --git a/po/fa.po b/po/fa.po
-index e5880138..3e60f9dc 100644
+index e588013..3e60f9d 100644
 --- a/po/fa.po
 +++ b/po/fa.po
 @@ -7,49 +7,55 @@
@@ -35093,7 +35239,7 @@ index e5880138..3e60f9dc 100644
 +#~ msgstr ""
 +#~ "در صورتی که گذرواژه‌تان را فراموش کنید یادآور گذرواژه نشان داده خواهد شد."
 diff --git a/po/fi.po b/po/fi.po
-index d03e06f0..46cc8bbd 100644
+index d03e06f..46cc8bb 100644
 --- a/po/fi.po
 +++ b/po/fi.po
 @@ -6,51 +6,55 @@
@@ -36171,7 +36317,7 @@ index d03e06f0..46cc8bbd 100644
 +#~ msgstr "Salasanan muistutus näytetään, jos unohdat salasanasi."
 diff --git a/po/fil.po b/po/fil.po
 new file mode 100644
-index 00000000..5e654295
+index 0000000..5e65429
 --- /dev/null
 +++ b/po/fil.po
 @@ -0,0 +1,1009 @@
@@ -37186,7 +37332,7 @@ index 00000000..5e654295
 +msgstr ""
 diff --git a/po/fo.po b/po/fo.po
 new file mode 100644
-index 00000000..6649a681
+index 0000000..6649a68
 --- /dev/null
 +++ b/po/fo.po
 @@ -0,0 +1,1009 @@
@@ -38200,7 +38346,7 @@ index 00000000..6649a681
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/fr.po b/po/fr.po
-index 44059336..327a0476 100644
+index 4405933..327a047 100644
 --- a/po/fr.po
 +++ b/po/fr.po
 @@ -15,57 +15,61 @@
@@ -39108,7 +39254,7 @@ index 44059336..327a0476 100644
 +#~ "L’indicateur du mot de passe s’affichera en cas d’oubli du mot de passe."
 diff --git a/po/fr_CA.po b/po/fr_CA.po
 new file mode 100644
-index 00000000..d4c35a30
+index 0000000..d4c35a3
 --- /dev/null
 +++ b/po/fr_CA.po
 @@ -0,0 +1,1102 @@
@@ -40215,7 +40361,7 @@ index 00000000..d4c35a30
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/fur.po b/po/fur.po
-index 70500d6d..b2e3a57c 100644
+index 70500d6..b2e3a57 100644
 --- a/po/fur.po
 +++ b/po/fur.po
 @@ -6,50 +6,56 @@
@@ -41224,7 +41370,7 @@ index 70500d6d..b2e3a57c 100644
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/ga.po b/po/ga.po
-index cb7c6ca0..bb128437 100644
+index cb7c6ca..bb12843 100644
 --- a/po/ga.po
 +++ b/po/ga.po
 @@ -6,568 +6,1006 @@
@@ -42494,7 +42640,7 @@ index cb7c6ca0..bb128437 100644
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/gd.po b/po/gd.po
-index b2d29f7f..8c13a342 100644
+index b2d29f7..8c13a34 100644
 --- a/po/gd.po
 +++ b/po/gd.po
 @@ -5,82 +5,90 @@
@@ -43922,7 +44068,7 @@ index b2d29f7f..8c13a342 100644
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/gl.po b/po/gl.po
-index 63f65e39..69bb6862 100644
+index 63f65e3..69bb686 100644
 --- a/po/gl.po
 +++ b/po/gl.po
 @@ -11,56 +11,61 @@
@@ -44912,7 +45058,7 @@ index 63f65e39..69bb6862 100644
 +#~ "O recordatorio de contrasinal mostrarase no caso de que esqueza o seu "
 +#~ "contrasinal."
 diff --git a/po/gu.po b/po/gu.po
-index 65c676af..5c53ee87 100644
+index 65c676a..5c53ee8 100644
 --- a/po/gu.po
 +++ b/po/gu.po
 @@ -5,112 +5,114 @@
@@ -46329,7 +46475,7 @@ index 65c676af..5c53ee87 100644
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/he.po b/po/he.po
-index e78fcc7a..2a6047fa 100644
+index e78fcc7..2a6047f 100644
 --- a/po/he.po
 +++ b/po/he.po
 @@ -7,53 +7,57 @@
@@ -47427,7 +47573,7 @@ index e78fcc7a..2a6047fa 100644
 +#~ msgid "Password reminder will be shown in case you forget your password."
 +#~ msgstr "זוכר הססמות יוצג במקרה בו שכחת את הססמה שלך."
 diff --git a/po/hi.po b/po/hi.po
-index 42abdde3..10ca8bed 100644
+index 42abdde..10ca8be 100644
 --- a/po/hi.po
 +++ b/po/hi.po
 @@ -9,51 +9,56 @@
@@ -48355,7 +48501,7 @@ index 42abdde3..10ca8bed 100644
 +#~ msgid "Password reminder will be shown in case you forget your password."
 +#~ msgstr "यदि आप अपना पासवर्ड भूल गए तो पासवर्ड रिमाइंडर दिखाया जाएगा।"
 diff --git a/po/hr.po b/po/hr.po
-index f74f135f..3c695142 100644
+index f74f135..3c69514 100644
 --- a/po/hr.po
 +++ b/po/hr.po
 @@ -6,76 +6,81 @@
@@ -49521,7 +49667,7 @@ index f74f135f..3c695142 100644
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/hu.po b/po/hu.po
-index 9179aac6..b1cddb34 100644
+index 9179aac..b1cddb3 100644
 --- a/po/hu.po
 +++ b/po/hu.po
 @@ -8,55 +8,60 @@
@@ -50284,7 +50430,7 @@ index 9179aac6..b1cddb34 100644
 +#~ msgstr "Jelszó-emlékeztető jelenik meg, ha elfelejti a jelszavát."
 diff --git a/po/hy.po b/po/hy.po
 new file mode 100644
-index 00000000..5a1671b5
+index 0000000..5a1671b
 --- /dev/null
 +++ b/po/hy.po
 @@ -0,0 +1,1011 @@
@@ -51300,7 +51446,7 @@ index 00000000..5a1671b5
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/ia.po b/po/ia.po
-index cff12059..73d51c6d 100644
+index cff1205..73d51c6 100644
 --- a/po/ia.po
 +++ b/po/ia.po
 @@ -6,83 +6,86 @@
@@ -52518,7 +52664,7 @@ index cff12059..73d51c6d 100644
 +msgid "Open App Center"
 +msgstr "Aperir le Centro del applicationes"
 diff --git a/po/id.po b/po/id.po
-index 71a480bf..8ee064f2 100644
+index 71a480b..8ee064f 100644
 --- a/po/id.po
 +++ b/po/id.po
 @@ -8,51 +8,55 @@
@@ -53220,7 +53366,7 @@ index 71a480bf..8ee064f2 100644
 +#~ msgstr ""
 +#~ "Pengingat kata sandi akan ditampilkan jika Anda lupa kata sandi Anda."
 diff --git a/po/ie.po b/po/ie.po
-index 101f4969..cca130de 100644
+index 101f496..cca130d 100644
 --- a/po/ie.po
 +++ b/po/ie.po
 @@ -6,77 +6,81 @@
@@ -54273,7 +54419,7 @@ index 101f4969..cca130de 100644
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/is.po b/po/is.po
-index 960696b4..180e7179 100644
+index 960696b..180e717 100644
 --- a/po/is.po
 +++ b/po/is.po
 @@ -5,66 +5,76 @@
@@ -55494,7 +55640,7 @@ index 960696b4..180e7179 100644
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/it.po b/po/it.po
-index ed55a7d0..7b9f596d 100644
+index ed55a7d..7b9f596 100644
 --- a/po/it.po
 +++ b/po/it.po
 @@ -9,56 +9,60 @@
@@ -56509,7 +56655,7 @@ index ed55a7d0..7b9f596d 100644
 +#~ "Il promemoria della password verrà visualizzato nel caso in cui dimentichi "
 +#~ "la password."
 diff --git a/po/ja.po b/po/ja.po
-index 27a5bd85..5bef8f70 100644
+index 27a5bd8..5bef8f7 100644
 --- a/po/ja.po
 +++ b/po/ja.po
 @@ -10,182 +10,204 @@
@@ -57887,7 +58033,7 @@ index 27a5bd85..5bef8f70 100644
 +msgid "Open App Center"
 +msgstr "アプリセンターを開く"
 diff --git a/po/ka.po b/po/ka.po
-index 67143d3b..bcead380 100644
+index 67143d3..bcead38 100644
 --- a/po/ka.po
 +++ b/po/ka.po
 @@ -6,51 +6,55 @@
@@ -58612,7 +58758,7 @@ index 67143d3b..bcead380 100644
 +#~ msgstr ""
 +#~ "პაროლის შეხსენებას იმ შემთხვევაში გაჩვენებთ, თუ პაროლი დაგავიწყდებათ."
 diff --git a/po/kab.po b/po/kab.po
-index 0c3dc907..1f35f96a 100644
+index 0c3dc90..1f35f96 100644
 --- a/po/kab.po
 +++ b/po/kab.po
 @@ -7,56 +7,60 @@
@@ -59414,7 +59560,7 @@ index 0c3dc907..1f35f96a 100644
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/kk.po b/po/kk.po
-index 6b7dbbc6..3c1b8d5d 100644
+index 6b7dbbc..3c1b8d5 100644
 --- a/po/kk.po
 +++ b/po/kk.po
 @@ -6,50 +6,55 @@
@@ -60327,7 +60473,7 @@ index 6b7dbbc6..3c1b8d5d 100644
 +#~ msgid "Password reminder will be shown in case you forget your password."
 +#~ msgstr "Парольді ұмытып қалсаңыз, парольді еске салу кеңесі көрсетіледі."
 diff --git a/po/kn.po b/po/kn.po
-index 0b1a0073..1ac41bc6 100644
+index 0b1a007..1ac41bc 100644
 --- a/po/kn.po
 +++ b/po/kn.po
 @@ -7,112 +7,114 @@
@@ -61748,7 +61894,7 @@ index 0b1a0073..1ac41bc6 100644
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/ko.po b/po/ko.po
-index 3a229ccf..611550be 100644
+index 3a229cc..611550b 100644
 --- a/po/ko.po
 +++ b/po/ko.po
 @@ -7,57 +7,61 @@
@@ -62676,7 +62822,7 @@ index 3a229ccf..611550be 100644
 +#~ msgstr "암호를 잊었다면 암호 연상 프로그램이 나타납니다."
 diff --git a/po/ku.po b/po/ku.po
 new file mode 100644
-index 00000000..bcef0c15
+index 0000000..bcef0c1
 --- /dev/null
 +++ b/po/ku.po
 @@ -0,0 +1,1049 @@
@@ -63731,7 +63877,7 @@ index 00000000..bcef0c15
 +msgstr ""
 diff --git a/po/kw.po b/po/kw.po
 new file mode 100644
-index 00000000..a4ffe0e9
+index 0000000..a4ffe0e
 --- /dev/null
 +++ b/po/kw.po
 @@ -0,0 +1,1038 @@
@@ -64775,7 +64921,7 @@ index 00000000..a4ffe0e9
 +msgstr ""
 diff --git a/po/lld.po b/po/lld.po
 new file mode 100644
-index 00000000..b07d1a20
+index 0000000..b07d1a2
 --- /dev/null
 +++ b/po/lld.po
 @@ -0,0 +1,1023 @@
@@ -65803,7 +65949,7 @@ index 00000000..b07d1a20
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/lt.po b/po/lt.po
-index 5e8a4b53..093af5b7 100644
+index 5e8a4b5..093af5b 100644
 --- a/po/lt.po
 +++ b/po/lt.po
 @@ -6,52 +6,55 @@
@@ -66902,7 +67048,7 @@ index 5e8a4b53..093af5b7 100644
 +#~ msgid "Password reminder will be shown in case you forget your password."
 +#~ msgstr "Slaptažodžio priminimas bus rodomas jei pamiršite savo slaptažodį."
 diff --git a/po/lv.po b/po/lv.po
-index ddf3d13f..07499fdf 100644
+index ddf3d13..07499fd 100644
 --- a/po/lv.po
 +++ b/po/lv.po
 @@ -7,56 +7,60 @@
@@ -67931,7 +68077,7 @@ index ddf3d13f..07499fdf 100644
 +#~ msgid "Password reminder will be shown in case you forget your password."
 +#~ msgstr "Paroļu atgādinātājs parādīsies, ja aizmirsīsiet savu paroli."
 diff --git a/po/mjw.po b/po/mjw.po
-index b9684fe5..af0849ad 100644
+index b9684fe..af0849a 100644
 --- a/po/mjw.po
 +++ b/po/mjw.po
 @@ -6,28 +6,33 @@
@@ -69025,7 +69171,7 @@ index b9684fe5..af0849ad 100644
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/ml.po b/po/ml.po
-index b24867e6..2e232e3e 100644
+index b24867e..2e232e3 100644
 --- a/po/ml.po
 +++ b/po/ml.po
 @@ -8,174 +8,224 @@
@@ -70437,7 +70583,7 @@ index b24867e6..2e232e3e 100644
 +msgstr ""
 diff --git a/po/mnw.po b/po/mnw.po
 new file mode 100644
-index 00000000..db976f64
+index 0000000..db976f6
 --- /dev/null
 +++ b/po/mnw.po
 @@ -0,0 +1,1041 @@
@@ -71483,7 +71629,7 @@ index 00000000..db976f64
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/mr.po b/po/mr.po
-index 2c12d904..42eee462 100644
+index 2c12d90..42eee46 100644
 --- a/po/mr.po
 +++ b/po/mr.po
 @@ -6,114 +6,115 @@
@@ -72942,7 +73088,7 @@ index 2c12d904..42eee462 100644
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/ms.po b/po/ms.po
-index 87b5259e..ace4c724 100644
+index 87b5259..ace4c72 100644
 --- a/po/ms.po
 +++ b/po/ms.po
 @@ -6,28 +6,33 @@
@@ -74022,7 +74168,7 @@ index 87b5259e..ace4c724 100644
 +msgstr ""
 diff --git a/po/my.po b/po/my.po
 new file mode 100644
-index 00000000..5b7c60d0
+index 0000000..5b7c60d
 --- /dev/null
 +++ b/po/my.po
 @@ -0,0 +1,1126 @@
@@ -75153,7 +75299,7 @@ index 00000000..5b7c60d0
 +#~ msgid "Password reminder will be shown in case you forget your password."
 +#~ msgstr "စကားဝှက်မေ့သွားပါက စကားဝှက်သတိပေးချက်ကို ပြပါမည်။"
 diff --git a/po/nb.po b/po/nb.po
-index c8dced06..cd542aa0 100644
+index c8dced0..cd542aa 100644
 --- a/po/nb.po
 +++ b/po/nb.po
 @@ -3,54 +3,58 @@
@@ -75808,7 +75954,7 @@ index c8dced06..cd542aa0 100644
 +#~ msgid "Password reminder will be shown in case you forget your password."
 +#~ msgstr "En påminnelse vil vises i tilfelle du glemmer passordet."
 diff --git a/po/ne.po b/po/ne.po
-index 66b976c9..7d12b035 100644
+index 66b976c..7d12b03 100644
 --- a/po/ne.po
 +++ b/po/ne.po
 @@ -6,70 +6,76 @@
@@ -77057,7 +77203,7 @@ index 66b976c9..7d12b035 100644
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/nl.po b/po/nl.po
-index a987e47c..fc6003b6 100644
+index a987e47..fc6003b 100644
 --- a/po/nl.po
 +++ b/po/nl.po
 @@ -11,52 +11,56 @@
@@ -78093,7 +78239,7 @@ index a987e47c..fc6003b6 100644
 +msgstr ""
 diff --git a/po/nn.po b/po/nn.po
 new file mode 100644
-index 00000000..a7f8aece
+index 0000000..a7f8aec
 --- /dev/null
 +++ b/po/nn.po
 @@ -0,0 +1,1009 @@
@@ -79107,7 +79253,7 @@ index 00000000..a7f8aece
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/oc.po b/po/oc.po
-index b6b389ed..0f2898de 100644
+index b6b389e..0f2898d 100644
 --- a/po/oc.po
 +++ b/po/oc.po
 @@ -5,52 +5,57 @@
@@ -80253,7 +80399,7 @@ index b6b389ed..0f2898de 100644
 +#~ msgid "Password reminder will be shown in case you forget your password."
 +#~ msgstr "S‘aficharà un rapèl de senhal se per cas oblidatz lo senhal."
 diff --git a/po/or.po b/po/or.po
-index c7eb0d5b..c05380bf 100644
+index c7eb0d5..c05380b 100644
 --- a/po/or.po
 +++ b/po/or.po
 @@ -5,112 +5,114 @@
@@ -81674,7 +81820,7 @@ index c7eb0d5b..c05380bf 100644
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/pa.po b/po/pa.po
-index 58248fba..97b92fcd 100644
+index 58248fb..97b92fc 100644
 --- a/po/pa.po
 +++ b/po/pa.po
 @@ -5,51 +5,55 @@
@@ -82989,7 +83135,7 @@ index 58248fba..97b92fcd 100644
 +msgid "Open App Center"
 +msgstr "ਐਪ ਸੈਂਟਰ ਨੂੰ ਖੋਲ੍ਹੋ"
 diff --git a/po/pl.po b/po/pl.po
-index 5831faa1..2219aa5b 100644
+index 5831faa..2219aa5 100644
 --- a/po/pl.po
 +++ b/po/pl.po
 @@ -7,51 +7,55 @@
@@ -83663,7 +83809,7 @@ index 5831faa1..2219aa5b 100644
 +#~ "Przypomnienie hasła będzie wyświetlane w przypadku zapomnienia hasła."
 diff --git a/po/ps.po b/po/ps.po
 new file mode 100644
-index 00000000..390b034d
+index 0000000..390b034
 --- /dev/null
 +++ b/po/ps.po
 @@ -0,0 +1,1021 @@
@@ -84689,7 +84835,7 @@ index 00000000..390b034d
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/pt.po b/po/pt.po
-index 03984cef..05fbadfa 100644
+index 03984ce..05fbadf 100644
 --- a/po/pt.po
 +++ b/po/pt.po
 @@ -13,52 +13,56 @@
@@ -85858,7 +86004,7 @@ index 03984cef..05fbadfa 100644
 +#~ "O lembrete da palavra-passe será apresentado caso se esqueça da sua palavra-"
 +#~ "passe."
 diff --git a/po/pt_BR.po b/po/pt_BR.po
-index ad507a80..7ed3a4ce 100644
+index ad507a8..7ed3a4c 100644
 --- a/po/pt_BR.po
 +++ b/po/pt_BR.po
 @@ -14,18 +14,18 @@
@@ -87073,7 +87219,7 @@ index ad507a80..7ed3a4ce 100644
 +#~ msgid "Password reminder will be shown in case you forget your password."
 +#~ msgstr "O lembrete de senha será mostrado no caso de esquecimento da senha."
 diff --git a/po/ro.po b/po/ro.po
-index 1aec7f71..6e736740 100644
+index 1aec7f7..6e73674 100644
 --- a/po/ro.po
 +++ b/po/ro.po
 @@ -6,54 +6,57 @@
@@ -87937,7 +88083,7 @@ index 1aec7f71..6e736740 100644
 +#~ msgid "Password reminder will be shown in case you forget your password."
 +#~ msgstr "Memento-ul de parolă va fi arătat în cazul în care vă uitați parola."
 diff --git a/po/ru.po b/po/ru.po
-index 7a3a9120..080c18a5 100644
+index 7a3a912..080c18a 100644
 --- a/po/ru.po
 +++ b/po/ru.po
 @@ -7,52 +7,55 @@
@@ -88680,7 +88826,7 @@ index 7a3a9120..080c18a5 100644
 +#~ msgstr "Напоминание о пароле будет показано в случае, если вы забыли пароль."
 diff --git a/po/sd.po b/po/sd.po
 new file mode 100644
-index 00000000..38fb10fe
+index 0000000..38fb10f
 --- /dev/null
 +++ b/po/sd.po
 @@ -0,0 +1,1009 @@
@@ -89695,7 +89841,7 @@ index 00000000..38fb10fe
 +msgstr ""
 diff --git a/po/se.po b/po/se.po
 new file mode 100644
-index 00000000..5754af12
+index 0000000..5754af1
 --- /dev/null
 +++ b/po/se.po
 @@ -0,0 +1,1009 @@
@@ -90710,7 +90856,7 @@ index 00000000..5754af12
 +msgstr ""
 diff --git a/po/shn.po b/po/shn.po
 new file mode 100644
-index 00000000..c6c47a8c
+index 0000000..c6c47a8
 --- /dev/null
 +++ b/po/shn.po
 @@ -0,0 +1,1009 @@
@@ -91725,7 +91871,7 @@ index 00000000..c6c47a8c
 +msgstr ""
 diff --git a/po/si.po b/po/si.po
 new file mode 100644
-index 00000000..2a877c2e
+index 0000000..2a877c2
 --- /dev/null
 +++ b/po/si.po
 @@ -0,0 +1,1009 @@
@@ -92739,7 +92885,7 @@ index 00000000..2a877c2e
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/sk.po b/po/sk.po
-index e12df945..40f29b40 100644
+index e12df94..40f29b4 100644
 --- a/po/sk.po
 +++ b/po/sk.po
 @@ -6,60 +6,64 @@
@@ -93791,7 +93937,7 @@ index e12df945..40f29b40 100644
 +#~ msgid "Password reminder will be shown in case you forget your password."
 +#~ msgstr "V prípade, že zabudnete svoje heslo, zobrazí sa pripomienka hesla"
 diff --git a/po/sl.po b/po/sl.po
-index 606056e0..b8d888d5 100644
+index 606056e..b8d888d 100644
 --- a/po/sl.po
 +++ b/po/sl.po
 @@ -7,53 +7,56 @@
@@ -94466,7 +94612,7 @@ index 606056e0..b8d888d5 100644
 +#~ msgstr "Če pozabite geslo, se prikaže opomnik za geslo."
 diff --git a/po/sq.po b/po/sq.po
 new file mode 100644
-index 00000000..eae81601
+index 0000000..eae8160
 --- /dev/null
 +++ b/po/sq.po
 @@ -0,0 +1,1053 @@
@@ -95524,7 +95670,7 @@ index 00000000..eae81601
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/sr.po b/po/sr.po
-index b514744b..3ca71873 100644
+index b514744..3ca7187 100644
 --- a/po/sr.po
 +++ b/po/sr.po
 @@ -7,53 +7,56 @@
@@ -96560,7 +96706,7 @@ index b514744b..3ca71873 100644
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/sr@latin.po b/po/sr@latin.po
-index 090b4842..ebd5bcad 100644
+index 090b484..ebd5bca 100644
 --- a/po/sr@latin.po
 +++ b/po/sr@latin.po
 @@ -7,53 +7,56 @@
@@ -97603,7 +97749,7 @@ index 090b4842..ebd5bcad 100644
 +msgstr ""
 diff --git a/po/su.po b/po/su.po
 new file mode 100644
-index 00000000..0b74042f
+index 0000000..0b74042
 --- /dev/null
 +++ b/po/su.po
 @@ -0,0 +1,1074 @@
@@ -98682,7 +98828,7 @@ index 00000000..0b74042f
 +msgid "Open App Center"
 +msgstr "Buka Pusat App"
 diff --git a/po/sv.po b/po/sv.po
-index da5ff408..7e9d8ffb 100644
+index da5ff40..7e9d8ff 100644
 --- a/po/sv.po
 +++ b/po/sv.po
 @@ -10,50 +10,55 @@
@@ -99459,7 +99605,7 @@ index da5ff408..7e9d8ffb 100644
 +#~ msgstr "En lösenordspåminnelse kommer visas om du glömmer ditt lösenord."
 diff --git a/po/szl.po b/po/szl.po
 new file mode 100644
-index 00000000..64202055
+index 0000000..6420205
 --- /dev/null
 +++ b/po/szl.po
 @@ -0,0 +1,1029 @@
@@ -100493,7 +100639,7 @@ index 00000000..64202055
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/ta.po b/po/ta.po
-index f92babdf..b9bead4b 100644
+index f92babd..b9bead4 100644
 --- a/po/ta.po
 +++ b/po/ta.po
 @@ -6,112 +6,113 @@
@@ -101928,7 +102074,7 @@ index f92babdf..b9bead4b 100644
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/te.po b/po/te.po
-index 7f51ec11..f2d720de 100644
+index 7f51ec1..f2d720d 100644
 --- a/po/te.po
 +++ b/po/te.po
 @@ -7,111 +7,113 @@
@@ -103318,7 +103464,7 @@ index 7f51ec11..f2d720de 100644
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/tg.po b/po/tg.po
-index 7f2cc57f..d4e567b4 100644
+index 7f2cc57..d4e567b 100644
 --- a/po/tg.po
 +++ b/po/tg.po
 @@ -5,28 +5,33 @@
@@ -104681,7 +104827,7 @@ index 7f2cc57f..d4e567b4 100644
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/th.po b/po/th.po
-index a19cdf68..56a716f7 100644
+index a19cdf6..56a716f 100644
 --- a/po/th.po
 +++ b/po/th.po
 @@ -6,48 +6,55 @@
@@ -105717,7 +105863,7 @@ index a19cdf68..56a716f7 100644
 +msgstr "เปิด App Center"
 diff --git a/po/tl.po b/po/tl.po
 new file mode 100644
-index 00000000..af695365
+index 0000000..af69536
 --- /dev/null
 +++ b/po/tl.po
 @@ -0,0 +1,1009 @@
@@ -106731,7 +106877,7 @@ index 00000000..af695365
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/tr.po b/po/tr.po
-index 0f7f2c43..235c8fac 100644
+index 0f7f2c4..235c8fa 100644
 --- a/po/tr.po
 +++ b/po/tr.po
 @@ -10,74 +10,79 @@
@@ -107674,7 +107820,7 @@ index 0f7f2c43..235c8fac 100644
 +#~ msgid "Password reminder will be shown in case you forget your password."
 +#~ msgstr "Parolanızı unutursanız parola anımsatıcı gösterilecek."
 diff --git a/po/ug.po b/po/ug.po
-index f820c06c..a5af58c2 100644
+index f820c06..a5af58c 100644
 --- a/po/ug.po
 +++ b/po/ug.po
 @@ -6,380 +6,1006 @@
@@ -108961,7 +109107,7 @@ index f820c06c..a5af58c2 100644
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/uk.po b/po/uk.po
-index 28c846f0..2ed76137 100644
+index 28c846f..2ed7613 100644
 --- a/po/uk.po
 +++ b/po/uk.po
 @@ -6,57 +6,62 @@
@@ -109918,7 +110064,7 @@ index 28c846f0..2ed76137 100644
 +#~ msgstr "Якщо ви забудете ваш пароль, буде показано нагадування щодо пароля."
 diff --git a/po/uz.po b/po/uz.po
 new file mode 100644
-index 00000000..3993a008
+index 0000000..3993a00
 --- /dev/null
 +++ b/po/uz.po
 @@ -0,0 +1,1043 @@
@@ -110966,7 +111112,7 @@ index 00000000..3993a008
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/vi.po b/po/vi.po
-index c0f31169..7df0147f 100644
+index c0f3116..7df0147 100644
 --- a/po/vi.po
 +++ b/po/vi.po
 @@ -8,67 +8,75 @@
@@ -112192,7 +112338,7 @@ index c0f31169..7df0147f 100644
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/zh_CN.po b/po/zh_CN.po
-index 83a1a892..e6b44cf4 100644
+index 83a1a89..e6b44cf 100644
 --- a/po/zh_CN.po
 +++ b/po/zh_CN.po
 @@ -13,51 +13,55 @@
@@ -113283,7 +113429,7 @@ index 83a1a892..e6b44cf4 100644
 +#~ msgid "Password reminder will be shown in case you forget your password."
 +#~ msgstr "密码提醒将被显示以防您忘记密码。"
 diff --git a/po/zh_HK.po b/po/zh_HK.po
-index 34915626..2c8791c5 100644
+index 3491562..2c8791c 100644
 --- a/po/zh_HK.po
 +++ b/po/zh_HK.po
 @@ -6,582 +6,1008 @@
@@ -114654,7 +114800,7 @@ index 34915626..2c8791c5 100644
 +msgid "Open App Center"
 +msgstr ""
 diff --git a/po/zh_TW.po b/po/zh_TW.po
-index 4d3da08c..e145a0cd 100644
+index 4d3da08..e145a0c 100644
 --- a/po/zh_TW.po
 +++ b/po/zh_TW.po
 @@ -8,51 +8,55 @@
