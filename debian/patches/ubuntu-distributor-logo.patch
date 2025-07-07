@@ -33,10 +33,10 @@ index 0000000..6062c1e
 +</g>
 +</svg>
 diff --git a/data/meson.build b/data/meson.build
-index dfa064c..decf523 100644
+index ab637e0..f9e6769 100644
 --- a/data/meson.build
 +++ b/data/meson.build
-@@ -130,3 +130,5 @@ configure_file(
+@@ -129,3 +129,5 @@ configure_file(
  
  mode_dir = join_paths(data_dir, 'gnome-shell', 'modes')
  install_data('initial-setup.json', install_dir: mode_dir)
