@@ -1,4 +1,4 @@
-gnome-initial-setup (49~alpha-1) UNRELEASED; urgency=medium
+gnome-initial-setup (49~alpha-0ubuntu1) questing; urgency=medium
 
   [ Sergio Costas Rodriguez ]
   * a11y: Add accessibility to some Ubuntu pages
@@ -6,8 +6,10 @@ gnome-initial-setup (49~alpha-1) UNRELEASED; urgency=medium
 
   [ Alessandro Astone ]
   * New upstream release
+  * Refresh patches
+  * d/p/launchpad-translations-export.patch: Drop patch to upload new strings
 
- -- Alessandro Astone <alessandro.astone@canonical.com>  Mon, 07 Jul 2025 16:08:21 +0200
+ -- Alessandro Astone <alessandro.astone@canonical.com>  Mon, 07 Jul 2025 16:30:18 +0200
 
 gnome-initial-setup (48.0-1ubuntu4) plucky; urgency=medium
 
