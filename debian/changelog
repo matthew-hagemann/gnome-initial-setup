@@ -1,10 +1,13 @@
-gnome-initial-setup (48.0-1ubuntu5) UNRELEASED; urgency=medium
+gnome-initial-setup (49~alpha-1) UNRELEASED; urgency=medium
 
   [ Sergio Costas Rodriguez ]
   * a11y: Add accessibility to some Ubuntu pages
   * a11y: Add role to the release notes link
 
- -- Alessandro Astone <alessandro.astone@canonical.com>  Mon, 07 Jul 2025 15:55:02 +0200
+  [ Alessandro Astone ]
+  * New upstream release
+
+ -- Alessandro Astone <alessandro.astone@canonical.com>  Mon, 07 Jul 2025 16:08:21 +0200
 
 gnome-initial-setup (48.0-1ubuntu4) plucky; urgency=medium
 
