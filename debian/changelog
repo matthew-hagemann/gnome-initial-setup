@@ -1,3 +1,11 @@
+gnome-initial-setup (48.0-1ubuntu5) UNRELEASED; urgency=medium
+
+  [ Sergio Costas Rodriguez ]
+  * a11y: Add accessibility to some Ubuntu pages
+  * a11y: Add role to the release notes link
+
+ -- Alessandro Astone <alessandro.astone@canonical.com>  Mon, 07 Jul 2025 15:55:02 +0200
+
 gnome-initial-setup (48.0-1ubuntu4) plucky; urgency=medium
 
   * debian/patches/launchpad-translations-export.patch:
