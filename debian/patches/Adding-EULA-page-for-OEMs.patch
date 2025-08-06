@@ -32,7 +32,7 @@ Co-authored-by: Marco Trevisan <marco@ubuntu.com>
  create mode 100644 gnome-initial-setup/pages/eula/meson.build
 
 diff --git a/gnome-initial-setup/gnome-initial-setup.c b/gnome-initial-setup/gnome-initial-setup.c
-index 2d2f0a8..02a5021 100644
+index 591063e..31b65e2 100644
 --- a/gnome-initial-setup/gnome-initial-setup.c
 +++ b/gnome-initial-setup/gnome-initial-setup.c
 @@ -32,6 +32,7 @@
@@ -52,10 +52,10 @@ index 2d2f0a8..02a5021 100644
    PAGE (privacy,  FALSE),
    PAGE (timezone, TRUE),
 diff --git a/gnome-initial-setup/meson.build b/gnome-initial-setup/meson.build
-index 2306a06..0466a57 100644
+index 75940a1..f81d01b 100644
 --- a/gnome-initial-setup/meson.build
 +++ b/gnome-initial-setup/meson.build
-@@ -60,6 +60,7 @@ dependencies = [
+@@ -58,6 +58,7 @@ dependencies = [
      dependency ('snapd-glib-2'),
      dependency ('libsoup-3.0'),
      dependency ('sysmetrics'),

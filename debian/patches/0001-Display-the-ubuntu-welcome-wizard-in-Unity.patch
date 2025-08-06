@@ -3,25 +3,11 @@ Date: Thu, 12 Jul 2018 16:51:34 +0200
 Subject: Display the ubuntu welcome wizard in Unity
 
 ---
- data/gnome-initial-setup-first-login.desktop.in.in |  2 +-
- gnome-initial-setup/gnome-initial-setup.c          | 12 ++++++++++++
- 2 files changed, 13 insertions(+), 1 deletion(-)
+ gnome-initial-setup/gnome-initial-setup.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/data/gnome-initial-setup-first-login.desktop.in.in b/data/gnome-initial-setup-first-login.desktop.in.in
-index f3d0df7..38f86cf 100644
---- a/data/gnome-initial-setup-first-login.desktop.in.in
-+++ b/data/gnome-initial-setup-first-login.desktop.in.in
-@@ -7,7 +7,7 @@ Terminal=false
- Type=Application
- StartupNotify=true
- Categories=GNOME;GTK;System;
--OnlyShowIn=GNOME;
-+OnlyShowIn=GNOME;Unity;
- NoDisplay=true
- AutostartCondition=unless-exists gnome-initial-setup-done
- X-GNOME-HiddenUnderSystemd=@systemd_hidden@
 diff --git a/gnome-initial-setup/gnome-initial-setup.c b/gnome-initial-setup/gnome-initial-setup.c
-index a050aa0..2d2f0a8 100644
+index 7cb2922..591063e 100644
 --- a/gnome-initial-setup/gnome-initial-setup.c
 +++ b/gnome-initial-setup/gnome-initial-setup.c
 @@ -93,6 +93,16 @@ static PageData ubuntu_page_table[] = {

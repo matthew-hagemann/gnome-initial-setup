@@ -33,17 +33,17 @@ index 0000000..6062c1e
 +</g>
 +</svg>
 diff --git a/data/meson.build b/data/meson.build
-index ab637e0..f9e6769 100644
+index ff0c4cc..ef4c812 100644
 --- a/data/meson.build
 +++ b/data/meson.build
-@@ -129,3 +129,5 @@ configure_file(
+@@ -49,3 +49,5 @@ install_data('@0@.session'.format(meson.project_name()), install_dir: session_di
  
  mode_dir = join_paths(data_dir, 'gnome-shell', 'modes')
  install_data('initial-setup.json', install_dir: mode_dir)
 +
 +install_data('distributor-logo.svg', install_dir: join_paths(data_dir, 'icons', 'hicolor', 'scalable', 'places'))
 diff --git a/gnome-initial-setup/pages/language/gis-language-page.c b/gnome-initial-setup/pages/language/gis-language-page.c
-index 0ac8281..fe5fed9 100644
+index d2eae0f..6fc9343 100644
 --- a/gnome-initial-setup/pages/language/gis-language-page.c
 +++ b/gnome-initial-setup/pages/language/gis-language-page.c
 @@ -191,7 +191,7 @@ update_distro_logo (GisLanguagePage *page)

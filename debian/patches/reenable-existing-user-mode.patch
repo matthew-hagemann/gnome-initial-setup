@@ -10,10 +10,10 @@ Forwarded: not-needed
  1 file changed, 14 deletions(-)
 
 diff --git a/gnome-initial-setup/gnome-initial-setup.c b/gnome-initial-setup/gnome-initial-setup.c
-index debfd4e..3de1705 100644
+index 02f7dad..e63d611 100644
 --- a/gnome-initial-setup/gnome-initial-setup.c
 +++ b/gnome-initial-setup/gnome-initial-setup.c
-@@ -319,20 +319,6 @@ main (int argc, char *argv[])
+@@ -311,20 +311,6 @@ main (int argc, char *argv[])
  
    driver = gis_driver_new (mode);
  

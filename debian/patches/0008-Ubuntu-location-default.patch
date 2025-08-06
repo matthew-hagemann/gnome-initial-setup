@@ -14,7 +14,7 @@ Subject: Ubuntu-location-default
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/gnome-initial-setup/pages/privacy/gis-privacy-page.c b/gnome-initial-setup/pages/privacy/gis-privacy-page.c
-index f875697..f8d662f 100644
+index 9c0796f..e4d679a 100644
 --- a/gnome-initial-setup/pages/privacy/gis-privacy-page.c
 +++ b/gnome-initial-setup/pages/privacy/gis-privacy-page.c
 @@ -128,7 +128,7 @@ gis_privacy_page_constructed (GObject *object)

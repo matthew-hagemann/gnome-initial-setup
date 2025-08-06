@@ -116,7 +116,7 @@ index 4b8cc0d..2660870 100644
  
    <object class="GtkSizeGroup" id="headerheight">
 diff --git a/gnome-initial-setup/gis-page.c b/gnome-initial-setup/gis-page.c
-index 7c53565..d8e2242 100644
+index dba762f..7376b0b 100644
 --- a/gnome-initial-setup/gis-page.c
 +++ b/gnome-initial-setup/gis-page.c
 @@ -38,7 +38,8 @@ struct _GisPagePrivate
@@ -167,7 +167,7 @@ index 7c53565..d8e2242 100644
    obj_props[PROP_NEEDS_ACCEPT] =
      g_param_spec_boolean ("needs-accept", "", "", FALSE,
                            G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE);
-@@ -289,6 +300,21 @@ gis_page_set_skippable (GisPage *page, gboolean skippable)
+@@ -293,6 +304,21 @@ gis_page_set_skippable (GisPage *page, gboolean skippable)
    g_object_notify_by_pspec (G_OBJECT (page), obj_props[PROP_SKIPPABLE]);
  }
  
