@@ -1,8 +1,12 @@
-gnome-initial-setup (49~beta.1-1) UNRELEASED; urgency=medium
+gnome-initial-setup (49~beta.1-0ubuntu1) questing; urgency=medium
 
   * New upstream release
+  * d/control: Depend on gnome-session 49.beta
+  * d/control: Drop unused dependency on gnome-keyring
+  * d/p/a11y-Notify-bad-username.patch: Drop patch applied upstream
+  * d/p: Rebase patches
 
- -- Alessandro Astone <alessandro.astone@canonical.com>  Wed, 06 Aug 2025 16:05:43 +0200
+ -- Alessandro Astone <alessandro.astone@canonical.com>  Thu, 07 Aug 2025 11:15:55 +0200
 
 gnome-initial-setup (49~alpha-0ubuntu2) questing; urgency=medium
 
