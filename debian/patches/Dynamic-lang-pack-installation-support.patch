@@ -36,17 +36,21 @@ attempting to close 1073741816 file descriptors which takes several minutes
 everytime it is called to install a lang pack.
 
 style: fixing start button filling too much space
+
+remove locales-all package if present on system
+
+Gbp-Dch: Full
 ---
  data/20-gnome-initial-setup.rules.in               |  10 +
  data/gnome-initial-setup-wrapper                   |   1 +
- gnome-initial-setup/gis-pkexec.c                   |  65 +++-
+ gnome-initial-setup/gis-pkexec.c                   | 116 +++++++-
  gnome-initial-setup/gis-pkexec.h                   |   6 +
  .../pages/language/cc-language-chooser.c           |  46 ++-
  .../pages/language/gis-language-page.c             | 129 --------
  .../pages/software/gis-software-page.c             |   2 +-
  .../pages/summary/gis-summary-page.c               | 331 +++++++++++++++++++--
  .../pages/summary/gis-summary-page.ui              |  70 ++++-
- 9 files changed, 501 insertions(+), 159 deletions(-)
+ 9 files changed, 544 insertions(+), 167 deletions(-)
 
 diff --git a/data/20-gnome-initial-setup.rules.in b/data/20-gnome-initial-setup.rules.in
 index e0d8b10..844e1dc 100644
@@ -82,27 +86,51 @@ index 0e276f5..5be7c08 100755
  if [ -f "${CONVD_WRAPPER}" ]; then
  # call convd wrapper passing as first parameter the full path to
 diff --git a/gnome-initial-setup/gis-pkexec.c b/gnome-initial-setup/gis-pkexec.c
-index 9e1bfa9..6654b00 100644
+index 9e1bfa9..024828a 100644
 --- a/gnome-initial-setup/gis-pkexec.c
 +++ b/gnome-initial-setup/gis-pkexec.c
-@@ -29,6 +29,7 @@ gboolean
+@@ -25,35 +25,133 @@
+ 
+ #include "gis-pkexec.h"
+ 
++static GSubprocess *
++pkexec_subprocess_new (const gchar * const *args,
++                       GError             **error)
++{
++  g_autoptr(GSubprocessLauncher) launcher = NULL;
++
++  launcher = g_subprocess_launcher_new (G_SUBPROCESS_FLAGS_NONE);
++  g_subprocess_launcher_unsetenv (launcher, "SHELL");
++  g_subprocess_launcher_setenv (launcher, "DEBCONF_NONINTERACTIVE_SEEN", "true", TRUE);
++  g_subprocess_launcher_setenv (launcher, "DEBIAN_FRONTEND", "noninteractive", TRUE);
++
++  return g_subprocess_launcher_spawnv (launcher, args, error);
++}
++
+ gboolean
  gis_pkexec (const gchar  *command,
              const gchar  *arg1,
              const gchar  *user,
 +            GCancellable *cancellable,
              GError      **error)
  {
-   g_autoptr(GSubprocessLauncher) launcher = NULL;
-@@ -43,6 +44,8 @@ gis_pkexec (const gchar  *command,
-    * so remove it from the environment.
-    */
-   g_subprocess_launcher_unsetenv (launcher, "SHELL");
-+  g_subprocess_launcher_setenv (launcher, "DEBCONF_NONINTERACTIVE_SEEN", "true", TRUE);
-+  g_subprocess_launcher_setenv (launcher, "DEBIAN_FRONTEND", "noninteractive", TRUE);
-   process = g_subprocess_launcher_spawnv (launcher, argv, error);
+-  g_autoptr(GSubprocessLauncher) launcher = NULL;
+   g_autoptr(GSubprocess) process = NULL;
+   const gchar * const root_argv[] = { "pkexec", command, arg1, NULL };
+   const gchar * const user_argv[] = { "pkexec", "--user", user, command, arg1, NULL };
+   const gchar * const *argv = user == NULL ? root_argv : user_argv;
+ 
+-  launcher = g_subprocess_launcher_new (G_SUBPROCESS_FLAGS_NONE);
+-
+-  /* pkexec won't let us run the program if $SHELL isn't in /etc/shells,
+-   * so remove it from the environment.
+-   */
+-  g_subprocess_launcher_unsetenv (launcher, "SHELL");
+-  process = g_subprocess_launcher_spawnv (launcher, argv, error);
++  process = pkexec_subprocess_new (argv, error);
  
    if (!process) {
-@@ -50,10 +53,70 @@ gis_pkexec (const gchar  *command,
+     g_prefix_error (error, "Failed to create %s process: ", command);
      return FALSE;
    }
  
@@ -116,10 +144,39 @@ index 9e1bfa9..6654b00 100644
  }
 +
 +gboolean
++remove_locales_all (GCancellable *cancellable,
++                    GError **error) {
++  g_autoptr(GSubprocess) process = NULL;
++
++  const gchar * const argv[] = {
++      "pkexec", "/usr/bin/apt-get", "remove", "locales-all", "-y", NULL
++  };
++
++  process = pkexec_subprocess_new (argv, error);
++
++  if (!process) {
++    return FALSE;
++  }
++
++  if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
++    return FALSE;
++  }
++
++  /* The apt-get remove succeeds regardless of if the package is installed, so
++   * for the subprocess to error indicates a larger issue.
++   *
++   */
++  if (!g_subprocess_wait_check (process, cancellable, error)) {
++    return FALSE;
++  }
++
++  return TRUE;
++}
++
++gboolean
 +apt_get_install (GPtrArray     *packages,
 +                 GCancellable  *cancellable,
 +                 GError       **error) {
-+  g_autoptr(GSubprocessLauncher) launcher = NULL;
 +  g_autoptr(GSubprocess) process = NULL;
 +  static gboolean already_updated = FALSE;
 +
@@ -132,6 +189,14 @@ index 9e1bfa9..6654b00 100644
 +      return FALSE;
 +
 +    g_atomic_int_set (&already_updated, TRUE);
++  }
++
++  /* Uninstall locales-all so that is does not take up space on the final
++   * system.
++   * */
++  if (!remove_locales_all(cancellable, error)) {
++    g_prefix_error_literal (error, "Failed to call apt-get remove locales-all: ");
++    return FALSE;
 +  }
 +
 +  /* Create space for 8 leading arguments of the install command, the number of
@@ -148,14 +213,7 @@ index 9e1bfa9..6654b00 100644
 +    g_ptr_array_add (argv, g_ptr_array_steal_index_fast (packages, 0));
 +  }
 +
-+  launcher = g_subprocess_launcher_new (G_SUBPROCESS_FLAGS_NONE);
-+  g_subprocess_launcher_unsetenv (launcher, "SHELL");
-+
-+  g_subprocess_launcher_setenv (launcher, "DEBCONF_NONINTERACTIVE_SEEN", "true", TRUE);
-+  g_subprocess_launcher_setenv (launcher, "DEBIAN_FRONTEND", "noninteractive", TRUE);
-+
-+  process =
-+      g_subprocess_launcher_spawnv (launcher, (const gchar *const *) argv->pdata, error);
++  process = pkexec_subprocess_new ((const gchar * const *) argv->pdata, error);
 +
 +  if (!process) {
 +    g_prefix_error_literal (error, "Failed to create apt install process: ");
