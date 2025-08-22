@@ -6,14 +6,14 @@ Subject: Use ubuntu-insights to report hardware and other metrics
  gnome-initial-setup/gnome-initial-setup.c          |  24 +-
  gnome-initial-setup/meson.build                    |   2 +-
  gnome-initial-setup/pages/meson.build              |   1 +
- .../ubuntu-insights/gis-ubuntu-insights-page.c     | 395 +++++++++++++++++++++
+ .../ubuntu-insights/gis-ubuntu-insights-page.c     | 416 +++++++++++++++++++++
  .../ubuntu-insights/gis-ubuntu-insights-page.h     |  33 ++
  .../ubuntu-insights/gis-ubuntu-insights-page.ui    | 104 ++++++
  .../pages/ubuntu-insights/meson.build              |  10 +
  .../ubuntu-insights/ubuntu-insights.gresource.xml  |   8 +
  .../pages/ubuntu-insights/ubuntu-insights.svg      |   1 +
  po/POTFILES.in                                     |   2 +
- 10 files changed, 568 insertions(+), 12 deletions(-)
+ 10 files changed, 589 insertions(+), 12 deletions(-)
  create mode 100644 gnome-initial-setup/pages/ubuntu-insights/gis-ubuntu-insights-page.c
  create mode 100644 gnome-initial-setup/pages/ubuntu-insights/gis-ubuntu-insights-page.h
  create mode 100644 gnome-initial-setup/pages/ubuntu-insights/gis-ubuntu-insights-page.ui
@@ -94,10 +94,10 @@ index b8b4631..adcdbd3 100644
  
 diff --git a/gnome-initial-setup/pages/ubuntu-insights/gis-ubuntu-insights-page.c b/gnome-initial-setup/pages/ubuntu-insights/gis-ubuntu-insights-page.c
 new file mode 100644
-index 0000000..97a5b21
+index 0000000..9d27747
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-insights/gis-ubuntu-insights-page.c
-@@ -0,0 +1,395 @@
+@@ -0,0 +1,416 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2025 Canonical Ltd.
@@ -210,10 +210,11 @@ index 0000000..97a5b21
 +  flags.source_metrics_path = TELEMETRY_LOG_PATH;
 +
 +  error_msg = insights_compile (NULL, &flags, &report);
-+  if (error_msg != NULL) {
-+    g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED, "%s", error_msg);
-+    return;
-+  }
++  if (error_msg != NULL)
++    {
++      g_task_return_new_error_literal (task, G_IO_ERROR, G_IO_ERROR_FAILED, error_msg);
++      return;
++    }
 +
 +  g_task_return_pointer (task, g_steal_pointer (&report), g_free);
 +}
@@ -236,20 +237,21 @@ index 0000000..97a5b21
 +  if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 +    return;
 +
-+  if (error != NULL) {
-+    dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (page))),
-+                                     GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-+                                     GTK_MESSAGE_ERROR,
-+                                     GTK_BUTTONS_CLOSE,
-+                                     _("Failed to get report information: %s"),
-+                                     error->message);
-+    g_signal_connect_swapped (dialog,
-+                              "response",
-+                              G_CALLBACK (gtk_window_destroy),
-+                              dialog);
-+    gtk_window_present (GTK_WINDOW (dialog));
-+    return;
-+  }
++  if (error != NULL)
++    {
++      dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (page))),
++                                       GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
++                                       GTK_MESSAGE_ERROR,
++                                       GTK_BUTTONS_CLOSE,
++                                       _("Failed to get report information: %s"),
++                                       error->message);
++      g_signal_connect_swapped (dialog,
++                                "response",
++                                G_CALLBACK (gtk_window_destroy),
++                                dialog);
++      gtk_window_present (GTK_WINDOW (dialog));
++      return;
++    }
 +
 +  dialog = gtk_dialog_new_with_buttons (_("Ubuntu Insights Contents"),
 +                                        GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (page))),
@@ -290,10 +292,11 @@ index 0000000..97a5b21
 +
 +  task = g_task_new (page, page->cancellable, on_show_report_callback, page);
 +
-+  if (page->report) {
-+    g_task_return_pointer (task, g_steal_pointer (&page->report), NULL);
-+    return;
-+  }
++  if (page->report)
++    {
++      g_task_return_pointer (task, g_steal_pointer (&page->report), g_free);
++      return;
++    }
 +
 +  g_task_set_return_on_cancel (task, TRUE);
 +  g_task_run_in_thread (task, on_collect_report_thread);
@@ -355,49 +358,68 @@ index 0000000..97a5b21
 +  WriteReportThreadData *data = task_data;
 +  g_autofree char *error = NULL;
 +
-+  // Set consents
++  /* Set consents */
 +  const char *sources[] = {
-+    "", // Global.
-+    APP_SOURCE, // Desktop provisioner (this).
-+    "linux", // Platform source used by timed systemd collection.
++    "", /* Global */
++    APP_SOURCE, /* Desktop provisioner (this) */
++    "linux", /* Platform source used by timed systemd collection */
 +  };
 +
 +  for (size_t i = 0; i < G_N_ELEMENTS (sources); i++) {
 +    error = insights_set_consent_state (NULL, sources[i], data->consent);
-+    if (error != NULL) {
-+      g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
-+                               _("Failed to set consent \"%s\" for source \"%s\": %s"),
-+                               data->consent ? "true" : "false", sources[i], error);
-+      return;
-+    }
++    if (error != NULL)
++      {
++        g_autofree char *error_msg = NULL;
++
++        if (data->consent)
++          {
++            /* TRANSLATORS: The second place-holder is an error message */
++            error_msg = g_strdup_printf(_("Failed give consent for source \"%s\": %s"),
++                                        sources[i], error);
++          }
++        else
++          {
++            /* TRANSLATORS: The second place-holder is an error message */
++            error_msg = g_strdup_printf(_("Failed withdraw consent for source \"%s\": %s"),
++                                        sources[i], error);
++          }
++
++        g_task_return_new_error_literal (task, G_IO_ERROR, G_IO_ERROR_FAILED,
++                                         error_msg);
++        return;
++      }
 +  }
 +
-+  // Write report
-+  if (!data->report) {
-+    insights_compile_flags flags = {0};
-+    flags.source_metrics_path = TELEMETRY_LOG_PATH;
++  /* Write report */
++  if (!data->report)
++    {
++      insights_compile_flags flags = {0};
++      flags.source_metrics_path = TELEMETRY_LOG_PATH;
 +
-+    error = insights_compile (NULL, &flags, &data->report);
-+    if (error != NULL) {
-+      g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
-+                               _("Failed to generate report: %s"), error);
-+      return;
++      error = insights_compile (NULL, &flags, &data->report);
++      if (error != NULL)
++        {
++          g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
++                                   _("Failed to generate report: %s"), error);
++          return;
++        }
 +    }
-+  }
 +
 +  g_assert (data->report);
-+  // We only write, and allow the systemd service/timer to do the uploading.
++
++  /* We only write, and allow the systemd service/timer to do the uploading */
 +  insights_write_flags flags = {0};
-+  flags.period = G_MAXINT32; // Ensure uniqueness.
-+  flags.force = TRUE; // Overwrite existing reports within period.
++  flags.period = G_MAXINT32; /* Ensure uniqueness */
++  flags.force = TRUE; /* Overwrite existing reports within period */
 +
 +  error = insights_write (NULL, APP_SOURCE,
 +                          data->report, &flags);
-+  if (error != NULL) {
-+    g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
-+                             _("Failed to write report: %s"), error);
-+    return;
-+  }
++  if (error != NULL)
++    {
++      g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
++                               _("Failed to write report: %s"), error);
++      return;
++    }
 +
 +  g_task_return_boolean (task, TRUE);
 +}
@@ -410,9 +432,8 @@ index 0000000..97a5b21
 +  GTask *task = G_TASK (res);
 +  g_autoptr (GError) error = NULL;
 +
-+  if (!g_task_propagate_boolean (task, &error)) {
++  if (!g_task_propagate_boolean (task, &error))
 +    g_warning ("%s", error->message);
-+  }
 +}
 +
 +/* Retrieve and write the report to disk (or decline thereof) and set consent.
@@ -431,7 +452,7 @@ index 0000000..97a5b21
 +  data->consent = gtk_check_button_get_active (GTK_CHECK_BUTTON (page->opt_in_check));
 +  data->report = g_steal_pointer (&page->report);
 +
-+  task = g_task_new (page, NULL, on_collect_write_report_callback, NULL);
++  task = g_task_new (page, cancellable, on_collect_write_report_callback, NULL);
 +  g_task_set_task_data (task, g_steal_pointer (&data),
 +                        (GDestroyNotify) write_report_thread_data_free);
 +
