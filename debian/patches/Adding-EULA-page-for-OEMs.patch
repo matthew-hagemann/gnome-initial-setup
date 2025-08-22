@@ -32,7 +32,7 @@ Co-authored-by: Marco Trevisan <marco@ubuntu.com>
  create mode 100644 gnome-initial-setup/pages/eula/meson.build
 
 diff --git a/gnome-initial-setup/gnome-initial-setup.c b/gnome-initial-setup/gnome-initial-setup.c
-index 591063e..31b65e2 100644
+index 5a7a78b..e08b98f 100644
 --- a/gnome-initial-setup/gnome-initial-setup.c
 +++ b/gnome-initial-setup/gnome-initial-setup.c
 @@ -32,6 +32,7 @@
@@ -43,7 +43,7 @@ index 591063e..31b65e2 100644
  #include "pages/network/gis-network-page.h"
  #include "pages/timezone/gis-timezone-page.h"
  #include "pages/privacy/gis-privacy-page.h"
-@@ -69,6 +70,7 @@ static PageData page_table[] = {
+@@ -68,6 +69,7 @@ static PageData page_table[] = {
    PAGE (welcome, FALSE),
    PAGE (language, FALSE),
    PAGE (keyboard, FALSE),
@@ -536,7 +536,7 @@ index 0000000..389d3ab
 +    'gis-eula-page.h',
 +)
 diff --git a/gnome-initial-setup/pages/meson.build b/gnome-initial-setup/pages/meson.build
-index 2ed2a5f..1a54d65 100644
+index d68a4f4..b8b4631 100644
 --- a/gnome-initial-setup/pages/meson.build
 +++ b/gnome-initial-setup/pages/meson.build
 @@ -1,5 +1,6 @@
