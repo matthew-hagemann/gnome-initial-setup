@@ -6,14 +6,14 @@ Subject: Use ubuntu-insights to report hardware and other metrics
  gnome-initial-setup/gnome-initial-setup.c          |  24 +-
  gnome-initial-setup/meson.build                    |   2 +-
  gnome-initial-setup/pages/meson.build              |   1 +
- .../ubuntu-insights/gis-ubuntu-insights-page.c     | 416 +++++++++++++++++++++
+ .../ubuntu-insights/gis-ubuntu-insights-page.c     | 437 +++++++++++++++++++++
  .../ubuntu-insights/gis-ubuntu-insights-page.h     |  33 ++
- .../ubuntu-insights/gis-ubuntu-insights-page.ui    | 104 ++++++
+ .../ubuntu-insights/gis-ubuntu-insights-page.ui    | 104 +++++
  .../pages/ubuntu-insights/meson.build              |  10 +
  .../ubuntu-insights/ubuntu-insights.gresource.xml  |   8 +
  .../pages/ubuntu-insights/ubuntu-insights.svg      |   1 +
  po/POTFILES.in                                     |   2 +
- 10 files changed, 589 insertions(+), 12 deletions(-)
+ 10 files changed, 610 insertions(+), 12 deletions(-)
  create mode 100644 gnome-initial-setup/pages/ubuntu-insights/gis-ubuntu-insights-page.c
  create mode 100644 gnome-initial-setup/pages/ubuntu-insights/gis-ubuntu-insights-page.h
  create mode 100644 gnome-initial-setup/pages/ubuntu-insights/gis-ubuntu-insights-page.ui
@@ -94,10 +94,10 @@ index b8b4631..adcdbd3 100644
  
 diff --git a/gnome-initial-setup/pages/ubuntu-insights/gis-ubuntu-insights-page.c b/gnome-initial-setup/pages/ubuntu-insights/gis-ubuntu-insights-page.c
 new file mode 100644
-index 0000000..9d27747
+index 0000000..172099d
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-insights/gis-ubuntu-insights-page.c
-@@ -0,0 +1,416 @@
+@@ -0,0 +1,437 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2025 Canonical Ltd.
@@ -349,6 +349,41 @@ index 0000000..9d27747
 +  g_free (data);
 +}
 +
++static gchar *
++format_consent_error_msg (const char *source,
++                          gboolean    consent,
++                          const char *error_msg)
++{ 
++  g_return_val_if_fail (source != NULL, NULL);
++
++  if (*source == '\0')
++    {
++      if (consent)
++        {
++          /* TRANSLATORS: The place-holder is an error message */
++          return g_strdup_printf (_("Failed to set the default consent: %s"), error_msg);
++        }
++
++        /* TRANSLATORS: The place-holder is an error message */
++        return g_strdup_printf (_("Failed to withdraw the default consent: %s"), error_msg);      
++    }
++
++    if (consent)
++      {
++        /* TRANSLATORS: The first place-holder is the static key name of a source
++        * such as "linux" or "ubuntu_desktop_provision".
++        * The second place-holder is an error message.
++        */
++        return g_strdup_printf (_("Failed to give consent for source \"%s\": %s"), source, error_msg);
++      }
++
++    /* TRANSLATORS: The first place-holder is the static key name of a source
++    * such as "linux" or "ubuntu_desktop_provision".
++    * The second place-holder is an error message.
++    */
++    return g_strdup_printf (_("Failed to withdraw consent for source \"%s\": %s"), source, error_msg);
++}
++
 +static void
 +on_collect_write_report_thread (GTask *task,
 +                                gpointer source_object,
@@ -356,36 +391,22 @@ index 0000000..9d27747
 +                                GCancellable *cancellable)
 +{
 +  WriteReportThreadData *data = task_data;
-+  g_autofree char *error = NULL;
++  g_autofree char *error_msg = NULL;
 +
 +  /* Set consents */
 +  const char *sources[] = {
-+    "", /* Global */
++    "", /* Default */
 +    APP_SOURCE, /* Desktop provisioner (this) */
 +    "linux", /* Platform source used by timed systemd collection */
 +  };
 +
 +  for (size_t i = 0; i < G_N_ELEMENTS (sources); i++) {
-+    error = insights_set_consent_state (NULL, sources[i], data->consent);
-+    if (error != NULL)
++    error_msg = insights_set_consent_state (NULL, sources[i], data->consent);
++    if (error_msg != NULL)
 +      {
-+        g_autofree char *error_msg = NULL;
-+
-+        if (data->consent)
-+          {
-+            /* TRANSLATORS: The second place-holder is an error message */
-+            error_msg = g_strdup_printf(_("Failed give consent for source \"%s\": %s"),
-+                                        sources[i], error);
-+          }
-+        else
-+          {
-+            /* TRANSLATORS: The second place-holder is an error message */
-+            error_msg = g_strdup_printf(_("Failed withdraw consent for source \"%s\": %s"),
-+                                        sources[i], error);
-+          }
-+
-+        g_task_return_new_error_literal (task, G_IO_ERROR, G_IO_ERROR_FAILED,
-+                                         error_msg);
++        g_autofree char *consent_error_msg = format_consent_error_msg (sources[i], data->consent, error_msg);
++        g_task_return_new_error_literal(task, G_IO_ERROR, G_IO_ERROR_FAILED,
++                                        consent_error_msg);
 +        return;
 +      }
 +  }
@@ -396,11 +417,11 @@ index 0000000..9d27747
 +      insights_compile_flags flags = {0};
 +      flags.source_metrics_path = TELEMETRY_LOG_PATH;
 +
-+      error = insights_compile (NULL, &flags, &data->report);
-+      if (error != NULL)
++      error_msg = insights_compile (NULL, &flags, &data->report);
++      if (error_msg != NULL)
 +        {
 +          g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
-+                                   _("Failed to generate report: %s"), error);
++                                   _("Failed to generate report: %s"), error_msg);
 +          return;
 +        }
 +    }
@@ -412,12 +433,12 @@ index 0000000..9d27747
 +  flags.period = G_MAXINT32; /* Ensure uniqueness */
 +  flags.force = TRUE; /* Overwrite existing reports within period */
 +
-+  error = insights_write (NULL, APP_SOURCE,
++  error_msg = insights_write (NULL, APP_SOURCE,
 +                          data->report, &flags);
-+  if (error != NULL)
++  if (error_msg != NULL)
 +    {
 +      g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
-+                               _("Failed to write report: %s"), error);
++                               _("Failed to write report: %s"), error_msg);
 +      return;
 +    }
 +
