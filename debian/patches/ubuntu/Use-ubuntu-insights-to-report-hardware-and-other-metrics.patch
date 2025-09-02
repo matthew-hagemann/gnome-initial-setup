@@ -6,14 +6,14 @@ Subject: Use ubuntu-insights to report hardware and other metrics
  gnome-initial-setup/gnome-initial-setup.c          |  24 +-
  gnome-initial-setup/meson.build                    |   2 +-
  gnome-initial-setup/pages/meson.build              |   1 +
- .../ubuntu-insights/gis-ubuntu-insights-page.c     | 437 +++++++++++++++++++++
+ .../ubuntu-insights/gis-ubuntu-insights-page.c     | 433 +++++++++++++++++++++
  .../ubuntu-insights/gis-ubuntu-insights-page.h     |  33 ++
  .../ubuntu-insights/gis-ubuntu-insights-page.ui    | 104 +++++
  .../pages/ubuntu-insights/meson.build              |  10 +
  .../ubuntu-insights/ubuntu-insights.gresource.xml  |   8 +
  .../pages/ubuntu-insights/ubuntu-insights.svg      |   1 +
  po/POTFILES.in                                     |   2 +
- 10 files changed, 610 insertions(+), 12 deletions(-)
+ 10 files changed, 606 insertions(+), 12 deletions(-)
  create mode 100644 gnome-initial-setup/pages/ubuntu-insights/gis-ubuntu-insights-page.c
  create mode 100644 gnome-initial-setup/pages/ubuntu-insights/gis-ubuntu-insights-page.h
  create mode 100644 gnome-initial-setup/pages/ubuntu-insights/gis-ubuntu-insights-page.ui
@@ -94,10 +94,10 @@ index b8b4631..adcdbd3 100644
  
 diff --git a/gnome-initial-setup/pages/ubuntu-insights/gis-ubuntu-insights-page.c b/gnome-initial-setup/pages/ubuntu-insights/gis-ubuntu-insights-page.c
 new file mode 100644
-index 0000000..172099d
+index 0000000..c154f87
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-insights/gis-ubuntu-insights-page.c
-@@ -0,0 +1,437 @@
+@@ -0,0 +1,433 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2025 Canonical Ltd.
@@ -349,41 +349,6 @@ index 0000000..172099d
 +  g_free (data);
 +}
 +
-+static gchar *
-+format_consent_error_msg (const char *source,
-+                          gboolean    consent,
-+                          const char *error_msg)
-+{ 
-+  g_return_val_if_fail (source != NULL, NULL);
-+
-+  if (*source == '\0')
-+    {
-+      if (consent)
-+        {
-+          /* TRANSLATORS: The place-holder is an error message */
-+          return g_strdup_printf (_("Failed to set the default consent: %s"), error_msg);
-+        }
-+
-+        /* TRANSLATORS: The place-holder is an error message */
-+        return g_strdup_printf (_("Failed to withdraw the default consent: %s"), error_msg);      
-+    }
-+
-+    if (consent)
-+      {
-+        /* TRANSLATORS: The first place-holder is the static key name of a source
-+        * such as "linux" or "ubuntu_desktop_provision".
-+        * The second place-holder is an error message.
-+        */
-+        return g_strdup_printf (_("Failed to give consent for source \"%s\": %s"), source, error_msg);
-+      }
-+
-+    /* TRANSLATORS: The first place-holder is the static key name of a source
-+    * such as "linux" or "ubuntu_desktop_provision".
-+    * The second place-holder is an error message.
-+    */
-+    return g_strdup_printf (_("Failed to withdraw consent for source \"%s\": %s"), source, error_msg);
-+}
-+
 +static void
 +on_collect_write_report_thread (GTask *task,
 +                                gpointer source_object,
@@ -393,20 +358,50 @@ index 0000000..172099d
 +  WriteReportThreadData *data = task_data;
 +  g_autofree char *error_msg = NULL;
 +
-+  /* Set consents */
-+  const char *sources[] = {
-+    "", /* Default */
-+    APP_SOURCE, /* Desktop provisioner (this) */
-+    "linux", /* Platform source used by timed systemd collection */
++  struct
++  {
++    const char *source;
++    const char *error_message_consent;
++    const char *error_message_withdraw;
++  } sources[] = {
++    {
++      "",
++      /* TRANSLATORS: The place-holder is an error message */
++      N_("Failed to set the default consent: %s"),
++      /* TRANSLATORS: The place-holder is an error message */
++      N_("Failed to withdraw the default consent: %s"),
++    },
++    {
++      APP_SOURCE, /* GNOME Initial Setup */
++      /* TRANSLATORS: The place-holder is an error message */
++      N_("Failed to give consent to the Initial Setup application: %s"),
++      /* TRANSLATORS: The place-holder is an error message */
++      N_("Failed to withdraw consent to the Initial Setup application: %s"),
++    },
++    {
++      "linux", /* Platform source used by timed systemd collection */
++      /* TRANSLATORS: The place-holder is an error message */
++      N_("Failed to give consent to the system data collector: %s"),
++      /* TRANSLATORS: The place-holder is an error message */
++      N_("Failed to withdraw consent to the system data collector: %s"),
++    },
 +  };
 +
 +  for (size_t i = 0; i < G_N_ELEMENTS (sources); i++) {
-+    error_msg = insights_set_consent_state (NULL, sources[i], data->consent);
++    error_msg = insights_set_consent_state (NULL, sources[i].source,
++                                            data->consent);
++
 +    if (error_msg != NULL)
 +      {
-+        g_autofree char *consent_error_msg = format_consent_error_msg (sources[i], data->consent, error_msg);
-+        g_task_return_new_error_literal(task, G_IO_ERROR, G_IO_ERROR_FAILED,
-+                                        consent_error_msg);
++        const char *consent_error_msg;
++
++        if (data->consent)
++          consent_error_msg = sources[i].error_message_consent;
++        else
++          consent_error_msg = sources[i].error_message_withdraw;
++
++        g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
++                                 _(consent_error_msg), error_msg);
 +        return;
 +      }
 +  }
@@ -434,7 +429,7 @@ index 0000000..172099d
 +  flags.force = TRUE; /* Overwrite existing reports within period */
 +
 +  error_msg = insights_write (NULL, APP_SOURCE,
-+                          data->report, &flags);
++                              data->report, &flags);
 +  if (error_msg != NULL)
 +    {
 +      g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
