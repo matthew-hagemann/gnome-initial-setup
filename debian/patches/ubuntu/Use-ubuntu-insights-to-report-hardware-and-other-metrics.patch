@@ -6,14 +6,14 @@ Subject: Use ubuntu-insights to report hardware and other metrics
  gnome-initial-setup/gnome-initial-setup.c          |  24 +-
  gnome-initial-setup/meson.build                    |   2 +-
  gnome-initial-setup/pages/meson.build              |   1 +
- .../ubuntu-insights/gis-ubuntu-insights-page.c     | 433 +++++++++++++++++++++
+ .../ubuntu-insights/gis-ubuntu-insights-page.c     | 437 +++++++++++++++++++++
  .../ubuntu-insights/gis-ubuntu-insights-page.h     |  33 ++
  .../ubuntu-insights/gis-ubuntu-insights-page.ui    | 104 +++++
  .../pages/ubuntu-insights/meson.build              |  10 +
  .../ubuntu-insights/ubuntu-insights.gresource.xml  |   8 +
  .../pages/ubuntu-insights/ubuntu-insights.svg      |   1 +
  po/POTFILES.in                                     |   2 +
- 10 files changed, 606 insertions(+), 12 deletions(-)
+ 10 files changed, 610 insertions(+), 12 deletions(-)
  create mode 100644 gnome-initial-setup/pages/ubuntu-insights/gis-ubuntu-insights-page.c
  create mode 100644 gnome-initial-setup/pages/ubuntu-insights/gis-ubuntu-insights-page.h
  create mode 100644 gnome-initial-setup/pages/ubuntu-insights/gis-ubuntu-insights-page.ui
@@ -94,10 +94,10 @@ index b8b4631..adcdbd3 100644
  
 diff --git a/gnome-initial-setup/pages/ubuntu-insights/gis-ubuntu-insights-page.c b/gnome-initial-setup/pages/ubuntu-insights/gis-ubuntu-insights-page.c
 new file mode 100644
-index 0000000..c154f87
+index 0000000..2b8c6db
 --- /dev/null
 +++ b/gnome-initial-setup/pages/ubuntu-insights/gis-ubuntu-insights-page.c
-@@ -0,0 +1,433 @@
+@@ -0,0 +1,437 @@
 +/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
 +/*
 + * Copyright (C) 2025 Canonical Ltd.
@@ -120,6 +120,11 @@ index 0000000..c154f87
 +
 +#define PAGE_ID "ubuntu-insights"
 +#define TELEMETRY_LOG_PATH "/var/log/installer/telemetry"
++
++/* Used for allow-list on the server side.
++ * The naming originates from the fact that the source metrics originate from
++ * the provisioner.
++ */
 +#define APP_SOURCE "ubuntu_desktop_provision"
 +
 +#include "config.h"
@@ -374,16 +379,16 @@ index 0000000..c154f87
 +    {
 +      APP_SOURCE, /* GNOME Initial Setup */
 +      /* TRANSLATORS: The place-holder is an error message */
-+      N_("Failed to give consent to the Initial Setup application: %s"),
++      N_("Failed to grant consent for the Initial Setup application: %s"),
 +      /* TRANSLATORS: The place-holder is an error message */
-+      N_("Failed to withdraw consent to the Initial Setup application: %s"),
++      N_("Failed to withdraw consent for the Initial Setup application: %s"),
 +    },
 +    {
 +      "linux", /* Platform source used by timed systemd collection */
 +      /* TRANSLATORS: The place-holder is an error message */
-+      N_("Failed to give consent to the system data collector: %s"),
++      N_("Failed to grant consent for the system data collector: %s"),
 +      /* TRANSLATORS: The place-holder is an error message */
-+      N_("Failed to withdraw consent to the system data collector: %s"),
++      N_("Failed to withdraw consent for the system data collector: %s"),
 +    },
 +  };
 +
