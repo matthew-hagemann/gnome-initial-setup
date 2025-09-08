@@ -1,3 +1,13 @@
+gnome-initial-setup (49~beta.1-0ubuntu3) questing; urgency=medium
+
+  [ Sergio Costas Rodriguez ]
+  * Fix SVGs
+
+  [ Matthew Hagemann ]
+  * feat: remove locales-all before language pack installation
+
+ -- Alessandro Astone <alessandro.astone@canonical.com>  Mon, 08 Sep 2025 13:57:37 +0200
+
 gnome-initial-setup (49~beta.1-0ubuntu2) questing; urgency=medium
 
   [ Marco Trevisan (Treviño) ]
